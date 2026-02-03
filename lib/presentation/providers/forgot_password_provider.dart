@@ -34,12 +34,26 @@ class ForgotPasswordProvider extends ChangeNotifier {
       // Check response status
       if (response is Map<String, dynamic>) {
         if (response['status'] == 200) {
-           if (context.mounted) {
-             ScaffoldMessenger.of(context).showSnackBar(
-               const SnackBar(content: Text("Success")), // @string/successmsg
-             );
-             context.go('/login');
-           }
+             if (context.mounted) {
+               showDialog(
+                 context: context,
+                 builder: (BuildContext context) {
+                   return AlertDialog(
+                     content: const Text("Please check your email to reset your password"), // @string/successmsg
+                     actions: [
+                       TextButton(
+                         onPressed: () {
+                           if (context.mounted) {
+                             context.go('/login');
+                           }
+                         },
+                         child: const Text("OK"),
+                       ),
+                     ],
+                   );
+                 },
+               );
+             }
         } else {
            if (context.mounted) {
              ScaffoldMessenger.of(context).showSnackBar(
