@@ -115,7 +115,7 @@ class SplashProvider extends ChangeNotifier {
               // Navigate to Companies List
               //! strict migration: navigate to companies list
               if (context.mounted) {
-                 // context.go('/companies'); // Route not added yet.
+                 context.go('/companies');
                  _errorMsg = "Multiple companies found. Feature pending.";
                  _isLoading = false;
                  notifyListeners();

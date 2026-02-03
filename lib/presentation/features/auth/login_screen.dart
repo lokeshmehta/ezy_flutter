@@ -285,17 +285,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         onTap: () async {
                           await provider.clearSession();
                           if (context.mounted) {
-                             // Route to companies list (Pending)
-                             // context.go('/companies');
                              if (Navigator.canPop(context)) {
-                               Navigator.pop(context); // Or go to Splash?
-                               // Actually best to go to default route or Splash which redirects to companies if no url?
-                               // Android goes to `CompaniesListActivity`.
-                               // We'll mimic this by going to a route we haven't made yet.
-                               // Temporary:
-                               ScaffoldMessenger.of(context).showSnackBar(
-                                 const SnackBar(content: Text("Navigate to Companies List (Pending)")),
-                               );
+                               context.go('/companies');
+                             } else {
+                               context.go('/companies');
                              }
                           }
                         },

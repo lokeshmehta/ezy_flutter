@@ -7,6 +7,7 @@ import 'core/di/service_locator.dart';
 import 'domain/repositories/auth_repository.dart';
 import 'presentation/providers/auth_provider.dart';
 import 'presentation/providers/splash_provider.dart';
+import 'presentation/providers/companies_provider.dart';
 
 import 'dart:io';
 
@@ -42,6 +43,7 @@ class MyApp extends StatelessWidget {
           providers: [
             ChangeNotifierProvider(create: (_) => AuthProvider(getIt<AuthRepository>())), // From ServiceLocator
             ChangeNotifierProvider(create: (_) => SplashProvider()),
+            ChangeNotifierProvider(create: (_) => CompaniesProvider()),
           ],
           child: MaterialApp.router(
             title: 'EzyOrders',

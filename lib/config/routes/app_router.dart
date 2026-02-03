@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../presentation/features/auth/login_screen.dart';
+import '../../presentation/features/companies/companies_list_screen.dart';
 import '../../presentation/features/splash/splash_screen.dart';
 
 class ForgotPasswordScreen extends StatelessWidget { const ForgotPasswordScreen({super.key}); @override Widget build(BuildContext context) => const Scaffold(body: Center(child: Text('Forgot Password'))); }
@@ -20,6 +21,10 @@ class AppRouter {
       GoRoute(
         path: '/splash',
         builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: '/companies',
+        builder: (context, state) => const CompaniesListScreen(),
       ),
       GoRoute(
         path: '/login',
