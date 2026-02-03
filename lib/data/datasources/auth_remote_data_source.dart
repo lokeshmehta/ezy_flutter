@@ -72,9 +72,9 @@ class AuthRemoteDataSource {
 
   Future<dynamic> forgotPassword(String email) async {
     final response = await apiClient.post(
-      "${UrlApiKey.baseUrl}forgotpassword", 
+      "${UrlApiKey.baseUrl}forgot-password", 
       body: {
-        'email': email,
+        'forgot_email': email,
       },
     );
     // Return raw response for provider to parse status
