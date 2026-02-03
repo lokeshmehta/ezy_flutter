@@ -66,12 +66,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             "Promotions",
                             provider.promotionsResponse?.results,
                           ),
-                           _buildSection(
-                            context,
-                            "Popular Categories",
-                            "Popular Categories",
-                            provider.popularCategoriesResponse?.results,
-                          ),
+                           _buildPopularCategoriesSection(context, provider),
                           _buildSection(
                             context,
                             "Best Sellers",
@@ -330,7 +325,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildHomeCategories(DashboardProvider provider) {
-      // Home Categories/Blocks
       if (provider.homeBlocksResponse?.results == null || provider.homeBlocksResponse!.results!.isEmpty) {
         return const SizedBox.shrink();
       }
@@ -354,12 +348,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
       );
   }
 
-  Widget _buildSection(BuildContext context, String title, String categoryKey, List<MenuitemsResponse?>? items) {
+  // Updated to support ProductItem
+  Widget _buildSection(BuildContext context, String title, String categoryKey, List<ProductItem?>? items) {
       if (items == null || items.isEmpty) return const SizedBox.shrink();
 
       return _buildSectionLayout(title,
         SizedBox(
-          height: 180, // Adjust based on item layout
+          height: 180, 
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: items.length,
@@ -384,7 +379,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     Padding(
                       padding: const EdgeInsets.all(4.0),
                       child: Text(
-                        item?.name ?? item?.displayName ?? '',
+                        item?.title ?? '',
                         style: const TextStyle(fontSize: 12),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -394,6 +389,52 @@ class _DashboardScreenState extends State<DashboardScreen> {
                        "\$${item?.price ?? '0.00'}",
                        style: const TextStyle(fontWeight: FontWeight.bold),
                     )
+                  ],
+                ),
+              );
+            },
+          ),
+        )
+      );
+  }
+
+  // New method for Popular Categories
+  Widget _buildPopularCategoriesSection(BuildContext context, DashboardProvider provider) {
+       final items = provider.popularCategoriesResponse?.results;
+       if (items == null || items.isEmpty) return const SizedBox.shrink();
+
+       return _buildSectionLayout("Popular Categories",
+        SizedBox(
+          height: 120, 
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: items.length,
+            itemBuilder: (context, index) {
+              final item = items[index];
+              return Container(
+                width: 100,
+                margin: const EdgeInsets.all(5),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 80,
+                      width: 80,
+                      child: CachedNetworkImage(
+                        imageUrl: "${UrlApiKey.companyMainUrl}${item?.image}",
+                        fit: BoxFit.cover,
+                         errorWidget: (context, url, error) => const Icon(Icons.category),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Text(
+                        item?.popularCategory ?? '', 
+                        style: const TextStyle(fontSize: 12),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                   ],
                 ),
               );

@@ -1,97 +1,3 @@
-class MenuitemsResponse {
-  String? category;
-  String? image;
-  String? name;
-  String? displayName; // display_name
-  String? fromDate; // from_date
-  String? toDate; // to_date
-  String? products;
-  String? id;
-  String? price;
-  String? promotionPrice; // promotion_price
-  String? hasPromotion; // has_promotion
-  String? availableStockQty; // available_stock_qty
-  String? stockUnlimited; // stock_unlimited
-  String? minimumOrderQty; // minimum_order_qty
-  String? isFavourite; // is_favourite
-  String? brandId; // brand_id
-  int? scrolledPosition;
-  int? productAvailable; // product_available
-  int? supplierAvailable; // supplier_available
-  String? notAvailableDaysMessage; // not_available_days_message
-  String? addedToCart; // added_to_cart
-  String? addedQty; // added_qty
-  String? addedSubTotal; // added_sub_total
-  String? soldAs; // sold_as
-  String? qtyPerOuter; // qty_per_outer
-  String? orderedAs; // ordered_as
-  String? apiData; // api_data
-  String? qtyStatus; // qty_status
-
-  MenuitemsResponse({
-    this.category,
-    this.image,
-    this.name,
-    this.displayName,
-    this.fromDate,
-    this.toDate,
-    this.products,
-    this.id,
-    this.price,
-    this.promotionPrice,
-    this.hasPromotion,
-    this.availableStockQty = "0",
-    this.stockUnlimited = "",
-    this.minimumOrderQty = "0",
-    this.isFavourite,
-    this.brandId,
-    this.scrolledPosition,
-    this.productAvailable,
-    this.supplierAvailable,
-    this.notAvailableDaysMessage,
-    this.addedToCart,
-    this.addedQty,
-    this.addedSubTotal,
-    this.soldAs,
-    this.qtyPerOuter = "0",
-    this.orderedAs = "",
-    this.apiData = "",
-    this.qtyStatus = "",
-  });
-
-  factory MenuitemsResponse.fromJson(Map<String, dynamic> json) {
-    return MenuitemsResponse(
-      category: json['category'],
-      image: json['image'],
-      name: json['name'],
-      displayName: json['display_name'],
-      fromDate: json['from_date'],
-      toDate: json['to_date'],
-      products: json['products'],
-      id: json['id'],
-      price: json['price'],
-      promotionPrice: json['promotion_price'],
-      hasPromotion: json['has_promotion'],
-      availableStockQty: json['available_stock_qty'] ?? "0",
-      stockUnlimited: json['stock_unlimited'] ?? "",
-      minimumOrderQty: json['minimum_order_qty'] ?? "0",
-      isFavourite: json['is_favourite'],
-      brandId: json['brand_id'],
-      scrolledPosition: json['scrolledPosition'],
-      productAvailable: json['product_available'],
-      supplierAvailable: json['supplier_available'],
-      notAvailableDaysMessage: json['not_available_days_message'],
-      addedToCart: json['added_to_cart'],
-      addedQty: json['added_qty'],
-      addedSubTotal: json['added_sub_total'],
-      soldAs: json['sold_as'],
-      qtyPerOuter: json['qty_per_outer'] ?? "0",
-      orderedAs: json['ordered_as'] ?? "",
-      apiData: json['api_data'] ?? "",
-      qtyStatus: json['qty_status'] ?? "",
-    );
-  }
-}
 
 class BannersResponse {
   int? status;
@@ -170,7 +76,7 @@ class ProfileResponse {
   List<ProfileResult?>? results;
   int? resultsCount; // results_count
   String? cartQuantity; // cart_quantity
-  String? suppliersCount; // suppliers_count
+  String? suppliersCount; // suppliers_count (Int in Android, making String safe or dynamic)
   String? suppliers;
 
   ProfileResponse({
@@ -191,15 +97,19 @@ class ProfileResponse {
           ? (json['results'] as List).map((i) => i != null ? ProfileResult.fromJson(i) : null).toList()
           : null,
       resultsCount: json['results_count'],
-      cartQuantity: json['cart_quantity'],
-      suppliersCount: json['suppliers_count'],
+      cartQuantity: json['cart_quantity']?.toString(), 
+      suppliersCount: json['suppliers_count']?.toString(), // Handle Int/String
       suppliers: json['suppliers'],
     );
   }
 }
 
 class ProfileResult {
-  String? customerId; // customer_id
+  String? customerId; // Android: Not explicitly in ResultsItem but Login returns it. 
+                      // Wait, Android ProfileResponse.ResultsItem DOES NOT have customer_id. 
+                      // Removing strict requirement or keeping for safety if backend includes it. 
+                      // Kept as per previous valid structure, but Android code didn't show it.
+
   String? firstName; // first_name
   String? lastName; // last_name
   String? email;
@@ -218,7 +128,7 @@ class ProfileResult {
   String? showMarqueText; // show_marque_text
   String? marqueText; // marque_text
   String? marqueTextColor; // marque_text_color
-  String? marqueTextSize; // marque_text_size
+  String? marqueTextSize; // marque_text_size (Float in Android)
   String? marqueTextBackgroundColor; // marque_text_background_color
   String? marqueTextFormat; // marque_text_format
   String? bestSellers; // best_sellers
@@ -265,26 +175,26 @@ class ProfileResult {
 
   factory ProfileResult.fromJson(Map<String, dynamic> json) {
     return ProfileResult(
-      customerId: json['customer_id'],
+      customerId: json['customer_id']?.toString(), // Parsing specifically
       firstName: json['first_name'],
       lastName: json['last_name'],
       email: json['email'],
       mobile: json['mobile'],
       image: json['image'],
-      unreadNotificationsCount: json['unread_notifications_count'],
+      unreadNotificationsCount: json['unread_notifications_count']?.toString(),
       wishlistPageHeading: json['wishlist_page_heading'],
       status: json['status'],
       showPortalIn: json['show_portal_in'],
       accNum: json['acc_num'],
       allowScanToOrder: json['allow_scan_to_order'],
-      priceDisplayTypeDecimals: json['price_display_type_decimals'],
+      priceDisplayTypeDecimals: json['price_display_type_decimals']?.toString(),
       priceDisplayType: json['price_display_type'],
       supplierLogosPosition: json['supplier_logos_position'],
       maximumNumberOfSuppliersProductsForFreeShipping: json['maximum_number_of_suppliers_products_for_free_shipping'],
       showMarqueText: json['show_marque_text'],
       marqueText: json['marque_text'],
       marqueTextColor: json['marque_text_color'],
-      marqueTextSize: json['marque_text_size'],
+      marqueTextSize: json['marque_text_size']?.toString(),
       marqueTextBackgroundColor: json['marque_text_background_color'],
       marqueTextFormat: json['marque_text_format'],
       bestSellers: json['best_sellers'],
@@ -302,8 +212,7 @@ class ProfileResult {
 class HomeBlocksResponse {
     int? status;
     String? message;
-    List<MenuitemsResponse?>? results; // Assuming HomeBlocks uses similar structure or simplified
-    // In Android: homePageCategoriesApiCall -> HomeBlocksResponse -> homeItemsLay. Probably Categories.
+    List<HomeBlockItem?>? results;
 
     HomeBlocksResponse({this.status, this.message, this.results});
     factory HomeBlocksResponse.fromJson(Map<String, dynamic> json) {
@@ -311,8 +220,110 @@ class HomeBlocksResponse {
             status: json['status'],
             message: json['message'],
             results: json['results'] != null
-                ? (json['results'] as List).map((i) => i != null ? MenuitemsResponse.fromJson(i) : null).toList()
+                ? (json['results'] as List).map((i) => i != null ? HomeBlockItem.fromJson(i) : null).toList()
                 : null,
+        );
+    }
+}
+
+class HomeBlockItem {
+  String? id;
+  String? companyId; // company_id
+  String? name;
+  String? image;
+  String? description;
+  String? sortOrder; // sort_order
+  String? status;
+
+  HomeBlockItem({this.id, this.companyId, this.name, this.image, this.description, this.sortOrder, this.status});
+
+  factory HomeBlockItem.fromJson(Map<String, dynamic> json) {
+    return HomeBlockItem(
+      id: json['id']?.toString(),
+      companyId: json['company_id']?.toString(),
+      name: json['name'],
+      image: json['image'],
+      description: json['description'],
+      sortOrder: json['sort_order']?.toString(),
+      status: json['status'],
+    );
+  }
+}
+
+// Corresponds to Android 'Products' class
+class ProductItem {
+    String? productId; // product_id
+    String? title;
+    String? description;
+    String? image;
+    String? brandName; // brand_name
+    String? brandId; // brand_id
+    String? price;
+    String? promotionPrice; // promotion_price
+    String? stockUnlimited; // stock_unlimited
+    String? qtyStatus; // qty_status
+    String? availableStockQty; // available_stock_qty
+    String? minimumOrderQty; // minimum_order_qty
+    String? soldAs; // sold_as
+    String? isFavourite; // is_favourite
+    int? productAvailable; // product_available
+    int? supplierAvailable; // supplier_available
+    String? notAvailableDaysMessage; // not_available_days_message
+    String? addedToCart; // added_to_cart
+    String? addedQty; // added_qty
+    String? addedSubTotal; // added_sub_total
+    String? orderedAs; // ordered_as
+    String? apiData; // api_data
+
+    ProductItem({
+        this.productId,
+        this.title,
+        this.description,
+        this.image,
+        this.brandName,
+        this.brandId,
+        this.price,
+        this.promotionPrice,
+        this.stockUnlimited,
+        this.qtyStatus,
+        this.availableStockQty,
+        this.minimumOrderQty,
+        this.soldAs,
+        this.isFavourite,
+        this.productAvailable,
+        this.supplierAvailable,
+        this.notAvailableDaysMessage,
+        this.addedToCart,
+        this.addedQty,
+        this.addedSubTotal,
+        this.orderedAs,
+        this.apiData,
+    });
+
+    factory ProductItem.fromJson(Map<String, dynamic> json) {
+        return ProductItem(
+            productId: json['product_id']?.toString(),
+            title: json['title'],
+            description: json['description'],
+            image: json['image'],
+            brandName: json['brand_name'],
+            brandId: json['brand_id']?.toString(),
+            price: json['price'],
+            promotionPrice: json['promotion_price'],
+            stockUnlimited: json['stock_unlimited'],
+            qtyStatus: json['qty_status'],
+            availableStockQty: json['available_stock_qty']?.toString(),
+            minimumOrderQty: json['minimum_order_qty']?.toString(),
+            soldAs: json['sold_as'],
+            isFavourite: json['is_favourite'],
+            productAvailable: json['product_available'] is int ? json['product_available'] : int.tryParse(json['product_available']?.toString() ?? ""),
+            supplierAvailable: json['supplier_available'] is int ? json['supplier_available'] : int.tryParse(json['supplier_available']?.toString() ?? ""),
+            notAvailableDaysMessage: json['not_available_days_message'],
+            addedToCart: json['added_to_cart']?.toString(),
+            addedQty: json['added_qty']?.toString(),
+            addedSubTotal: json['added_sub_total']?.toString(),
+            orderedAs: json['ordered_as'],
+            apiData: json['api_data'],
         );
     }
 }
@@ -320,7 +331,7 @@ class HomeBlocksResponse {
 class DashboardProductsResponse {
     int? status;
     String? message;
-     List<MenuitemsResponse?>? results;
+     List<ProductItem?>? results;
 
     DashboardProductsResponse({this.status, this.message, this.results});
     factory DashboardProductsResponse.fromJson(Map<String, dynamic> json) {
@@ -328,7 +339,7 @@ class DashboardProductsResponse {
             status: json['status'],
             message: json['message'],
             results: json['results'] != null
-                ? (json['results'] as List).map((i) => i != null ? MenuitemsResponse.fromJson(i) : null).toList()
+                ? (json['results'] as List).map((i) => i != null ? ProductItem.fromJson(i) : null).toList()
                 : null,
         );
     }
@@ -337,7 +348,7 @@ class DashboardProductsResponse {
 class PromotionsResponse {
     int? status;
     String? message;
-     List<MenuitemsResponse?>? results;
+     List<ProductItem?>? results;
 
     PromotionsResponse({this.status, this.message, this.results});
     factory PromotionsResponse.fromJson(Map<String, dynamic> json) {
@@ -345,7 +356,7 @@ class PromotionsResponse {
             status: json['status'],
             message: json['message'],
             results: json['results'] != null
-                ? (json['results'] as List).map((i) => i != null ? MenuitemsResponse.fromJson(i) : null).toList()
+                ? (json['results'] as List).map((i) => i != null ? ProductItem.fromJson(i) : null).toList()
                 : null,
         );
     }
@@ -354,7 +365,7 @@ class PromotionsResponse {
 class FlashDealsResponse {
      int? status;
     String? message;
-     List<MenuitemsResponse?>? results;
+     List<ProductItem?>? results;
 
     FlashDealsResponse({this.status, this.message, this.results});
     factory FlashDealsResponse.fromJson(Map<String, dynamic> json) {
@@ -362,8 +373,27 @@ class FlashDealsResponse {
             status: json['status'],
             message: json['message'],
             results: json['results'] != null
-                ? (json['results'] as List).map((i) => i != null ? MenuitemsResponse.fromJson(i) : null).toList()
+                ? (json['results'] as List).map((i) => i != null ? ProductItem.fromJson(i) : null).toList()
                 : null,
+        );
+    }
+}
+
+class PopularCategoryItem {
+    String? divisionId; // division_id
+    String? groupLevel1; // group_level_1
+    String? image;
+    String? popularCategory; // popular_category
+    // category_products ignored for dashboard listing usually, unless needed.
+
+    PopularCategoryItem({this.divisionId, this.groupLevel1, this.image, this.popularCategory});
+
+    factory PopularCategoryItem.fromJson(Map<String, dynamic> json) {
+        return PopularCategoryItem(
+            divisionId: json['division_id']?.toString(),
+            groupLevel1: json['group_level_1'],
+            image: json['image'],
+            popularCategory: json['popular_category'],
         );
     }
 }
@@ -371,7 +401,7 @@ class FlashDealsResponse {
 class PopularCategoriesResponse {
     int? status;
     String? message;
-    List<MenuitemsResponse?>? results;
+    List<PopularCategoryItem?>? results;
 
     PopularCategoriesResponse({this.status, this.message, this.results});
     factory PopularCategoriesResponse.fromJson(Map<String, dynamic> json) {
@@ -379,7 +409,7 @@ class PopularCategoriesResponse {
             status: json['status'],
             message: json['message'],
             results: json['results'] != null
-                ? (json['results'] as List).map((i) => i != null ? MenuitemsResponse.fromJson(i) : null).toList()
+                ? (json['results'] as List).map((i) => i != null ? PopularCategoryItem.fromJson(i) : null).toList()
                 : null,
         );
     }
