@@ -49,7 +49,7 @@ class SplashProvider extends ChangeNotifier {
          context.go('/login');
       } else {
          _setBaseUrl(companyUrl);
-         context.go('/dashboard/home');
+         context.go('/dashboard');
       }
     }
   }

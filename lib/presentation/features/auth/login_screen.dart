@@ -217,7 +217,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                             );
                                             
                                             if (success && context.mounted) {
-                                               context.go('/dashboard/home');
+                                               context.go('/dashboard');
                                             }
                                           },
                                     style: ElevatedButton.styleFrom(
