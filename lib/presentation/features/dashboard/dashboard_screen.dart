@@ -284,7 +284,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             return Padding(
               padding: const EdgeInsets.all(8.0),
               child: CachedNetworkImage(
-                imageUrl: "${UrlApiKey.companyMainUrl}${banner?.bannerImage}", // Check path assumption
+                imageUrl: "${UrlApiKey.companyMainUrl}${banner?.image}", // Check path assumption
                 fit: BoxFit.cover,
                 errorWidget: (context, url, error) => const Icon(Icons.error),
               ),
@@ -314,7 +314,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     width: 100,
                     margin: const EdgeInsets.symmetric(horizontal: 5),
                      child: CachedNetworkImage(
-                        imageUrl: "${UrlApiKey.companyMainUrl}${item?.bannerImage}",
+                imageUrl: "${UrlApiKey.companyMainUrl}${item?.image}",
                         errorWidget: (context, url, error) => const Icon(Icons.error),
                      ),
                   );
@@ -480,7 +480,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             return Padding(
               padding: const EdgeInsets.all(8.0),
               child: CachedNetworkImage(
-                imageUrl: "${UrlApiKey.companyMainUrl}${banner?.bannerImage}", 
+                imageUrl: "${UrlApiKey.companyMainUrl}${banner?.image}", 
                 fit: BoxFit.cover,
                 errorWidget: (context, url, error) => const Icon(Icons.error),
               ),

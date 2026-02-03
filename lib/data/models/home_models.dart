@@ -19,35 +19,44 @@ class BannersResponse {
 
 class BannerItem {
   String? bannerId; // banner_id
-  String? bannerImage; // banner_image
-  String? bannerTitle; // banner_title
-  String? categoryId; // category_id
+  String? name; // name (was banner_title)
+  String? image; // image (was banner_image)
+  String? topCaption; // top_caption
+  String? bottomCaption; // bottom_caption
   String? linkImageTo; // link_image_to
-  String? offerId; // offer_id
-  String? supplierId; // supplier_id
-  String? tagId; // tag_id
+  String? divisionId; // division_id
+  String? groupId; // group_id
+  String? productId; // product_id
+  String? sortOrder; // sort_order
+  String? externalLink; // external_link
 
   BannerItem({
     this.bannerId,
-    this.bannerImage,
-    this.bannerTitle,
-    this.categoryId,
+    this.name,
+    this.image,
+    this.topCaption,
+    this.bottomCaption,
     this.linkImageTo,
-    this.offerId,
-    this.supplierId,
-    this.tagId,
+    this.divisionId,
+    this.groupId,
+    this.productId,
+    this.sortOrder,
+    this.externalLink,
   });
 
   factory BannerItem.fromJson(Map<String, dynamic> json) {
     return BannerItem(
-      bannerId: json['banner_id'],
-      bannerImage: json['banner_image'],
-      bannerTitle: json['banner_title'],
-      categoryId: json['category_id'],
-      linkImageTo: json['link_image_to'],
-      offerId: json['offer_id'],
-      supplierId: json['supplier_id'],
-      tagId: json['tag_id'],
+      bannerId: json['banner_id']?.toString(),
+      name: json['name']?.toString(),
+      image: json['image']?.toString(),
+      topCaption: json['top_caption']?.toString(),
+      bottomCaption: json['bottom_caption']?.toString(),
+      linkImageTo: json['link_image_to']?.toString(),
+      divisionId: json['division_id']?.toString(),
+      groupId: json['group_id']?.toString(),
+      productId: json['product_id']?.toString(),
+      sortOrder: json['sort_order']?.toString(),
+      externalLink: json['external_link']?.toString(),
     );
   }
 }
@@ -74,9 +83,9 @@ class ProfileResponse {
   int? status;
   String? message;
   List<ProfileResult?>? results;
-  int? resultsCount; // results_count
-  String? cartQuantity; // cart_quantity
-  String? suppliersCount; // suppliers_count (Int in Android, making String safe or dynamic)
+  int? resultsCount;
+  String? cartQuantity; 
+  String? suppliersCount; 
   String? suppliers;
 
   ProfileResponse({
@@ -98,47 +107,43 @@ class ProfileResponse {
           : null,
       resultsCount: json['results_count'],
       cartQuantity: json['cart_quantity']?.toString(), 
-      suppliersCount: json['suppliers_count']?.toString(), // Handle Int/String
+      suppliersCount: json['suppliers_count']?.toString(), 
       suppliers: json['suppliers']?.toString(),
     );
   }
 }
 
 class ProfileResult {
-  String? customerId; // Android: Not explicitly in ResultsItem but Login returns it. 
-                      // Wait, Android ProfileResponse.ResultsItem DOES NOT have customer_id. 
-                      // Removing strict requirement or keeping for safety if backend includes it. 
-                      // Kept as per previous valid structure, but Android code didn't show it.
-
-  String? firstName; // first_name
-  String? lastName; // last_name
+  String? customerId; 
+  String? firstName; 
+  String? lastName; 
   String? email;
   String? mobile;
   String? image;
-  String? unreadNotificationsCount; // unread_notifications_count
-  String? wishlistPageHeading; // wishlist_page_heading
+  String? unreadNotificationsCount; 
+  String? wishlistPageHeading; 
   String? status;
-  String? showPortalIn; // show_portal_in
-  String? accNum; // acc_num
-  String? allowScanToOrder; // allow_scan_to_order
-  String? priceDisplayTypeDecimals; // price_display_type_decimals
-  String? priceDisplayType; // price_display_type
-  String? supplierLogosPosition; // supplier_logos_position
-  String? maximumNumberOfSuppliersProductsForFreeShipping; // maximum_number_of_suppliers_products_for_free_shipping
-  String? showMarqueText; // show_marque_text
-  String? marqueText; // marque_text
-  String? marqueTextColor; // marque_text_color
-  String? marqueTextSize; // marque_text_size (Float in Android)
-  String? marqueTextBackgroundColor; // marque_text_background_color
-  String? marqueTextFormat; // marque_text_format
-  String? bestSellers; // best_sellers
-  String? productsAdvertisements; // products_advertisements
-  String? hotSelling; // hot_selling
-  String? supplierLogos; // supplier_logos
-  String? popularCategories; // popular_categories
-  String? flashDeals; // flash_deals
-  String? newArrivals; // new_arrivals
-  String? recentlyAdded; // recently_added
+  String? showPortalIn; 
+  String? accNum; 
+  String? allowScanToOrder; 
+  String? priceDisplayTypeDecimals; 
+  String? priceDisplayType; 
+  String? supplierLogosPosition; 
+  String? maximumNumberOfSuppliersProductsForFreeShipping; 
+  String? showMarqueText; 
+  String? marqueText; 
+  String? marqueTextColor; 
+  String? marqueTextSize; 
+  String? marqueTextBackgroundColor; 
+  String? marqueTextFormat; 
+  String? bestSellers; 
+  String? productsAdvertisements; 
+  String? hotSelling; 
+  String? supplierLogos; 
+  String? popularCategories; 
+  String? flashDeals; 
+  String? newArrivals; 
+  String? recentlyAdded; 
 
   ProfileResult({
     this.customerId,
@@ -228,11 +233,11 @@ class HomeBlocksResponse {
 
 class HomeBlockItem {
   String? id;
-  String? companyId; // company_id
+  String? companyId; 
   String? name;
   String? image;
   String? description;
-  String? sortOrder; // sort_order
+  String? sortOrder; 
   String? status;
 
   HomeBlockItem({this.id, this.companyId, this.name, this.image, this.description, this.sortOrder, this.status});
@@ -241,39 +246,42 @@ class HomeBlockItem {
     return HomeBlockItem(
       id: json['id']?.toString(),
       companyId: json['company_id']?.toString(),
-      name: json['name'],
-      image: json['image'],
-      description: json['description'],
+      name: json['name']?.toString(),
+      image: json['image']?.toString(),
+      description: json['description']?.toString(),
       sortOrder: json['sort_order']?.toString(),
-      status: json['status'],
+      status: json['status']?.toString(),
     );
   }
 }
 
-// Corresponds to Android 'Products' class
 class ProductItem {
-    String? productId; // product_id
+    String? productId; 
     String? title;
     String? description;
     String? image;
-    String? brandName; // brand_name
-    String? brandId; // brand_id
+    String? brandName; 
+    String? brandId; 
     String? price;
-    String? promotionPrice; // promotion_price
-    String? stockUnlimited; // stock_unlimited
-    String? qtyStatus; // qty_status
-    String? availableStockQty; // available_stock_qty
-    String? minimumOrderQty; // minimum_order_qty
-    String? soldAs; // sold_as
-    String? isFavourite; // is_favourite
-    int? productAvailable; // product_available
-    int? supplierAvailable; // supplier_available
-    String? notAvailableDaysMessage; // not_available_days_message
-    String? addedToCart; // added_to_cart
-    String? addedQty; // added_qty
-    String? addedSubTotal; // added_sub_total
-    String? orderedAs; // ordered_as
-    String? apiData; // api_data
+    String? promotionPrice; 
+    String? stockUnlimited; 
+    String? qtyStatus; 
+    String? availableStockQty; 
+    String? minimumOrderQty; 
+    String? soldAs; 
+    String? isFavourite; 
+    String? productAvailable; // Changed to String to handle 1/"1"
+    String? supplierAvailable; // Changed to String
+    String? notAvailableDaysMessage; 
+    String? addedToCart; 
+    String? addedQty; 
+    String? addedSubTotal; 
+    String? orderedAs; 
+    String? apiData;
+    String? divisionId;
+    String? groupId;
+    String? sku;
+    String? gstPercentage;
 
     ProductItem({
         this.productId,
@@ -298,32 +306,40 @@ class ProductItem {
         this.addedSubTotal,
         this.orderedAs,
         this.apiData,
+        this.divisionId,
+        this.groupId,
+        this.sku,
+        this.gstPercentage,
     });
 
     factory ProductItem.fromJson(Map<String, dynamic> json) {
         return ProductItem(
             productId: json['product_id']?.toString(),
-            title: json['title'],
-            description: json['description'],
-            image: json['image'],
-            brandName: json['brand_name'],
+            title: json['title']?.toString(),
+            description: json['description']?.toString(),
+            image: json['image']?.toString(),
+            brandName: json['brand_name']?.toString(),
             brandId: json['brand_id']?.toString(),
-            price: json['price'],
-            promotionPrice: json['promotion_price'],
-            stockUnlimited: json['stock_unlimited'],
-            qtyStatus: json['qty_status'],
+            price: json['price']?.toString(),
+            promotionPrice: json['promotion_price']?.toString(),
+            stockUnlimited: json['stock_unlimited']?.toString(),
+            qtyStatus: json['qty_status']?.toString(),
             availableStockQty: json['available_stock_qty']?.toString(),
             minimumOrderQty: json['minimum_order_qty']?.toString(),
-            soldAs: json['sold_as'],
-            isFavourite: json['is_favourite'],
-            productAvailable: json['product_available'] is int ? json['product_available'] : int.tryParse(json['product_available']?.toString() ?? ""),
-            supplierAvailable: json['supplier_available'] is int ? json['supplier_available'] : int.tryParse(json['supplier_available']?.toString() ?? ""),
-            notAvailableDaysMessage: json['not_available_days_message'],
+            soldAs: json['sold_as']?.toString(),
+            isFavourite: json['is_favourite']?.toString(),
+            productAvailable: json['product_available']?.toString(),
+            supplierAvailable: json['supplier_available']?.toString(),
+            notAvailableDaysMessage: json['not_available_days_message']?.toString(),
             addedToCart: json['added_to_cart']?.toString(),
             addedQty: json['added_qty']?.toString(),
             addedSubTotal: json['added_sub_total']?.toString(),
-            orderedAs: json['ordered_as'],
-            apiData: json['api_data'],
+            orderedAs: json['ordered_as']?.toString(),
+            apiData: json['api_data']?.toString(),
+            divisionId: json['division_id']?.toString(),
+            groupId: json['group_id']?.toString(),
+            sku: json['sku']?.toString(),
+            gstPercentage: json['gst_percentage']?.toString(),
         );
     }
 }
@@ -380,20 +396,21 @@ class FlashDealsResponse {
 }
 
 class PopularCategoryItem {
-    String? divisionId; // division_id
-    String? groupLevel1; // group_level_1
+    String? divisionId; 
+    String? groupLevel1; 
     String? image;
-    String? popularCategory; // popular_category
-    // category_products ignored for dashboard listing usually, unless needed.
+    String? popularCategory; 
+    String? categoryProductsCount; // Added
 
-    PopularCategoryItem({this.divisionId, this.groupLevel1, this.image, this.popularCategory});
+    PopularCategoryItem({this.divisionId, this.groupLevel1, this.image, this.popularCategory, this.categoryProductsCount});
 
     factory PopularCategoryItem.fromJson(Map<String, dynamic> json) {
         return PopularCategoryItem(
             divisionId: json['division_id']?.toString(),
-            groupLevel1: json['group_level_1'],
-            image: json['image'],
-            popularCategory: json['popular_category'],
+            groupLevel1: json['group_level_1']?.toString(),
+            image: json['image']?.toString(),
+            popularCategory: json['popular_category']?.toString(),
+            categoryProductsCount: json['category_products_count']?.toString(),
         );
     }
 }
@@ -415,10 +432,35 @@ class PopularCategoriesResponse {
     }
 }
 
+class BrandItem {
+    String? brandId;
+    String? brandName;
+    String? image;
+    String? brandNumber;
+    String? topBrand;
+    String? majorBrand;
+    String? status;
+
+    BrandItem({this.brandId, this.brandName, this.image, this.brandNumber, this.topBrand, this.majorBrand, this.status});
+
+    factory BrandItem.fromJson(Map<String, dynamic> json) {
+        return BrandItem(
+            brandId: json['brand_id']?.toString(),
+            brandName: json['brand_name']?.toString(),
+            image: json['image']?.toString(),
+            brandNumber: json['brand_number']?.toString(),
+            topBrand: json['top_brand']?.toString(),
+            majorBrand: json['major_brand']?.toString(),
+            status: json['status']?.toString(),
+        );
+    }
+}
+
+
 class SupplierLogosResponse {
      int? status;
     String? message;
-    List<BannerItem?>? results; // Uses BannerItem structure usually for logos
+    List<BrandItem?>? results; 
 
      SupplierLogosResponse({this.status, this.message, this.results});
       factory SupplierLogosResponse.fromJson(Map<String, dynamic> json) {
@@ -426,7 +468,7 @@ class SupplierLogosResponse {
             status: json['status'],
             message: json['message'],
             results: json['results'] != null
-                ? (json['results'] as List).map((i) => i != null ? BannerItem.fromJson(i) : null).toList()
+                ? (json['results'] as List).map((i) => i != null ? BrandItem.fromJson(i) : null).toList()
                 : null,
         );
     }
