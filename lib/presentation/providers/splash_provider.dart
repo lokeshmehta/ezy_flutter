@@ -27,12 +27,15 @@ class SplashProvider extends ChangeNotifier {
        // So if false, it stops.
        return; 
     }
+    
+    if (!context.mounted) return;
 
     final prefs = await SharedPreferences.getInstance();
     final String? companyUrl = prefs.getString('COMPANY_URL'); 
     final String? userId = prefs.getString('USER_ID');
 
     if (companyUrl == null || companyUrl.isEmpty) {
+      if (!context.mounted) return;
       // Logic: vm?.countriesApicall()
       await _fetchCompanies(context, prefs);
     } else {
@@ -53,7 +56,7 @@ class SplashProvider extends ChangeNotifier {
 
   void _setBaseUrl(String companyUrl) {
       if (companyUrl.isNotEmpty) {
-          UrlApiKey.baseUrl = companyUrl + "/api/";
+          UrlApiKey.baseUrl = "$companyUrl/api/";
           // Android also sets MAIN_URL but we focus on BASE_URL for API
       }
   }
@@ -70,7 +73,7 @@ class SplashProvider extends ChangeNotifier {
       // Notification
       // Storage (or Photos/Videos on Android 13)
       
-      Map<Permission, PermissionStatus> statuses = await [
+      await [
         Permission.camera,
         Permission.notification, // Android 13+
         Permission.storage, // Android 12 and below mainly
@@ -93,59 +96,46 @@ class SplashProvider extends ChangeNotifier {
   }
 
   Future<void> _fetchCompanies(BuildContext context, SharedPreferences prefs) async {
-    final result = await _repository.getCompanies();
-    
-    result.fold(
-      (failure) {
-        _isLoading = false;
-        _errorMsg = failure.message;
-        notifyListeners();
-        // Show error dialog logic here or in UI
-      },
-      (response) async {
-        if (response.status == 200) {
-          final results = response.results;
-          if (results != null && results.isNotEmpty) {
-             if (response.resultsCount == 1) {
-                // Auto Config
-                final company = results[0];
-                await _saveCompanyPrefs(prefs, company);
-                _setBaseUrl(company.companyUrl ?? "");
-                
-                if (context.mounted) {
-                   context.go('/login');
-                }
-             } else {
-                // Navigate to Companies List
-                //! strict migration: navigate to companies list
-                // For now, routing to a placeholder or error if not implemented
-                // context.go('/companies_list'); 
-                // Assuming we don't have CompaniesList implemented yet, we direct to login or show error?
-                // Plan said Splash->Login. 
-                // We will implement basic selection logic later.
-                // For this step, if multiple, we pick first or fail.
-                // Strict rule: "Do NOT simple optimize". 
-                // I will navigate to '/companies' (need to add route).
-                if (context.mounted) {
-                   // context.go('/companies'); // Route not added yet.
-                   // Temporary fallback until next screen implementation
-                   _errorMsg = "Multiple companies found. Feature pending.";
-                   _isLoading = false;
-                   notifyListeners();
-                }
-             }
-          } else {
-             _isLoading = false;
-             _errorMsg = "No data";
-             notifyListeners();
-          }
+    try {
+      final response = await _repository.getCompanies();
+      
+      if (response.status == 200) {
+        final results = response.results;
+        if (results != null && results.isNotEmpty) {
+           if (response.resultsCount == 1) {
+              // Auto Config
+              final company = results[0];
+              await _saveCompanyPrefs(prefs, company);
+              _setBaseUrl(company.companyUrl ?? "");
+              
+              if (context.mounted) {
+                 context.go('/login');
+              }
+           } else {
+              // Navigate to Companies List
+              //! strict migration: navigate to companies list
+              if (context.mounted) {
+                 // context.go('/companies'); // Route not added yet.
+                 _errorMsg = "Multiple companies found. Feature pending.";
+                 _isLoading = false;
+                 notifyListeners();
+              }
+           }
         } else {
            _isLoading = false;
-           _errorMsg = response.message ?? "Error fetching companies";
+           _errorMsg = "No data";
            notifyListeners();
         }
-      },
-    );
+      } else {
+         _isLoading = false;
+         _errorMsg = response.message ?? "Error fetching companies";
+         notifyListeners();
+      }
+    } catch (e) {
+      _isLoading = false;
+      _errorMsg = e.toString(); // Or map specific failure types if needed
+      notifyListeners();
+    }
   }
 
   Future<void> _saveCompanyPrefs(SharedPreferences prefs, CompanyResult company) async {

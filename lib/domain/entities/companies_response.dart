@@ -1,40 +1,77 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+class CompaniesResponse {
+  final int? resultsCount;
+  final String? message;
+  final List<CompanyResult>? results;
+  final int? status;
 
-part 'companies_response.freezed.dart';
-part 'companies_response.g.dart';
+  CompaniesResponse({
+    this.resultsCount,
+    this.message,
+    this.results,
+    this.status,
+  });
 
-@freezed
-class CompaniesResponse with _$CompaniesResponse {
-  const factory CompaniesResponse({
-    @JsonKey(name: 'results_count') int? resultsCount,
-    String? message,
-    List<CompanyResult>? results,
-    int? status,
-  }) = _CompaniesResponse;
-
-  factory CompaniesResponse.fromJson(Map<String, dynamic> json) =>
-      _$CompaniesResponseFromJson(json);
+  factory CompaniesResponse.fromJson(Map<String, dynamic> json) {
+    return CompaniesResponse(
+      resultsCount: json['results_count'] is int ? json['results_count'] : int.tryParse(json['results_count']?.toString() ?? '0'),
+      message: json['message']?.toString(),
+      results: (json['results'] as List<dynamic>?)
+          ?.map((e) => CompanyResult.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      status: json['status'] is int ? json['status'] : int.tryParse(json['status']?.toString() ?? '0'),
+    );
+  }
 }
 
-@freezed
-class CompanyResult with _$CompanyResult {
-  const factory CompanyResult({
-    @JsonKey(name: 'company_id') int? companyId,
-    String? name,
-    @JsonKey(name: 'nature_of_business') String? natureOfBusiness,
-    @JsonKey(name: 'unique_url') String? uniqueUrl,
-    String? image,
-    @JsonKey(name: 'access_token') String? accessToken,
-    @JsonKey(name: 'company_url') String? companyUrl,
-    @JsonKey(name: 'email_required_for_customer_signup') String? emailRequiredForCustomerSignup,
-    @JsonKey(name: 'available_payment_methods') String? availablePaymentMethods,
-    @JsonKey(name: 'razor_pay_key') String? razorPayKey,
-    @JsonKey(name: 'razor_pay_secret') String? razorPaySecret,
-    @JsonKey(name: 'web_url') String? webUrl,
-    @JsonKey(name: 'allow_new_user_sign_up') String? allowNewUserSignUp,
-    @JsonKey(name: 'login_screen_username_placeholder') String? loginScreenUsernamePlaceholder,
-  }) = _CompanyResult;
+class CompanyResult {
+  final int? companyId;
+  final String? name;
+  final String? natureOfBusiness;
+  final String? uniqueUrl;
+  final String? image;
+  final String? accessToken;
+  final String? companyUrl;
+  final String? emailRequiredForCustomerSignup;
+  final String? availablePaymentMethods;
+  final String? razorPayKey;
+  final String? razorPaySecret;
+  final String? webUrl;
+  final String? allowNewUserSignUp;
+  final String? loginScreenUsernamePlaceholder;
 
-  factory CompanyResult.fromJson(Map<String, dynamic> json) =>
-      _$CompanyResultFromJson(json);
+  CompanyResult({
+    this.companyId,
+    this.name,
+    this.natureOfBusiness,
+    this.uniqueUrl,
+    this.image,
+    this.accessToken,
+    this.companyUrl,
+    this.emailRequiredForCustomerSignup,
+    this.availablePaymentMethods,
+    this.razorPayKey,
+    this.razorPaySecret,
+    this.webUrl,
+    this.allowNewUserSignUp,
+    this.loginScreenUsernamePlaceholder,
+  });
+
+  factory CompanyResult.fromJson(Map<String, dynamic> json) {
+    return CompanyResult(
+      companyId: json['company_id'] is int ? json['company_id'] : int.tryParse(json['company_id']?.toString() ?? '0'),
+      name: json['name']?.toString(),
+      natureOfBusiness: json['nature_of_business']?.toString(),
+      uniqueUrl: json['unique_url']?.toString(),
+      image: json['image']?.toString(),
+      accessToken: json['access_token']?.toString(),
+      companyUrl: json['company_url']?.toString(),
+      emailRequiredForCustomerSignup: json['email_required_for_customer_signup']?.toString(),
+      availablePaymentMethods: json['available_payment_methods']?.toString(),
+      razorPayKey: json['razor_pay_key']?.toString(),
+      razorPaySecret: json['razor_pay_secret']?.toString(),
+      webUrl: json['web_url']?.toString(),
+      allowNewUserSignUp: json['allow_new_user_sign_up']?.toString(),
+      loginScreenUsernamePlaceholder: json['login_screen_username_placeholder']?.toString(),
+    );
+  }
 }

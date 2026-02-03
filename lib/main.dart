@@ -8,8 +8,20 @@ import 'domain/repositories/auth_repository.dart';
 import 'presentation/providers/auth_provider.dart';
 import 'presentation/providers/splash_provider.dart';
 
+import 'dart:io';
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+  }
+}
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  HttpOverrides.global = MyHttpOverrides(); // Bypass SSL verification
+  
   // TODO: Initialize ServiceLocator (GetIt) here
   setupLocator(); 
   

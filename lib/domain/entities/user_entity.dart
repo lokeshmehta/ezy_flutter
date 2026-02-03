@@ -1,19 +1,50 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+class UserEntity {
+  final String id;
+  final String firstName;
+  final String lastName;
+  final String email;
+  final String phone;
+  final String accessToken;
+  final int? status;
+  final String? message;
+  final String? customerId;
 
-part 'user_entity.freezed.dart';
-part 'user_entity.g.dart';
+  UserEntity({
+    required this.id,
+    required this.firstName,
+    required this.lastName,
+    required this.email,
+    required this.phone,
+    required this.accessToken,
+    this.status,
+    this.message,
+    this.customerId,
+  });
 
-@freezed
-class UserEntity with _$UserEntity {
-  const factory UserEntity({
-    @JsonKey(name: 'customer_id') required String id,
-    @JsonKey(name: 'first_name') required String firstName,
-    @JsonKey(name: 'last_name') required String lastName,
-    required String email,
-    required String phone,
-    @JsonKey(name: 'access_token') required String accessToken,
-  }) = _UserEntity;
+  factory UserEntity.fromJson(Map<String, dynamic> json) {
+    return UserEntity(
+      id: json['customer_id']?.toString() ?? '',
+      firstName: json['first_name']?.toString() ?? '',
+      lastName: json['last_name']?.toString() ?? '',
+      email: json['email']?.toString() ?? '',
+      phone: json['phone']?.toString() ?? '',
+      accessToken: json['access_token']?.toString() ?? '',
+      status: json['status'] is int ? json['status'] : int.tryParse(json['status']?.toString() ?? '0'),
+      message: json['message']?.toString(),
+      customerId: json['customer_id']?.toString(),
+    );
+  }
 
-  factory UserEntity.fromJson(Map<String, dynamic> json) =>
-      _$UserEntityFromJson(json);
+  Map<String, dynamic> toJson() {
+    return {
+      'customer_id': id,
+      'first_name': firstName,
+      'last_name': lastName,
+      'email': email,
+      'phone': phone,
+      'access_token': accessToken,
+      'status': status,
+      'message': message,
+    };
+  }
 }
