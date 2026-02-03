@@ -107,35 +107,35 @@ class SignUpScreen extends StatelessWidget {
 
                                             // First Name
                                             _buildLabel("First Name *"), // @string/first_name
-                                            _buildTextField(provider.firstNameController, "Enter First Name", TextInputType.name),
+                                            _buildTextField(provider.firstNameController, "Enter Your First Name", TextInputType.name),
                                             
                                             SizedBox(height: 10),
                                             
                                             // Last Name
                                             _buildLabel("Last Name *"), // @string/last_name_
-                                            _buildTextField(provider.lastNameController, "Enter Last Name", TextInputType.name),
+                                            _buildTextField(provider.lastNameController, "Enter Your Last Name", TextInputType.name),
 
                                             SizedBox(height: 10),
 
                                             // Mobile
                                             _buildLabel("Mobile Number *"), // @string/mobile_number
-                                            _buildTextField(provider.mobileController, "Enter Mobile Number", TextInputType.phone),
+                                            _buildTextField(provider.mobileController, "Enter Your Mobile Number", TextInputType.phone),
 
                                             SizedBox(height: 10),
 
                                             // Email
                                             _buildLabel(provider.emailRequired == "Yes" ? "Email *" : "Email"), // Dynamic Label from Provider
-                                            _buildTextField(provider.emailController, "Enter Email", TextInputType.emailAddress),
+                                            _buildTextField(provider.emailController, "Enter Your Email", TextInputType.emailAddress),
 
                                             SizedBox(height: 10),
 
                                             // Order Emails
-                                            _buildLabel("Order Email(s)"), // @string/orderemail_n (Assuming not mandatory unless noted, but Logic checks valid format)
-                                            _buildTextField(provider.orderEmailsController, "Enter Order Email", TextInputType.emailAddress),
+                                            _buildLabel("Order Receipt Email(s)"), // @string/orderemail_n (Assuming not mandatory unless noted, but Logic checks valid format)
+                                            _buildTextField(provider.orderEmailsController, "Enter Your Order Receipt Email(s)", TextInputType.emailAddress),
                                             
                                             SizedBox(height: 5),
                                             Text(
-                                              "Note: Use comma (,) to separate multiple emails.", // @string/note
+                                              "Note : Please add Email(s) in comma separated", // @string/note
                                               style: TextStyle(
                                                 color: Colors.red, // @color/redcolor
                                                 fontSize: 12, // @dimen/padding_12
@@ -146,13 +146,13 @@ class SignUpScreen extends StatelessWidget {
 
                                             // Password
                                             _buildLabel("Password *"), // @string/password_m
-                                            _buildTextField(provider.passwordController, "Enter Password", TextInputType.visiblePassword, isPassword: true),
+                                            _buildTextField(provider.passwordController, "Enter Your Password", TextInputType.visiblePassword, isPassword: true),
 
                                             SizedBox(height: 10),
 
                                             // Confirm Password
                                             _buildLabel("Confirm Password *"), // @string/cnfpassword_m
-                                            _buildTextField(provider.confirmPasswordController, "Enter Confirm Password", TextInputType.visiblePassword, isPassword: true),
+                                            _buildTextField(provider.confirmPasswordController, "Enter Your Password Again", TextInputType.visiblePassword, isPassword: true),
 
                                             SizedBox(height: 30),
 
@@ -201,12 +201,24 @@ class SignUpScreen extends StatelessWidget {
                                                       context.go('/login');
                                                     }
                                                 },
-                                                child: Text(
-                                                  "Login", // @string/login_small
-                                                  style: TextStyle(
-                                                    color: AppTheme.textColor,
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.bold,
+                                                child: RichText(
+                                                  text: TextSpan(
+                                                    text: "Already have an account? ",
+                                                    style: TextStyle(
+                                                      color: Colors.black, // Match screenshot text color
+                                                      fontSize: 14,
+                                                      fontWeight: FontWeight.bold,
+                                                      fontFamily: 'Roboto', 
+                                                    ),
+                                                    children: [
+                                                      TextSpan(
+                                                        text: "Login",
+                                                        style: TextStyle(
+                                                          color: AppTheme.tealColor, // Orange/Gold
+                                                          fontWeight: FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
                                               ),
@@ -262,15 +274,15 @@ class SignUpScreen extends StatelessWidget {
           hintText: hint,
           hintStyle: TextStyle(color: Colors.grey, fontSize: 14), // @color/hint_color
           filled: true,
-          fillColor: const Color(0xFFF2F2F2), // Light gray bg match @drawable/edittext_bg usually
-          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 12), // @dimen/padding_12
+          fillColor: Colors.white,
+          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 12),
           border: OutlineInputBorder(
-             borderRadius: BorderRadius.circular(4), // Standard border radius
-             borderSide: BorderSide.none, // Remove default border
+             borderRadius: BorderRadius.circular(4),
+             borderSide: const BorderSide(color: Colors.grey),
           ),
           enabledBorder: OutlineInputBorder(
              borderRadius: BorderRadius.circular(4),
-             borderSide: BorderSide.none,
+             borderSide: const BorderSide(color: Colors.grey),
           ),
         ),
       ),
