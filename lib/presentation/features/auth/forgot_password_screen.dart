@@ -88,7 +88,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                                              const Padding(
                                                padding: EdgeInsets.only(left: 3),
                                                child: Text(
-                                                 "User Id", // @string/userid_
+                                                 "Username *", // @string/userid_
                                                  style: TextStyle(
                                                    color: AppTheme.primaryColor,
                                                    fontSize: 14,
@@ -101,18 +101,22 @@ class ForgotPasswordScreen extends StatelessWidget {
                                              TextField(
                                                controller: provider.userIdController,
                                                decoration: InputDecoration(
-                                                 hintText: "Enter Your User Id", // @string/enter_your_user_id
-                                                 hintStyle: const TextStyle(color: AppTheme.hintColor, fontSize: 14),
+                                                 hintText: "Enter your Email ID/Mobile Number", // @string/enter_your_user_id
+                                                 hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
                                                  filled: true,
-                                                 fillColor: const Color(0xFFF2F2F2), // @drawable/edittext_bg usually light gray or white? Android xml says edittext_bg. Let's stick to standard gray/white.
+                                                 fillColor: const Color(0xFFFFFFFF),
                                                  contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
                                                  border: OutlineInputBorder(
-                                                   borderRadius: BorderRadius.circular(5),
-                                                   borderSide: BorderSide.none,
+                                                   borderRadius: BorderRadius.circular(4),
+                                                   borderSide: const BorderSide(color: Colors.black, width: 1),
                                                  ),
                                                  enabledBorder: OutlineInputBorder(
-                                                   borderRadius: BorderRadius.circular(5),
-                                                   borderSide: BorderSide.none,
+                                                   borderRadius: BorderRadius.circular(4),
+                                                   borderSide: const BorderSide(color: Colors.black, width: 1),
+                                                 ),
+                                                 focusedBorder: OutlineInputBorder(
+                                                   borderRadius: BorderRadius.circular(4),
+                                                   borderSide: const BorderSide(color: Colors.black, width: 2),
                                                  ),
                                                ),
                                                style: const TextStyle(
@@ -139,7 +143,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                                                   ? const CircularProgressIndicator(color: Colors.white)
                                                   : const Text(
                                                      "Submit",
-                                                     style: TextStyle(color: Colors.white, fontSize: 15),
+                                                     style: TextStyle(color: Colors.white, fontSize: 14),
                                                    ),
                                                ),
                                              ),

@@ -16,7 +16,7 @@ class ForgotPasswordProvider extends ChangeNotifier {
 
     if (userId.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Enter your user id")), // @string/enter_your_user_id
+        const SnackBar(content: Text("Enter your Email ID/Mobile Number")), // @string/enter_your_user_id
       );
       notifyListeners();
       return;
