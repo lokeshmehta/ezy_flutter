@@ -13,7 +13,7 @@ class AuthRemoteDataSource {
   Future<UserEntity> login(String email, String password) async {
     // Note: Android uses FormUrlEncoded. http.post with map body does this by default.
     final response = await apiClient.post(
-      UrlApiKey.baseUrl + ApiEndpoints.login,
+      "${UrlApiKey.baseUrl}${ApiEndpoints.login}",
       body: {
         'user_name': email,
         'password': password,
@@ -35,7 +35,7 @@ class AuthRemoteDataSource {
      required String title,
   }) async {
     final response = await apiClient.post(
-      UrlApiKey.baseUrl + ApiEndpoints.signUp,
+      "${UrlApiKey.baseUrl}${ApiEndpoints.signUp}",
       body: {
         'first_name': firstName,
         'last_name': lastName,
@@ -64,7 +64,7 @@ class AuthRemoteDataSource {
     // In Android: mainclient.create(BackEndApi::class.java).getCompaniesList()
     // mainclient uses UrlApiKey.COMPANYMAIN_URL
     final response = await apiClient.get(
-      UrlApiKey.companyMainUrl + ApiEndpoints.companiesList,
+      "${UrlApiKey.companyMainUrl}${ApiEndpoints.companiesList}",
     );
     return CompaniesResponse.fromJson(response);
   }
@@ -72,7 +72,7 @@ class AuthRemoteDataSource {
 
   Future<dynamic> forgotPassword(String email) async {
     final response = await apiClient.post(
-      UrlApiKey.baseUrl + "forgotpassword", 
+      "${UrlApiKey.baseUrl}forgotpassword", 
       body: {
         'email': email,
       },

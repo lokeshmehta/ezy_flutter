@@ -74,7 +74,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                                          // Logo
                                          const SizedBox(height: 20),
                                          Image.asset(
-                                            AppAssets.splashLogo, // Using splash logo as fallback for @drawable/forgot_icon
+                                            AppAssets.forgotIcon,
                                             height: 200,
                                             width: 200,
                                          ),
@@ -115,23 +115,11 @@ class ForgotPasswordScreen extends StatelessWidget {
                                                    borderSide: BorderSide.none,
                                                  ),
                                                ),
-                                                style: const TextStyle(
-                                                  color: AppTheme.textColor,
-                                                  fontSize: 14,
-                                                ),
-                                             ),
-
-                                             // Error Msg
-                                             if (provider.errorMsg != null)
-                                               Padding(
-                                                 padding: const EdgeInsets.only(top: 10),
-                                                 child: Center(
-                                                   child: Text(
-                                                     provider.errorMsg!,
-                                                     style: const TextStyle(color: Colors.red),
-                                                   ),
-                                                 ),
+                                               style: const TextStyle(
+                                                 color: AppTheme.textColor,
+                                                 fontSize: 14,
                                                ),
+                                             ),
 
                                              const SizedBox(height: 50),
 

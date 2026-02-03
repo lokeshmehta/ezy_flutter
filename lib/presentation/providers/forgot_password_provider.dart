@@ -9,17 +9,15 @@ class ForgotPasswordProvider extends ChangeNotifier {
   final TextEditingController userIdController = TextEditingController();
   
   bool _isLoading = false;
-  String? _errorMsg;
-
   bool get isLoading => _isLoading;
-  String? get errorMsg => _errorMsg;
 
   Future<void> submit(BuildContext context) async {
-    _errorMsg = null;
     final userId = userIdController.text.trim();
 
     if (userId.isEmpty) {
-      _errorMsg = "Enter your user id"; // @string/enter_your_user_id
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Enter your user id")), // @string/enter_your_user_id
+      );
       notifyListeners();
       return;
     }
@@ -43,17 +41,29 @@ class ForgotPasswordProvider extends ChangeNotifier {
              context.go('/login');
            }
         } else {
-           _errorMsg = response['error'] ?? "Unknown Error";
+           if (context.mounted) {
+             ScaffoldMessenger.of(context).showSnackBar(
+               SnackBar(content: Text(response['error'] ?? "Unknown Error")),
+             );
+           }
         }
       } else {
-         _errorMsg = "Unexpected response format";
+         if (context.mounted) {
+           ScaffoldMessenger.of(context).showSnackBar(
+             const SnackBar(content: Text("Unexpected response format")),
+           );
+         }
       }
       notifyListeners();
 
     } catch (e) {
       _isLoading = false;
-      _errorMsg = e.toString();
       notifyListeners();
+       if (context.mounted) {
+         ScaffoldMessenger.of(context).showSnackBar(
+           SnackBar(content: Text(e.toString())),
+         );
+       }
     }
   }
 
