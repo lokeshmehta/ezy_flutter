@@ -86,7 +86,7 @@ class _CompaniesListScreenState extends State<CompaniesListScreen> {
                                       ), 
                                       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                                         crossAxisCount: 2,
-                                        childAspectRatio: 0.70, // Decrease ratio to increase height (0.8 -> 0.7)
+                                        childAspectRatio: 0.60, // Further decreased for safety against overflow
                                         mainAxisSpacing: 10,
                                         crossAxisSpacing: 10,
                                       ),
@@ -108,6 +108,7 @@ class _CompaniesListScreenState extends State<CompaniesListScreen> {
                                             padding: EdgeInsets.all(5.w),
                                             child: Column(
                                               mainAxisSize: MainAxisSize.min,
+                                              mainAxisAlignment: MainAxisAlignment.center, // Center content vertically
                                               children: [
                                                 // Company Image
                                                 CachedNetworkImage(
@@ -137,16 +138,14 @@ class _CompaniesListScreenState extends State<CompaniesListScreen> {
                                                 SizedBox(height: 5.h),
                                                 
                                                 // Description
-                                                Expanded(
-                                                  child: Text(
-                                                    company.natureOfBusiness ?? "", 
-                                                    textAlign: TextAlign.center,
-                                                    maxLines: 2,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 12.sp, 
-                                                    ),
+                                                Text(
+                                                  company.natureOfBusiness ?? "", 
+                                                  textAlign: TextAlign.center,
+                                                  maxLines: 2,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 12.sp, 
                                                   ),
                                                 ),
                                                 
@@ -163,7 +162,7 @@ class _CompaniesListScreenState extends State<CompaniesListScreen> {
                                                     style: ElevatedButton.styleFrom(
                                                       backgroundColor: AppTheme.tealColor, 
                                                       shape: RoundedRectangleBorder(
-                                                        borderRadius: BorderRadius.circular(2.r), 
+                                                        borderRadius: BorderRadius.circular(20.r), // Round corners (Pill)
                                                       ),
                                                       padding: EdgeInsets.zero,
                                                     ),
@@ -177,7 +176,7 @@ class _CompaniesListScreenState extends State<CompaniesListScreen> {
                                                   ),
                                                 ),
                                                 
-                                                SizedBox(height: 15.h),
+                                                SizedBox(height: 5.h), // Bottom padding
                                               ],
                                             ),
                                           ),
