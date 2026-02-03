@@ -187,8 +187,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 // Forgot Password
                                 GestureDetector(
                                   onTap: () {
-                                    // Navigation: ForgotPasswordActivity
-                                    // context.push('/forgot_password');
+                                    if (context.mounted) {
+                                      context.push('/forgot_password');
+                                    }
                                   },
                                   child: Text(
                                     "Forgot Password?", // @string/forgotpw 

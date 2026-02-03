@@ -272,17 +272,23 @@ class SignUpScreen extends StatelessWidget {
         ),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: TextStyle(color: Colors.grey, fontSize: 14), // @color/hint_color
+          hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
           filled: true,
-          fillColor: Colors.white,
-          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+          fillColor: const Color(0xFFFFFFFF), // White background
+          contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+
+          // Black rectangular border
           border: OutlineInputBorder(
-             borderRadius: BorderRadius.circular(4),
-             borderSide: const BorderSide(color: Colors.grey),
+            borderRadius: BorderRadius.circular(4),
+            borderSide: const BorderSide(color: Colors.black, width: 1),
           ),
           enabledBorder: OutlineInputBorder(
-             borderRadius: BorderRadius.circular(4),
-             borderSide: const BorderSide(color: Colors.grey),
+            borderRadius: BorderRadius.circular(4),
+            borderSide: const BorderSide(color: Colors.black, width: 1),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(4),
+            borderSide: const BorderSide(color: Colors.black, width: 2),
           ),
         ),
       ),

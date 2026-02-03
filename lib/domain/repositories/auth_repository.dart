@@ -17,4 +17,5 @@ abstract class AuthRepository {
     required String receiptEmails,
     required String title,
   });
+  Future<dynamic> forgotPassword(String email);
 }

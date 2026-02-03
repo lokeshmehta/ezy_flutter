@@ -68,4 +68,16 @@ class AuthRemoteDataSource {
     );
     return CompaniesResponse.fromJson(response);
   }
+  }
+
+  Future<dynamic> forgotPassword(String email) async {
+    final response = await apiClient.post(
+      UrlApiKey.baseUrl + "forgotpassword", 
+      body: {
+        'email': email,
+      },
+    );
+    // Return raw response for provider to parse status
+    return response;
+  }
 }

@@ -9,6 +9,7 @@ import 'presentation/providers/auth_provider.dart';
 import 'presentation/providers/splash_provider.dart';
 import 'presentation/providers/companies_provider.dart';
 import 'presentation/providers/signup_provider.dart';
+import 'presentation/providers/forgot_password_provider.dart';
 
 import 'dart:io';
 
@@ -46,6 +47,7 @@ class MyApp extends StatelessWidget {
             ChangeNotifierProvider(create: (_) => SplashProvider()),
             ChangeNotifierProvider(create: (_) => CompaniesProvider()),
             ChangeNotifierProvider(create: (_) => SignUpProvider()),
+            ChangeNotifierProvider(create: (_) => ForgotPasswordProvider()),
           ],
           child: MaterialApp.router(
             title: 'EzyOrders',

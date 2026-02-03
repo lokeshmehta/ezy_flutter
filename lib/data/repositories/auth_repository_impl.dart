@@ -43,4 +43,8 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<CompaniesResponse> getCompanies() async {
     return await remoteDataSource.getCompanies();
   }
+  @override
+  Future<dynamic> forgotPassword(String email) async {
+    return await remoteDataSource.forgotPassword(email);
+  }
 }
