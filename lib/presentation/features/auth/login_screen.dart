@@ -65,16 +65,12 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: Column(
                               children: [
                                 SizedBox(height: 20.h),
-                                // Company Name
+                                  // Company Name
                                 Text(
                                   provider.companyName,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                    color: const Color(0xFFADD8E6), // @color/lightblue (Assuming light blue hex)
-                                    // Android: textColor="@color/lightblue"
-                                    // Need exact hex? Let's assume standard light blue or check colors.xml later if strict.
-                                    // For now using a close approximation or theme if defined.
-                                    // Let's use Color(0xFF4FC3F7) for light blue material.
+                                    color: AppTheme.lightBlue, // @color/lightblue matches Android
                                     fontSize: 16.sp,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -122,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   controller: _emailController,
                                   decoration: InputDecoration(
                                     hintText: provider.userNameHint, // Dynamic Hint
-                                    hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
+                                    hintStyle: TextStyle(color: AppTheme.hintColor, fontSize: 14.sp),
                                     filled: true,
                                     fillColor: Colors.white,
                                     contentPadding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 12.h),
@@ -135,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       borderSide: const BorderSide(color: Colors.grey),
                                     ),
                                   ),
-                                  style: TextStyle(fontSize: 14.sp, color: Colors.black),
+                                  style: TextStyle(fontSize: 14.sp, color: AppTheme.textColor),
                                 ),
 
                                 SizedBox(height: 20.h),
@@ -159,11 +155,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                 // Password Input
                                 TextField(
                                   controller: _passwordController,
-                                  obscureText: !provider.isPasswordVisible, // Simplified, Android didn't have toggle in xml shown but good for UX. Assuming standard password field.
-                                  // Android xml: android:inputType="textPassword"
+                                  obscureText: !provider.isPasswordVisible, 
                                   decoration: InputDecoration(
                                     hintText: "Enter Your Password",
-                                    hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
+                                    hintStyle: TextStyle(color: AppTheme.hintColor, fontSize: 14.sp),
                                     filled: true,
                                     fillColor: Colors.white,
                                     contentPadding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 12.h),
@@ -175,8 +170,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                       borderRadius: BorderRadius.circular(5.r),
                                       borderSide: const BorderSide(color: Colors.grey),
                                     ),
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        provider.isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                                        color: Colors.grey,
+                                      ),
+                                      onPressed: provider.togglePasswordVisibility,
+                                    ),
                                   ),
-                                  style: TextStyle(fontSize: 14.sp, color: Colors.black),
+                                  style: TextStyle(fontSize: 14.sp, color: AppTheme.textColor),
                                 ),
 
                                 SizedBox(height: 20.h),
@@ -188,9 +190,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                     // context.push('/forgot_password');
                                   },
                                   child: Text(
-                                    "Forgot Password?", // @string/forgotpw (Dynamic in Android but typically constant text)
+                                    "Forgot Password?", // @string/forgotpw 
                                     style: TextStyle(
-                                      color: const Color(0xFFF59300), // @color/yellow
+                                      color: AppTheme.yellow, // @color/yellow
                                       fontSize: 14.sp,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -217,7 +219,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                             }
                                           },
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFF008080), // @color/tealcolor
+                                      backgroundColor: AppTheme.tealColor,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(5.r),
                                       ),
@@ -303,7 +305,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           margin: EdgeInsets.only(bottom: 30.h),
                           alignment: Alignment.center,
                           decoration: const BoxDecoration(
-                            color: Color(0xFFE0E0E0), // @drawable/lightgray_bg approximation
+                            color: AppTheme.lightGrayBg, // @drawable/lightgray_bg matches color.xml or close enough
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
