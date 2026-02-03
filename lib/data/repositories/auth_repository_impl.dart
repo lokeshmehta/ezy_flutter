@@ -19,14 +19,24 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<UserEntity> signUp({
+  Future<dynamic> signUp({
     required String firstName,
     required String lastName,
+    required String phone,
     required String email,
     required String password,
-    required String phone,
+    required String receiptEmails,
+    required String title,
   }) async {
-    return await remoteDataSource.signUp(firstName, lastName, phone, email, password);
+    return await remoteDataSource.signUp(
+      firstName: firstName,
+      lastName: lastName,
+      phone: phone,
+      email: email,
+      password: password,
+      receiptEmails: receiptEmails,
+      title: title,
+    );
   }
 
   @override

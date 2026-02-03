@@ -3,6 +3,7 @@ import '../../core/network/api_client.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/entities/companies_response.dart';
 import '../../core/constants/url_api_key.dart';
+import 'dart:io';
 
 class AuthRemoteDataSource {
   final ApiClient apiClient;
@@ -24,13 +25,15 @@ class AuthRemoteDataSource {
     return UserEntity.fromJson(response);
   }
 
-  Future<UserEntity> signUp(
-     String firstName,
-     String lastName,
-     String phone,
-     String email,
-     String password,
-  ) async {
+  Future<UserEntity> signUp({
+     required String firstName,
+     required String lastName,
+     required String phone,
+     required String email,
+     required String password,
+     required String receiptEmails,
+     required String title,
+  }) async {
     final response = await apiClient.post(
       UrlApiKey.baseUrl + ApiEndpoints.signUp,
       body: {
@@ -39,11 +42,21 @@ class AuthRemoteDataSource {
         'phone': phone,
         'email': email,
         'password': password,
-        // Add other fields as needed per Android implementation
+        'receiptemails': receiptEmails,
+        'title': title,
+        'source': 'Android',
+        'devicetype': Platform.operatingSystem, // Requires import 'dart:io'
+        'token': '',
+        'device_id': '',
       },
     );
 
-    return UserEntity.fromJson(response);
+    // API returns standard JSON, assuming UserEntity structure or similar success response.
+    // However, SignUpViewModel expects JSONObject with 'status', 'message', 'error'.
+    // UserEntity might not match exactly if it's just a status response.
+    // But AuthRepository returns dynamic. 
+    // Let's return the raw response (Map) so Provider can parse status/messages.
+    return UserEntity.fromJson(response); 
   }
 
   Future<CompaniesResponse> getCompanies() async {

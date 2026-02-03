@@ -242,7 +242,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 if (provider.isSignupRequired)
                                   GestureDetector(
                                     onTap: () {
-                                      // context.push('/signup');
+                                      if (context.mounted) {
+                                         context.push('/signup');
+                                      }
                                     },
                                     child: RichText(
                                       text: TextSpan(

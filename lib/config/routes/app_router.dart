@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../presentation/features/auth/login_screen.dart';
 import '../../presentation/features/companies/companies_list_screen.dart';
+import '../../presentation/features/auth/signup_screen.dart';
 import '../../presentation/features/splash/splash_screen.dart';
 
 class ForgotPasswordScreen extends StatelessWidget { const ForgotPasswordScreen({super.key}); @override Widget build(BuildContext context) => const Scaffold(body: Center(child: Text('Forgot Password'))); }
-class SignupScreen extends StatelessWidget { const SignupScreen({super.key}); @override Widget build(BuildContext context) => const Scaffold(body: Center(child: Text('Signup'))); }
+
 class DashboardScreen extends StatelessWidget { final Widget child; const DashboardScreen({super.key, required this.child}); @override Widget build(BuildContext context) => Scaffold(body: child, bottomNavigationBar: BottomNavigationBar(items: const [BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'), BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: 'Cart')])); }
 class HomeScreen extends StatelessWidget { const HomeScreen({super.key}); @override Widget build(BuildContext context) => const Scaffold(body: Center(child: Text('Home Results'))); }
 class OrdersScreen extends StatelessWidget { const OrdersScreen({super.key}); @override Widget build(BuildContext context) => const Scaffold(body: Center(child: Text('Orders'))); }
@@ -36,7 +37,7 @@ class AppRouter {
       ),
       GoRoute(
         path: '/signup',
-        builder: (context, state) => const SignupScreen(),
+        builder: (context, state) => const SignUpScreen(),
       ),
       
       // Dashboard Shell

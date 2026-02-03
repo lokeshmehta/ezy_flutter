@@ -6,12 +6,15 @@ import '../entities/companies_response.dart';
 abstract class AuthRepository {
   Future<UserEntity> login(String email, String password);
   Future<void> logout();
-  Future<UserEntity> signUp({
+
+  Future<CompaniesResponse> getCompanies();
+  Future<dynamic> signUp({
     required String firstName,
     required String lastName,
+    required String phone,
     required String email,
     required String password,
-    required String phone,
+    required String receiptEmails,
+    required String title,
   });
-  Future<CompaniesResponse> getCompanies();
 }
