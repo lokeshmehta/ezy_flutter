@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../providers/companies_provider.dart';
 import '../../../core/constants/app_theme.dart';
 import '../../../core/constants/assets.dart';
+import '../../../core/constants/url_api_key.dart';
 
 
 class CompaniesListScreen extends StatefulWidget {
@@ -81,38 +82,27 @@ class _CompaniesListScreenState extends State<CompaniesListScreen> {
                                       padding: EdgeInsets.only(
                                         top: 15.h, 
                                         bottom: 15.h, 
-                                        right: 10.w // Margin Adjustment from XML
+                                        right: 10.w 
                                       ), 
                                       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                                         crossAxisCount: 2,
-                                        childAspectRatio: 0.8, // Adjust based on Card Content (Image 110 + Text + Button 35 + Margins)
+                                        childAspectRatio: 0.70, // Decrease ratio to increase height (0.8 -> 0.7)
                                         mainAxisSpacing: 10,
                                         crossAxisSpacing: 10,
                                       ),
                                       itemCount: provider.companies.length,
                                       itemBuilder: (context, index) {
                                         final company = provider.companies[index];
-                                        // Image URL Construction? 
-                                        // Android companies_list logic doesn't explicitly show url construction in Activity, 
-                                        // but usually it's Full URL or partial.
-                                        // Let's assume partial needs BaseURL or it's full. 
-                                        // Splash used manual construct? No, Splash saved it.
-                                        // Login used UrlApiKey.companyMainUrl + image.
-                                        // Here we don't have Company Prefs yet.
-                                        // We might need a base MAIN_URL? 
-                                        // Let's infer from `UrlApiKey`.
                                         
                                         String imageUrl = company.image ?? "";
-                                        // If not http, assume relative to some main url?
-                                        // Android VM log: UrlApiKey.MAIN_URL is logged.
-                                        // But UrlApiKey.MAIN_URL isn't set until we select a company?
-                                        // Wait, `UrlApiKey` has constants.
-                                        // Let's assume full URL or we'll debug.
+                                        if (imageUrl.isNotEmpty && !imageUrl.startsWith('http')) {
+                                          imageUrl = UrlApiKey.companyMainUrl + imageUrl;
+                                        }
                                         
                                         return Card(
                                           elevation: 2,
                                           color: Colors.white,
-                                          margin: EdgeInsets.only(left: 10.w, bottom: 5.h), // XML margins
+                                          margin: EdgeInsets.only(left: 10.w, bottom: 5.h), 
                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.r)),
                                           child: Padding(
                                             padding: EdgeInsets.all(5.w),
@@ -135,41 +125,45 @@ class _CompaniesListScreenState extends State<CompaniesListScreen> {
                                                 Text(
                                                   company.name ?? "",
                                                   textAlign: TextAlign.center,
+                                                  maxLines: 2,
+                                                  overflow: TextOverflow.ellipsis,
                                                   style: TextStyle(
-                                                    color: AppTheme.lightBlue, // @color/lightblue
-                                                    fontSize: 15.sp, // @dimen/dimen_15
+                                                    color: AppTheme.lightBlue, 
+                                                    fontSize: 15.sp, 
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
                                                 
                                                 SizedBox(height: 5.h),
                                                 
-                                                // Description (Nature of Business?)
-                                                Text(
-                                                  company.natureOfBusiness ?? "", // Using natureOfBusiness as description based on API fields
-                                                  textAlign: TextAlign.center,
-                                                  maxLines: 2,
-                                                  overflow: TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 12.sp, // @dimen/padding_12
+                                                // Description
+                                                Expanded(
+                                                  child: Text(
+                                                    company.natureOfBusiness ?? "", 
+                                                    textAlign: TextAlign.center,
+                                                    maxLines: 2,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 12.sp, 
+                                                    ),
                                                   ),
                                                 ),
                                                 
-                                                Spacer(),
+                                                SizedBox(height: 10.h),
 
                                                 // Select Button
                                                 SizedBox(
-                                                  width: 150.w, // @dimen/dimen_150
-                                                  height: 35.h, // @dimen/dimen_35
+                                                  width: 150.w, 
+                                                  height: 35.h, 
                                                   child: ElevatedButton(
                                                     onPressed: () {
                                                       provider.selectCompany(context, company);
                                                     },
                                                     style: ElevatedButton.styleFrom(
-                                                      backgroundColor: AppTheme.tealColor, // @color/tealcolor
+                                                      backgroundColor: AppTheme.tealColor, 
                                                       shape: RoundedRectangleBorder(
-                                                        borderRadius: BorderRadius.circular(2.r), // Android bg is rectangle/small radius
+                                                        borderRadius: BorderRadius.circular(2.r), 
                                                       ),
                                                       padding: EdgeInsets.zero,
                                                     ),
