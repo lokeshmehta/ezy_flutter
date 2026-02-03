@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../providers/auth_provider.dart';
@@ -61,96 +62,96 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: Colors.white, // Inner LinearLayout background
                         child: SingleChildScrollView(
                           child: Padding(
-                            padding: EdgeInsets.all(20.w),
+                            padding: EdgeInsets.all(20),
                             child: Column(
                               children: [
-                                SizedBox(height: 20.h),
+                                SizedBox(height: 20),
                                   // Company Name
                                 Text(
                                   provider.companyName,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     color: AppTheme.lightBlue, // @color/lightblue matches Android
-                                    fontSize: 16.sp,
+                                    fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                SizedBox(height: 10.h),
+                                SizedBox(height: 10),
                                 
                                 // Logo
                                 if (imageUrl.isNotEmpty)
                                   CachedNetworkImage(
                                     imageUrl: imageUrl,
-                                    height: 120.h, // @dimen/dimen_120
+                                    height: 120, // @dimen/dimen_120
                                     fit: BoxFit.contain,
                                     placeholder: (context, url) => const SizedBox(),
                                     errorWidget: (context, url, error) => Image.asset(
                                        AppAssets.splashLogo, // Fallback
-                                       height: 120.h,
+                                       height: 120,
                                     ),
                                   )
                                 else 
                                   Image.asset(
                                      AppAssets.splashLogo,
-                                     height: 120.h,
+                                     height: 120,
                                   ),
 
-                                SizedBox(height: 20.h),
+                                SizedBox(height: 20),
 
                                 // User ID Label
                                 Align(
                                   alignment: Alignment.centerLeft,
                                   child: Padding(
-                                    padding: EdgeInsets.only(left: 3.w),
+                                    padding: EdgeInsets.only(left: 3),
                                     child: Text(
                                       "User Id", // @string/userid_
                                       style: TextStyle(
                                         color: AppTheme.primaryColor,
-                                        fontSize: 14.sp,
+                                        fontSize: 14,
                                       ),
                                     ),
                                   ),
                                 ),
-                                SizedBox(height: 5.h),
+                                SizedBox(height: 5),
 
                                 // User ID Input
                                 TextField(
                                   controller: _emailController,
                                   decoration: InputDecoration(
                                     hintText: provider.userNameHint, // Dynamic Hint
-                                    hintStyle: TextStyle(color: AppTheme.hintColor, fontSize: 14.sp),
+                                    hintStyle: TextStyle(color: AppTheme.hintColor, fontSize: 14),
                                     filled: true,
                                     fillColor: Colors.white,
-                                    contentPadding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 12.h),
+                                    contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 12),
                                     border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(5.r),
+                                      borderRadius: BorderRadius.circular(5),
                                       borderSide: const BorderSide(color: Colors.grey),
                                     ),
                                     enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(5.r),
+                                      borderRadius: BorderRadius.circular(5),
                                       borderSide: const BorderSide(color: Colors.grey),
                                     ),
                                   ),
-                                  style: TextStyle(fontSize: 14.sp, color: AppTheme.textColor),
+                                  style: TextStyle(fontSize: 14, color: AppTheme.textColor),
                                 ),
 
-                                SizedBox(height: 20.h),
+                                SizedBox(height: 20),
 
                                 // Password Label
                                 Align(
                                   alignment: Alignment.centerLeft,
                                   child: Padding(
-                                    padding: EdgeInsets.only(left: 3.w),
+                                    padding: EdgeInsets.only(left: 3),
                                     child: Text(
                                       "Password", // @string/passwordv
                                       style: TextStyle(
                                         color: AppTheme.primaryColor,
-                                        fontSize: 14.sp,
+                                        fontSize: 14,
                                       ),
                                     ),
                                   ),
                                 ),
-                                SizedBox(height: 5.h),
+                                SizedBox(height: 5),
 
                                 // Password Input
                                 TextField(
@@ -158,16 +159,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                   obscureText: !provider.isPasswordVisible, 
                                   decoration: InputDecoration(
                                     hintText: "Enter Your Password",
-                                    hintStyle: TextStyle(color: AppTheme.hintColor, fontSize: 14.sp),
+                                    hintStyle: TextStyle(color: AppTheme.hintColor, fontSize: 14),
                                     filled: true,
                                     fillColor: Colors.white,
-                                    contentPadding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 12.h),
+                                    contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 12),
                                     border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(5.r),
+                                      borderRadius: BorderRadius.circular(5),
                                       borderSide: const BorderSide(color: Colors.grey),
                                     ),
                                     enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(5.r),
+                                      borderRadius: BorderRadius.circular(5),
                                       borderSide: const BorderSide(color: Colors.grey),
                                     ),
                                     suffixIcon: IconButton(
@@ -178,10 +179,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                       onPressed: provider.togglePasswordVisibility,
                                     ),
                                   ),
-                                  style: TextStyle(fontSize: 14.sp, color: AppTheme.textColor),
+                                  style: TextStyle(fontSize: 14, color: AppTheme.textColor),
                                 ),
 
-                                SizedBox(height: 20.h),
+                                SizedBox(height: 20),
 
                                 // Forgot Password
                                 GestureDetector(
@@ -193,7 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     "Forgot Password?", // @string/forgotpw 
                                     style: TextStyle(
                                       color: AppTheme.yellow, // @color/yellow
-                                      fontSize: 14.sp,
+                                      fontSize: 14,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -204,7 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 // Login Button
                                 SizedBox(
                                   width: double.infinity,
-                                  height: 45.h,
+                                  height: 45,
                                   child: ElevatedButton(
                                     onPressed: provider.isLoading
                                         ? null
@@ -221,7 +222,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: AppTheme.tealColor,
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(5.r),
+                                        borderRadius: BorderRadius.circular(5),
                                       ),
                                     ),
                                     child: provider.isLoading
@@ -230,13 +231,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                             "Login",
                                             style: TextStyle(
                                               color: Colors.white,
-                                              fontSize: 14.sp,
+                                              fontSize: 14,
                                             ),
                                           ),
                                   ),
                                 ),
 
-                                SizedBox(height: 20.h),
+                                SizedBox(height: 20),
 
                                 // Sign Up Link
                                 if (provider.isSignupRequired)
@@ -249,7 +250,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     child: RichText(
                                       text: TextSpan(
                                         text: "Don’t have an account? ",
-                                        style: TextStyle(color: Colors.black, fontSize: 14.sp),
+                                        style: TextStyle(color: Colors.black, fontSize: 14),
                                         children: [
                                           TextSpan(
                                             text: "Sign Up",
@@ -266,7 +267,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 // Error Message Display
                                 if (provider.errorMessage != null)
                                   Padding(
-                                    padding: EdgeInsets.only(top: 10.h),
+                                    padding: EdgeInsets.only(top: 10),
                                     child: Text(
                                       provider.errorMessage!,
                                       style: const TextStyle(color: Colors.red),
@@ -296,8 +297,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                         child: Container(
                           width: double.infinity,
-                          height: 50.h,
-                          margin: EdgeInsets.only(bottom: 30.h),
+                          height: 50,
+                          margin: EdgeInsets.only(bottom: 30),
                           alignment: Alignment.center,
                           decoration: const BoxDecoration(
                             color: AppTheme.lightGrayBg, // @drawable/lightgray_bg matches color.xml or close enough
@@ -305,13 +306,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.list, size: 18.w, color: Colors.black), // @drawable/listview_icon placeholder
-                              SizedBox(width: 10.w),
+                              Icon(Icons.list, size: 18, color: Colors.black), // @drawable/listview_icon placeholder
+                              SizedBox(width: 10),
                               Text(
                                 "Access Other Stores",
                                 style: TextStyle(
                                   color: AppTheme.primaryColor, // @color/blue
-                                  fontSize: 14.sp,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
