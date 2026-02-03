@@ -26,6 +26,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
+  String _getImageUrl(String? path) {
+    if (path == null || path.isEmpty) return "";
+    if (path.startsWith("http") || path.startsWith("https")) return path;
+    return "${UrlApiKey.companyMainUrl}$path";
+  }
+
+  Widget _buildNetworkImage(String? path, {BoxFit fit = BoxFit.cover}) {
+    final url = _getImageUrl(path);
+    if (url.isEmpty) {
+      return Image.asset(AppAssets.placeholder, fit: fit); 
+    }
+    return CachedNetworkImage(
+      imageUrl: url,
+      fit: fit,
+      errorWidget: (context, url, error) => Image.asset(AppAssets.placeholder, fit: fit),
+       placeholder: (context, url) => Container(color: Colors.grey[200]),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -283,11 +302,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             final banner = provider.bannersResponse!.results![index];
             return Padding(
               padding: const EdgeInsets.all(8.0),
-              child: CachedNetworkImage(
-                imageUrl: "${UrlApiKey.companyMainUrl}${banner?.image}", // Check path assumption
-                fit: BoxFit.cover,
-                errorWidget: (context, url, error) => const Icon(Icons.error),
-              ),
+              child: _buildNetworkImage(banner?.image),
             );
          },
        ),
@@ -313,10 +328,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   return Container(
                     width: 100,
                     margin: const EdgeInsets.symmetric(horizontal: 5),
-                     child: CachedNetworkImage(
-                imageUrl: "${UrlApiKey.companyMainUrl}${item?.image}",
-                        errorWidget: (context, url, error) => const Icon(Icons.error),
-                     ),
+                     child: _buildNetworkImage(item?.image),
                   );
               },
             ),
@@ -338,10 +350,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   return Container(
                     width: 80,
                     margin: const EdgeInsets.symmetric(horizontal: 5),
-                     child: CachedNetworkImage(
-                        imageUrl: "${UrlApiKey.companyMainUrl}${item?.image}",
-                        errorWidget: (context, url, error) => const Icon(Icons.error),
-                     ),
+                     child: _buildNetworkImage(item?.image),
                   );
               },
          ),
@@ -370,11 +379,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 child: Column(
                   children: [
                     Expanded(
-                      child: CachedNetworkImage(
-                        imageUrl: "${UrlApiKey.companyMainUrl}${item?.image}",
-                        fit: BoxFit.cover,
-                         errorWidget: (context, url, error) => const Icon(Icons.image_not_supported),
-                      ),
+                      child: _buildNetworkImage(item?.image),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(4.0),
@@ -419,11 +424,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     SizedBox(
                       height: 80,
                       width: 80,
-                      child: CachedNetworkImage(
-                        imageUrl: "${UrlApiKey.companyMainUrl}${item?.image}",
-                        fit: BoxFit.cover,
-                         errorWidget: (context, url, error) => const Icon(Icons.category),
-                      ),
+                      child: _buildNetworkImage(item?.image),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(4.0),
@@ -479,11 +480,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             final banner = provider.footerBannersResponse!.results![index];
             return Padding(
               padding: const EdgeInsets.all(8.0),
-              child: CachedNetworkImage(
-                imageUrl: "${UrlApiKey.companyMainUrl}${banner?.image}", 
-                fit: BoxFit.cover,
-                errorWidget: (context, url, error) => const Icon(Icons.error),
-              ),
+              child: _buildNetworkImage(banner?.image),
             );
          },
        ),
