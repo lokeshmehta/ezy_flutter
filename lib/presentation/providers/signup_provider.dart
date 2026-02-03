@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/di/service_locator.dart';
 import '../../domain/repositories/auth_repository.dart';
+import '../../core/constants/storage_keys.dart';
 
 class SignUpProvider extends ChangeNotifier {
   final AuthRepository _repository = getIt<AuthRepository>();
@@ -35,14 +36,8 @@ class SignUpProvider extends ChangeNotifier {
   }
 
   Future<void> _init() async {
-    // Replicate logic: viewmodel?.emailstatus=prefs.EmailRequired.toString()
-    // Defaulting to "No" if not set, need to check where this Pref comes from.
-    // It seems to be saved during companies selection?
-    // In Android: PreferenceHelper.customPreference(this, CommonMethods.CUSTOMER_TABLE)
-    // We saved 'EMAILREQUIRED' in CompaniesProvider.
-    
     final prefs = await SharedPreferences.getInstance();
-    _emailRequired = prefs.getString('EMAILREQUIRED') ?? "No";
+    _emailRequired = prefs.getString(StorageKeys.emailRequired) ?? "No";
     notifyListeners();
   }
 
@@ -128,16 +123,6 @@ class SignUpProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // API call needs to be implemented in Repository first, 
-      // but for now we assume it exists or we mock it/implement it.
-      // Wait, I haven't added signUp to Repository yet. 
-      // I need to add it to AuthRepository.
-      
-      // Let's hold on API call and just simulate for UI first? 
-      // STRICT RULES: "Replicate functionality 1:1". 
-      // I must add it to Repository.
-      
-      // For now, I will write the placeholder here and then update Repo.
       await _repository.signUp(
         firstName: firstNameController.text.trim(),
         lastName: lastNameController.text.trim(),
@@ -152,15 +137,11 @@ class SignUpProvider extends ChangeNotifier {
       notifyListeners();
 
       if (context.mounted) {
-         // Show Success Dialog logic
          _showSuccessDialog(context);
       }
 
     } catch (e) {
       _isLoading = false;
-      // Handle "Phone Or Email Already Exists" vs other errors
-      // Android: Checks error string.
-      // We'll pass the exception message to _setError or Show Error Dialog
       if (context.mounted) {
         _showErrorDialog(context, e.toString());
       }
@@ -174,7 +155,6 @@ class SignUpProvider extends ChangeNotifier {
   }
 
   bool _isValidEmail(String email) {
-    // Simple regex matching Android's Patterns.EMAIL_ADDRESS
     return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(email);
   }
 
@@ -183,12 +163,7 @@ class SignUpProvider extends ChangeNotifier {
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        title: const Text("Success"), // Custom Layout needed matching dialog_registersuccess.xml later?
-        // For now simple dialog or if strictly pixel perfect, I need to build that dialog UI.
-        // User rule: "Pixel-perfect UI replication".
-        // I should probably simplify for this iteration and verify logic, 
-        // but strictly I should build a custom dialog.
-        // Let's use standard alert for speed first, or custom if I can.
+        title: const Text("Success"), 
         content: const Text("Registered Successfully. Please Login."),
         actions: [
           TextButton(
@@ -204,7 +179,6 @@ class SignUpProvider extends ChangeNotifier {
   }
 
   void _showErrorDialog(BuildContext context, String error) {
-     // Logic for different error types
      showDialog(
       context: context,
       builder: (ctx) => AlertDialog(

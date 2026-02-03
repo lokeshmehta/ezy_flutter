@@ -132,17 +132,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
           // Logo
           Consumer<DashboardProvider>(
             builder: (context, provider, _) { 
-                 final logoUrl = provider.profileResponse?.results?.isNotEmpty == true
-                     ? provider.profileResponse!.results![0]?.image
-                     : null;
+                 final logoUrl = provider.companyImage;
                  
                   if (logoUrl != null && logoUrl.isNotEmpty) {
-                    // Android Logic: if contains http use as is, else prepend MAIN_URL (or COMPANYMAIN_URL? Android uses COMPANYMAIN_URL + Company_image for one, but Profile img might be different)
-                    // Line 641: Glide.with(this).load(UrlApiKey.COMPANYMAIN_URL+prefs.Company_image).into(binding?.applogoPng !!)
-                    // BUT nav header uses profile image.
-                    // This is center logo. Android ID: applogo_png
-                    // We need to fetch company image from prefs or profile.
-                    // Provider should probably expose it.
                     return CachedNetworkImage(
                       imageUrl: logoUrl.contains("http") ? logoUrl : "${UrlApiKey.companyMainUrl}$logoUrl",
                       height: 50,

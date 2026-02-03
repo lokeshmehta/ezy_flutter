@@ -310,7 +310,7 @@ class HomeBlocksResponse {
          return HomeBlocksResponse(
             status: json['status'],
             message: json['message'],
-             results: json['results'] != null
+            results: json['results'] != null
                 ? (json['results'] as List).map((i) => i != null ? MenuitemsResponse.fromJson(i) : null).toList()
                 : null,
         );
@@ -393,6 +393,23 @@ class SupplierLogosResponse {
      SupplierLogosResponse({this.status, this.message, this.results});
       factory SupplierLogosResponse.fromJson(Map<String, dynamic> json) {
          return SupplierLogosResponse(
+            status: json['status'],
+            message: json['message'],
+            results: json['results'] != null
+                ? (json['results'] as List).map((i) => i != null ? BannerItem.fromJson(i) : null).toList()
+                : null,
+        );
+    }
+}
+
+class PopularAdvertosementsResponse {
+    int? status;
+    String? message;
+    List<BannerItem?>? results;
+
+    PopularAdvertosementsResponse({this.status, this.message, this.results});
+    factory PopularAdvertosementsResponse.fromJson(Map<String, dynamic> json) {
+         return PopularAdvertosementsResponse(
             status: json['status'],
             message: json['message'],
             results: json['results'] != null

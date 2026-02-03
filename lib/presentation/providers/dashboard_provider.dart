@@ -3,6 +3,7 @@ import '../../../data/datasources/auth_remote_data_source.dart';
 import '../../../data/models/home_models.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
+import '../../../core/constants/storage_keys.dart';
 
 class DashboardProvider extends ChangeNotifier {
   final AuthRemoteDataSource _dataSource;
@@ -26,6 +27,10 @@ class DashboardProvider extends ChangeNotifier {
   PopularCategoriesResponse? _popularCategoriesResponse;
   SupplierLogosResponse? _supplierLogosResponse;
   DashboardProductsResponse? _recentlyAddedResponse;
+  PopularAdvertosementsResponse? _popularAdvertisementsResponse;
+
+  // Company Config
+  String? _companyImage;
 
 
   // Pagination Pages (Defaults to 1 as per Android)
@@ -37,6 +42,7 @@ class DashboardProvider extends ChangeNotifier {
   int popularCategoriesPage = 1;
   int supplierLogosPage = 1;
   int recentlyAddedPage = 1;
+  int popularAdsPage = 1;
 
 
   // Getters
@@ -56,6 +62,8 @@ class DashboardProvider extends ChangeNotifier {
   PopularCategoriesResponse? get popularCategoriesResponse => _popularCategoriesResponse;
   SupplierLogosResponse? get supplierLogosResponse => _supplierLogosResponse;
   DashboardProductsResponse? get recentlyAddedResponse => _recentlyAddedResponse;
+  PopularAdvertosementsResponse? get popularAdvertisementsResponse => _popularAdvertisementsResponse;
+  String? get companyImage => _companyImage;
 
 
   DashboardProvider(this._dataSource);
@@ -65,67 +73,83 @@ class DashboardProvider extends ChangeNotifier {
     _errorMsg = null;
     notifyListeners();
 
-    // Parallel API Calls (as much as possible, or sequential if dependencies exist)
-    // Android calls them mostly in parallel or rapid succession in init()
-    _fetchAllData();
+    // Android Logic: Profile Call FIRST
+    _loadCompanyConfig();
+    _fetchProfile();
   }
 
-  Future<void> _fetchAllData() async {
+  Future<void> _fetchDashboardContent(ProfileResult profile) async {
+      // Logic from Android DashboardActivity/ViewModel:
+      // Always call: Banners, Footer Banners, Home Blocks, Promotions
+      
+      final futures = <Future>[];
+      
+      futures.add(_fetchBanners());
+      futures.add(_fetchFooterBanners());
+      futures.add(_fetchHomeBlocks());
+      futures.add(_fetchPromotions());
+      
+      // Conditional Calls based on Profile settings
+      if (profile.bestSellers == "Show") futures.add(_fetchBestSellers());
+      
+      if (profile.productsAdvertisements == "Show") futures.add(_fetchPopularAdvertisements());
+      
+      if (profile.hotSelling == "Show") futures.add(_fetchHotSelling());
+      
+      if (profile.supplierLogos == "Show") futures.add(_fetchSupplierLogos());
+      
+      if (profile.popularCategories == "Show") futures.add(_fetchPopularCategories());
+      
+      if (profile.flashDeals == "Show") futures.add(_fetchFlashDeals());
+      
+      if (profile.newArrivals == "Show") futures.add(_fetchNewArrivals());
+      
+      if (profile.recentlyAdded == "Show") futures.add(_fetchRecentlyAdded());
+
+      await Future.wait(futures);
+      
+      _isLoading = false;
+      notifyListeners();
+  }
+
+
+  Future<void> _loadCompanyConfig() async {
     try {
-      // 1. Profile (Critical for settings)
-      // 2. Banners & Home Blocks
-      // 3. Sections
-      
-      // We can run independent calls in parallel
-      await Future.wait([
-        _fetchProfile(),
-        _fetchBanners(),
-        _fetchFooterBanners(),
-        _fetchHomeBlocks(),
-      ]);
-
-      // After Home Blocks, we know which sections to show (technically logic is in UI or here)
-      // Android checks `homePageBlocks` or Profile settings to decide API calls.
-      // For now, we fetch all relevant ones.
-      
-      await Future.wait([
-         _fetchPromotions(),
-         _fetchBestSellers(),
-         _fetchFlashDeals(),
-         _fetchNewArrivals(),
-         _fetchHotSelling(),
-         _fetchPopularCategories(),
-         _fetchSupplierLogos(),
-         _fetchRecentlyAdded(),
-      ]);
-
-      _isLoading = false;
-      notifyListeners();
-
+      final prefs = await SharedPreferences.getInstance();
+      _companyImage = prefs.getString(StorageKeys.companyImage);
     } catch (e) {
-      _isLoading = false;
-      _errorMsg = e.toString();
-      notifyListeners();
+       debugPrint("Error loading company config: $e");
     }
   }
 
   Future<void> _fetchProfile() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final accessToken = prefs.getString('access_token') ?? '';
-      final customerId = prefs.getString('user_id') ?? ''; // Check auth provider for key
+      final accessToken = prefs.getString(StorageKeys.accessToken) ?? '';
+      final customerId = prefs.getString(StorageKeys.userId) ?? ''; 
       
       final response = await _dataSource.getProfile(accessToken, customerId);
       _profileResponse = ProfileResponse.fromJson(response);
+      
+      if (_profileResponse?.results != null && _profileResponse!.results!.isNotEmpty) {
+          await _fetchDashboardContent(_profileResponse!.results![0]!);
+      } else {
+          _isLoading = false;
+          notifyListeners();
+      }
+      
     } catch (e) {
       debugPrint("Error fetching profile: $e");
+      _isLoading = false;
+      // errorMsg = e.toString(); // Android doesn't show blocking error for dashboard components, just logs/toasts
+      notifyListeners();
     }
   }
 
   Future<void> _fetchBanners() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final accessToken = prefs.getString('access_token') ?? '';
+      final accessToken = prefs.getString(StorageKeys.accessToken) ?? '';
       final response = await _dataSource.getBanners(accessToken);
       _bannersResponse = BannersResponse.fromJson(response);
     } catch (e) {
@@ -135,7 +159,7 @@ class DashboardProvider extends ChangeNotifier {
    Future<void> _fetchFooterBanners() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final accessToken = prefs.getString('access_token') ?? '';
+      final accessToken = prefs.getString(StorageKeys.accessToken) ?? '';
       final response = await _dataSource.getFooterBanners(accessToken);
       _footerBannersResponse = FooterBannersResponse.fromJson(response);
     } catch (e) {
@@ -146,7 +170,7 @@ class DashboardProvider extends ChangeNotifier {
   Future<void> _fetchHomeBlocks() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final accessToken = prefs.getString('access_token') ?? '';
+      final accessToken = prefs.getString(StorageKeys.accessToken) ?? '';
       final response = await _dataSource.getHomePageBlocks(accessToken);
       _homeBlocksResponse = HomeBlocksResponse.fromJson(response);
     } catch (e) {
@@ -157,8 +181,8 @@ class DashboardProvider extends ChangeNotifier {
    Future<void> _fetchPromotions() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final accessToken = prefs.getString('access_token') ?? '';
-      final customerId = prefs.getString('user_id') ?? '';
+      final accessToken = prefs.getString(StorageKeys.accessToken) ?? '';
+      final customerId = prefs.getString(StorageKeys.userId) ?? '';
       final response = await _dataSource.getPromotions(accessToken, customerId, promotionPage);
       _promotionsResponse = PromotionsResponse.fromJson(response);
     } catch (e) {
@@ -169,8 +193,8 @@ class DashboardProvider extends ChangeNotifier {
   Future<void> _fetchBestSellers() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final accessToken = prefs.getString('access_token') ?? '';
-      final customerId = prefs.getString('user_id') ?? '';
+      final accessToken = prefs.getString(StorageKeys.accessToken) ?? '';
+      final customerId = prefs.getString(StorageKeys.userId) ?? '';
       final response = await _dataSource.getBestSellers(accessToken, customerId, bestSellersPage);
       _bestSellersResponse = DashboardProductsResponse.fromJson(response);
     } catch (e) {
@@ -181,8 +205,8 @@ class DashboardProvider extends ChangeNotifier {
   Future<void> _fetchFlashDeals() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final accessToken = prefs.getString('access_token') ?? '';
-      final customerId = prefs.getString('user_id') ?? '';
+      final accessToken = prefs.getString(StorageKeys.accessToken) ?? '';
+      final customerId = prefs.getString(StorageKeys.userId) ?? '';
       final response = await _dataSource.getFlashDeals(accessToken, customerId, flashDealsPage);
       _flashDealsResponse = FlashDealsResponse.fromJson(response);
     } catch (e) {
@@ -193,8 +217,8 @@ class DashboardProvider extends ChangeNotifier {
   Future<void> _fetchNewArrivals() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final accessToken = prefs.getString('access_token') ?? '';
-      final customerId = prefs.getString('user_id') ?? '';
+      final accessToken = prefs.getString(StorageKeys.accessToken) ?? '';
+      final customerId = prefs.getString(StorageKeys.userId) ?? '';
       final response = await _dataSource.getNewArrivals(accessToken, customerId, newArrivalsPage);
       _newArrivalsResponse = DashboardProductsResponse.fromJson(response);
     } catch (e) {
@@ -205,8 +229,8 @@ class DashboardProvider extends ChangeNotifier {
   Future<void> _fetchHotSelling() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final accessToken = prefs.getString('access_token') ?? '';
-      final customerId = prefs.getString('user_id') ?? '';
+      final accessToken = prefs.getString(StorageKeys.accessToken) ?? '';
+      final customerId = prefs.getString(StorageKeys.userId) ?? '';
       final response = await _dataSource.getHotSelling(accessToken, customerId, hotSellingPage);
       _hotSellingResponse = DashboardProductsResponse.fromJson(response);
     } catch (e) {
@@ -217,8 +241,8 @@ class DashboardProvider extends ChangeNotifier {
   Future<void> _fetchPopularCategories() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final accessToken = prefs.getString('access_token') ?? '';
-      final customerId = prefs.getString('user_id') ?? '';
+      final accessToken = prefs.getString(StorageKeys.accessToken) ?? '';
+      final customerId = prefs.getString(StorageKeys.userId) ?? '';
       final response = await _dataSource.getPopularCategories(accessToken, customerId, popularCategoriesPage);
       _popularCategoriesResponse = PopularCategoriesResponse.fromJson(response);
     } catch (e) {
@@ -229,7 +253,7 @@ class DashboardProvider extends ChangeNotifier {
   Future<void> _fetchSupplierLogos() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final accessToken = prefs.getString('access_token') ?? '';
+      final accessToken = prefs.getString(StorageKeys.accessToken) ?? '';
       final response = await _dataSource.getSupplierLogos(accessToken, supplierLogosPage);
       _supplierLogosResponse = SupplierLogosResponse.fromJson(response);
     } catch (e) {
@@ -240,12 +264,23 @@ class DashboardProvider extends ChangeNotifier {
   Future<void> _fetchRecentlyAdded() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final accessToken = prefs.getString('access_token') ?? '';
-      final customerId = prefs.getString('user_id') ?? '';
+      final accessToken = prefs.getString(StorageKeys.accessToken) ?? '';
+      final customerId = prefs.getString(StorageKeys.userId) ?? '';
       final response = await _dataSource.getRecentlyAdded(accessToken, customerId, recentlyAddedPage);
       _recentlyAddedResponse = DashboardProductsResponse.fromJson(response);
     } catch (e) {
        debugPrint("Error fetching recently added: $e");
+    }
+  }
+
+  Future<void> _fetchPopularAdvertisements() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final accessToken = prefs.getString(StorageKeys.accessToken) ?? '';
+      final response = await _dataSource.getPopularAdvertisements(accessToken, popularAdsPage);
+      _popularAdvertisementsResponse = PopularAdvertosementsResponse.fromJson(response);
+    } catch (e) {
+       debugPrint("Error fetching popular advertisements: $e");
     }
   }
 

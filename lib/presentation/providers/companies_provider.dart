@@ -5,6 +5,7 @@ import '../../core/di/service_locator.dart';
 import '../../core/constants/url_api_key.dart';
 import '../../domain/entities/companies_response.dart';
 import '../../domain/repositories/auth_repository.dart';
+import '../../core/constants/storage_keys.dart';
 
 class CompaniesProvider extends ChangeNotifier {
   bool _isLoading = true; // Start loading immediately as per Android init
@@ -51,17 +52,17 @@ class CompaniesProvider extends ChangeNotifier {
   Future<void> selectCompany(BuildContext context, CompanyResult company) async {
       final prefs = await SharedPreferences.getInstance();
       
-      await prefs.setString('COMPANY_ID', company.companyId?.toString() ?? "");
-      await prefs.setString('COMPANY_TOKEN', company.accessToken ?? "");
-      await prefs.setString('COMPANY_URL', company.companyUrl ?? "");
-      await prefs.setString('COMPANY_NAME', company.name ?? "");
-      await prefs.setString('COMPANY_IMAGE', company.image ?? "");
-      await prefs.setString('PAYMENTMETHODS', company.availablePaymentMethods ?? "");
-      await prefs.setString('EMAILREQUIRED', company.emailRequiredForCustomerSignup ?? "");
-      await prefs.setString('RAZAR_SECRETKEY', company.razorPaySecret ?? "");
-      await prefs.setString('RAZAR_SERVERKEY', company.razorPayKey ?? "");
-      await prefs.setString('COMPANY_REGISTER_NEEDED', company.allowNewUserSignUp ?? ""); 
-      await prefs.setString('userName', company.loginScreenUsernamePlaceholder ?? "");
+      await prefs.setString(StorageKeys.companyId, company.companyId?.toString() ?? "");
+      await prefs.setString(StorageKeys.companyToken, company.accessToken ?? "");
+      await prefs.setString(StorageKeys.companyUrl, company.companyUrl ?? "");
+      await prefs.setString(StorageKeys.companyName, company.name ?? "");
+      await prefs.setString(StorageKeys.companyImage, company.image ?? "");
+      await prefs.setString(StorageKeys.paymentMethods, company.availablePaymentMethods ?? "");
+      await prefs.setString(StorageKeys.emailRequired, company.emailRequiredForCustomerSignup ?? "");
+      await prefs.setString(StorageKeys.razorSecretKey, company.razorPaySecret ?? "");
+      await prefs.setString(StorageKeys.razorServerKey, company.razorPayKey ?? "");
+      await prefs.setString(StorageKeys.companyRegisterNeeded, company.allowNewUserSignUp ?? ""); 
+      await prefs.setString(StorageKeys.userNamePlaceholder, company.loginScreenUsernamePlaceholder ?? "");
 
       if (company.companyUrl != null && company.companyUrl!.isNotEmpty) {
           UrlApiKey.baseUrl = "${company.companyUrl}/api/";

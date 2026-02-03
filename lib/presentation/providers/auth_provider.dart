@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../domain/entities/user_entity.dart';
+import '../../core/constants/storage_keys.dart';
 
 
 class AuthProvider extends ChangeNotifier {
@@ -36,11 +37,11 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> loadCompanyData() async {
     final prefs = await SharedPreferences.getInstance();
-    _companyName = prefs.getString('COMPANY_NAME') ?? "";
-    _companyImage = prefs.getString('COMPANY_IMAGE') ?? "";
+    _companyName = prefs.getString(StorageKeys.companyName) ?? "";
+    _companyImage = prefs.getString(StorageKeys.companyImage) ?? "";
     // Note: Android uses 'userName' key for hint.
-    _userNameHint = prefs.getString('userName') ?? "User ID";
-    _customerSignupRequired = prefs.getString('COMPANY_REGISTER_NEEDED') ?? "No"; // We mapped 'allow_new_user_sign_up' to this key
+    _userNameHint = prefs.getString(StorageKeys.userNamePlaceholder) ?? "User ID";
+    _customerSignupRequired = prefs.getString(StorageKeys.companyRegisterNeeded) ?? "No"; 
     notifyListeners();
   }
 
@@ -72,16 +73,16 @@ class AuthProvider extends ChangeNotifier {
       // Save Session
       if (user.status == 200) {
          final prefs = await SharedPreferences.getInstance();
-         await prefs.setString('USER_ID', user.customerId ?? "");
-         await prefs.setString('ACCESSTOKEN', user.accessToken);
-         await prefs.setString('USER_PASSWORD', password);
+         await prefs.setString(StorageKeys.userId, user.customerId ?? "");
+         await prefs.setString(StorageKeys.accessToken, user.accessToken);
+         await prefs.setString(StorageKeys.userPassword, password);
          success = true;
       } else {
          _errorMessage = user.message ?? "Login Failed";
          notifyListeners();
       }
     } catch (e) {
-      _errorMessage = e.toString(); // Or check if e is Failure
+      _errorMessage = e.toString(); 
       _isLoading = false;
       notifyListeners();
     }
@@ -91,16 +92,16 @@ class AuthProvider extends ChangeNotifier {
   Future<void> clearSession() async {
       final prefs = await SharedPreferences.getInstance();
       
-      await prefs.setString('USER_ID', "0");
-      await prefs.setString('ACCESSTOKEN', "");
+      await prefs.setString(StorageKeys.userId, "0");
+      await prefs.setString(StorageKeys.accessToken, "");
       
-      await prefs.remove('COMPANY_ID');
-      await prefs.remove('COMPANY_TOKEN');
-      await prefs.remove('COMPANY_URL');
-      await prefs.remove('COMPANY_NAME');
-      await prefs.remove('COMPANY_IMAGE');
-      await prefs.remove('COMPANY_REGISTER_NEEDED');
-      await prefs.remove('userName');
+      await prefs.remove(StorageKeys.companyId);
+      await prefs.remove(StorageKeys.companyToken);
+      await prefs.remove(StorageKeys.companyUrl);
+      await prefs.remove(StorageKeys.companyName);
+      await prefs.remove(StorageKeys.companyImage);
+      await prefs.remove(StorageKeys.companyRegisterNeeded);
+      await prefs.remove(StorageKeys.userNamePlaceholder);
       
       // Update UrlApiKey implicitly via next Splash load or manually if we had a reset method.
   }

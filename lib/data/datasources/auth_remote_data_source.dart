@@ -217,4 +217,15 @@ class AuthRemoteDataSource {
     );
     return response;
   }
+
+  Future<Map<String, dynamic>> getPopularAdvertisements(String accessToken, int page) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}product-advertisements",
+      body: {
+        'access_token': accessToken,
+        'page': page.toString(),
+      },
+    );
+    return response;
+  }
 }
