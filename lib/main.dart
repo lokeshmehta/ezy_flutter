@@ -10,6 +10,8 @@ import 'presentation/providers/splash_provider.dart';
 import 'presentation/providers/companies_provider.dart';
 import 'presentation/providers/signup_provider.dart';
 import 'presentation/providers/forgot_password_provider.dart';
+import 'presentation/providers/dashboard_provider.dart';
+import 'data/datasources/auth_remote_data_source.dart';
 
 import 'dart:io';
 
@@ -48,6 +50,8 @@ class MyApp extends StatelessWidget {
             ChangeNotifierProvider(create: (_) => CompaniesProvider()),
             ChangeNotifierProvider(create: (_) => SignUpProvider()),
             ChangeNotifierProvider(create: (_) => ForgotPasswordProvider()),
+            ChangeNotifierProvider(create: (_) => DashboardProvider(getIt<AuthRemoteDataSource>())), // Pass DataSource directly or via Repository if implemented
+
           ],
           child: MaterialApp.router(
             title: 'EzyOrders',

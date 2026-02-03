@@ -1,0 +1,491 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../providers/dashboard_provider.dart';
+import '../../../core/constants/app_theme.dart';
+import '../../../core/constants/assets.dart';
+import 'package:go_router/go_router.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import '../../../core/constants/url_api_key.dart';
+import '../../../data/models/home_models.dart';
+
+class DashboardScreen extends StatefulWidget {
+  const DashboardScreen({super.key});
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<DashboardProvider>().init();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      key: _scaffoldKey,
+      backgroundColor: AppTheme.primaryColor, // @color/blue
+      drawer: _buildDrawer(context),
+      body: SafeArea(
+        child: Container(
+          color: Colors.white,
+          child: Column(
+            children: [
+              _buildAppBar(context),
+              Expanded(
+                child: Consumer<DashboardProvider>(
+                  builder: (context, provider, child) {
+                    if (provider.isLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    // if (provider.errorMsg != null) {
+                    //   return Center(child: Text(provider.errorMsg!));
+                    // }
+
+                    return SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildMarqueeText(provider),
+                          _buildBanners(provider),
+                          _buildTopSuppliers(provider), // Best Sellers text in Android but ID says topsuppliers
+                          _buildHomeCategories(provider),
+                          _buildSection(
+                            context,
+                            "Best Sellers", // Title from layout xml ID: promotionTitle (Text "Best Sellers") - Wait, duplicates?
+                            // Android XML has multiple "Best Sellers" titles hardcoded for different sections.
+                            // We should check what the section actually is.
+                            // ID: promotionsLlay -> "Promotions"
+                            "Promotions",
+                            provider.promotionsResponse?.results,
+                          ),
+                           _buildSection(
+                            context,
+                            "Popular Categories",
+                            "Popular Categories",
+                            provider.popularCategoriesResponse?.results,
+                          ),
+                          _buildSection(
+                            context,
+                            "Best Sellers",
+                            "Best Sellers",
+                            provider.bestSellersResponse?.results,
+                          ),
+                          _buildSection(
+                            context,
+                            "Flash Deals",
+                            "Flash Deals",
+                            provider.flashDealsResponse?.results,
+                          ),
+                          _buildSection(
+                            context,
+                            "Hot Selling",
+                            "Hot Selling",
+                            provider.hotSellingResponse?.results,
+                          ),
+                           _buildSection(
+                            context,
+                            "New Arrivals",
+                            "New Arrivals",
+                            provider.newArrivalsResponse?.results,
+                          ),
+                           _buildSection(
+                            context,
+                            "Recently Added",
+                            "Recently Added",
+                            provider.recentlyAddedResponse?.results,
+                          ),
+                          _buildFooterBanners(provider),
+                          const SizedBox(height: 20),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+              _buildBottomBar(context),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAppBar(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      color: Colors.white,
+      child: Row(
+        children: [
+          IconButton(
+            icon: const Icon(Icons.menu, color: AppTheme.primaryColor),
+            onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+          ),
+          const Spacer(),
+          // Logo
+          Consumer<DashboardProvider>(
+            builder: (context, provider, _) { 
+                 final logoUrl = provider.profileResponse?.results?.isNotEmpty == true
+                     ? provider.profileResponse!.results![0]?.image
+                     : null;
+                 
+                  if (logoUrl != null && logoUrl.isNotEmpty) {
+                    // Android Logic: if contains http use as is, else prepend MAIN_URL (or COMPANYMAIN_URL? Android uses COMPANYMAIN_URL + Company_image for one, but Profile img might be different)
+                    // Line 641: Glide.with(this).load(UrlApiKey.COMPANYMAIN_URL+prefs.Company_image).into(binding?.applogoPng !!)
+                    // BUT nav header uses profile image.
+                    // This is center logo. Android ID: applogo_png
+                    // We need to fetch company image from prefs or profile.
+                    // Provider should probably expose it.
+                    return CachedNetworkImage(
+                      imageUrl: logoUrl.contains("http") ? logoUrl : "${UrlApiKey.companyMainUrl}$logoUrl",
+                      height: 50,
+                      fit: BoxFit.contain,
+                      errorWidget: (context, url, error) => Image.asset(AppAssets.splashLogo, height: 50),
+                    );
+                  }
+                  return Image.asset(AppAssets.splashLogo, height: 50);
+            }
+          ),
+          const Spacer(),
+          // Notification & Cart
+           IconButton(
+            icon: const Icon(Icons.notifications, color: AppTheme.primaryColor),
+            onPressed: () {},
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDrawer(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          _buildDrawerHeader(context),
+          ListTile(
+            leading: const Icon(Icons.home, color: AppTheme.primaryColor),
+            title: const Text('Home', style: TextStyle(color: AppTheme.primaryColor)),
+            onTap: () {
+               Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.qr_code, color: AppTheme.primaryColor),
+            title: const Text('Scan to Order', style: TextStyle(color: AppTheme.primaryColor)),
+            onTap: () {},
+          ),
+           ListTile(
+            leading: const Icon(Icons.local_offer, color: AppTheme.primaryColor),
+            title: const Text('Promotions', style: TextStyle(color: AppTheme.primaryColor)),
+            onTap: () {},
+          ),
+           ListTile(
+            leading: const Icon(Icons.notifications, color: AppTheme.primaryColor),
+            title: const Text('Notifications', style: TextStyle(color: AppTheme.primaryColor)),
+            onTap: () {},
+          ),
+           ListTile(
+            leading: const Icon(Icons.shopping_cart, color: AppTheme.primaryColor),
+            title: const Text('Order Now', style: TextStyle(color: AppTheme.primaryColor)),
+            onTap: () {},
+          ),
+           ListTile(
+            leading: const Icon(Icons.favorite, color: AppTheme.primaryColor),
+            title: const Text('My Favorites', style: TextStyle(color: AppTheme.primaryColor)),
+            onTap: () {},
+          ),
+           ListTile(
+            leading: const Icon(Icons.list_alt, color: AppTheme.primaryColor),
+            title: const Text('My Orders', style: TextStyle(color: AppTheme.primaryColor)),
+            onTap: () {},
+          ),
+           ListTile(
+            leading: const Icon(Icons.question_answer, color: AppTheme.primaryColor),
+            title: const Text('FAQ', style: TextStyle(color: AppTheme.primaryColor)),
+            onTap: () {},
+          ),
+           ListTile(
+            leading: const Icon(Icons.info, color: AppTheme.primaryColor),
+            title: const Text('About', style: TextStyle(color: AppTheme.primaryColor)),
+            onTap: () {},
+          ),
+           ListTile(
+            leading: const Icon(Icons.logout, color: AppTheme.primaryColor),
+            title: const Text('Logout', style: TextStyle(color: AppTheme.primaryColor)),
+            onTap: () {
+               // Implement Logout
+               context.go('/');
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDrawerHeader(BuildContext context) {
+      return Consumer<DashboardProvider>(
+          builder: (context, provider, _) { 
+              final profile = provider.profileResponse?.results?.isNotEmpty == true ? provider.profileResponse!.results![0] : null;
+              return Container(
+                 color: AppTheme.tealColor, // @color/tealcolor
+                 padding: const EdgeInsets.all(20),
+                 child: Column(
+                   crossAxisAlignment: CrossAxisAlignment.start,
+                   children: [
+                     const SizedBox(height: 30),
+                     CircleAvatar(
+                       radius: 30,
+                       backgroundImage: (profile?.image != null && profile!.image!.isNotEmpty)
+                           ? CachedNetworkImageProvider(profile.image!.contains("http") ? profile.image! : "${UrlApiKey.companyMainUrl}${profile.image}")
+                           : null,
+                       child: (profile?.image == null || profile!.image!.isEmpty) ? const Icon(Icons.person, size: 40) : null,
+                     ),
+                     const SizedBox(height: 10),
+                     Text(
+                       "${profile?.firstName ?? 'Guest'} ${profile?.lastName ?? ''}",
+                       style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                     ),
+                     Text(
+                       profile?.email ?? '',
+                       style: const TextStyle(color: Colors.white70, fontSize: 14),
+                     ),
+                   ],
+                 ),
+              );
+          });
+  }
+
+  Widget _buildMarqueeText(DashboardProvider provider) {
+    // Logic from Android: if (datalist.results?.get(0)?.show_marque_text=="Yes")
+    final profile = provider.profileResponse?.results?.isNotEmpty == true ? provider.profileResponse!.results![0] : null;
+    if (profile?.showMarqueText == "Yes" && profile?.marqueText != null) {
+      return Container(
+        color: Colors.yellow[100], // Default or parse from profile.marqueTextBackgroundColor
+        width: double.infinity,
+        padding: const EdgeInsets.all(8.0),
+        child: Text(
+          profile!.marqueText!,
+           style: TextStyle(
+             color: Colors.red, // parse profile.marqueTextColor
+             fontSize: 16, // parse profile.marqueTextSize
+             fontStyle: FontStyle.italic, // parse format
+           ),
+        ),
+      );
+    }
+    return const SizedBox.shrink();
+  }
+
+  Widget _buildBanners(DashboardProvider provider) {
+     if (provider.bannersResponse?.results == null || provider.bannersResponse!.results!.isEmpty) {
+       return const SizedBox.shrink();
+     }
+     return SizedBox(
+       height: 200,
+       child: PageView.builder(
+         itemCount: provider.bannersResponse!.results!.length,
+         itemBuilder: (context, index) {
+            final banner = provider.bannersResponse!.results![index];
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: CachedNetworkImage(
+                imageUrl: "${UrlApiKey.companyMainUrl}${banner?.bannerImage}", // Check path assumption
+                fit: BoxFit.cover,
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+              ),
+            );
+         },
+       ),
+     );
+  }
+
+  Widget _buildTopSuppliers(DashboardProvider provider) {
+      // Android ID: topsuppliersRv (Horizontal)
+      // Logic: show if supplier_logos == "Show" (Wait, this might be separate from Suppliers List section?)
+      // Android line 330: id topSuppliersLay
+      // Check ViewModel: viewmodel?.supplierLogosApiCall()
+      if (provider.supplierLogosResponse?.results == null || provider.supplierLogosResponse!.results!.isEmpty) {
+        return const SizedBox.shrink();
+      }
+      return _buildSectionLayout("Suppliers",
+          SizedBox(
+            height: 100,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: provider.supplierLogosResponse!.results!.length,
+              itemBuilder: (context, index) {
+                  final item = provider.supplierLogosResponse!.results![index];
+                  return Container(
+                    width: 100,
+                    margin: const EdgeInsets.symmetric(horizontal: 5),
+                     child: CachedNetworkImage(
+                        imageUrl: "${UrlApiKey.companyMainUrl}${item?.bannerImage}",
+                        errorWidget: (context, url, error) => const Icon(Icons.error),
+                     ),
+                  );
+              },
+            ),
+          )
+      );
+  }
+
+  Widget _buildHomeCategories(DashboardProvider provider) {
+      // Home Categories/Blocks
+      if (provider.homeBlocksResponse?.results == null || provider.homeBlocksResponse!.results!.isEmpty) {
+        return const SizedBox.shrink();
+      }
+      return SizedBox(
+        height: 80,
+         child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: provider.homeBlocksResponse!.results!.length,
+              itemBuilder: (context, index) {
+                  final item = provider.homeBlocksResponse!.results![index];
+                  return Container(
+                    width: 80,
+                    margin: const EdgeInsets.symmetric(horizontal: 5),
+                     child: CachedNetworkImage(
+                        imageUrl: "${UrlApiKey.companyMainUrl}${item?.image}",
+                        errorWidget: (context, url, error) => const Icon(Icons.error),
+                     ),
+                  );
+              },
+         ),
+      );
+  }
+
+  Widget _buildSection(BuildContext context, String title, String categoryKey, List<MenuitemsResponse?>? items) {
+      if (items == null || items.isEmpty) return const SizedBox.shrink();
+
+      return _buildSectionLayout(title,
+        SizedBox(
+          height: 180, // Adjust based on item layout
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: items.length,
+            itemBuilder: (context, index) {
+              final item = items[index];
+              return Container(
+                width: 120,
+                margin: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: CachedNetworkImage(
+                        imageUrl: "${UrlApiKey.companyMainUrl}${item?.image}",
+                        fit: BoxFit.cover,
+                         errorWidget: (context, url, error) => const Icon(Icons.image_not_supported),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Text(
+                        item?.name ?? item?.displayName ?? '',
+                        style: const TextStyle(fontSize: 12),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Text(
+                       "\$${item?.price ?? '0.00'}",
+                       style: const TextStyle(fontWeight: FontWeight.bold),
+                    )
+                  ],
+                ),
+              );
+            },
+          ),
+        )
+      );
+  }
+
+  Widget _buildSectionLayout(String title, Widget content) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              Row(
+                children: [
+                   const Icon(Icons.arrow_back_ios, size: 16),
+                   const Icon(Icons.arrow_forward_ios, size: 16),
+                ],
+              )
+            ],
+          ),
+        ),
+        content,
+      ],
+    );
+  }
+  
+  Widget _buildFooterBanners(DashboardProvider provider) {
+       if (provider.footerBannersResponse?.results == null || provider.footerBannersResponse!.results!.isEmpty) {
+       return const SizedBox.shrink();
+     }
+     return SizedBox(
+       height: 150,
+       child: PageView.builder(
+         itemCount: provider.footerBannersResponse!.results!.length,
+         itemBuilder: (context, index) {
+            final banner = provider.footerBannersResponse!.results![index];
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: CachedNetworkImage(
+                imageUrl: "${UrlApiKey.companyMainUrl}${banner?.bannerImage}", 
+                fit: BoxFit.cover,
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+              ),
+            );
+         },
+       ),
+     );
+  }
+
+  Widget _buildBottomBar(BuildContext context) {
+    return Container(
+      height: 60,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(top: BorderSide(color: Colors.grey, width: 0.5)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildBottomItem(Icons.home, "Home", true),
+          _buildBottomItem(Icons.list_alt, "My Orders", false),
+          _buildBottomItem(Icons.shopping_cart, "My Cart", false),
+          _buildBottomItem(Icons.person, "My Account", false),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomItem(IconData icon, String label, bool isSelected) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(icon, color: isSelected ? AppTheme.primaryColor : Colors.grey),
+        Text(label, style: TextStyle(
+          color: isSelected ? AppTheme.primaryColor : Colors.grey,
+          fontSize: 12
+        ))
+      ],
+    );
+  }
+}

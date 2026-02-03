@@ -80,4 +80,141 @@ class AuthRemoteDataSource {
     // Return raw response for provider to parse status
     return response;
   }
+
+  // Dashboard APIs
+  Future<Map<String, dynamic>> getProfile(String accessToken, String customerId) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}get-profile",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> getBanners(String accessToken) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}banners",
+      body: {
+        'access_token': accessToken,
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> getFooterBanners(String accessToken) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}footer-banners",
+      body: {
+        'access_token': accessToken,
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> getHomePageBlocks(String accessToken) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}home-page-blocks",
+      body: {
+        'access_token': accessToken,
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> getPromotions(String accessToken, String customerId, int page) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}promotions",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'page': page.toString(),
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> getBestSellers(String accessToken, String customerId, int page) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}best-sellers",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'page': page.toString(),
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> getFlashDeals(String accessToken, String customerId, int page) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}flash-deals",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'page': page.toString(),
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> getNewArrivals(String accessToken, String customerId, int page) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}new-arrivals",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'page': page.toString(),
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> getHotSelling(String accessToken, String customerId, int page) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}hot-selling",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'page': page.toString(),
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> getPopularCategories(String accessToken, String customerId, int page) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}popular-categories",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'page': page.toString(),
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> getSupplierLogos(String accessToken, int page) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}supplier-logos",
+      body: {
+        'access_token': accessToken,
+        'page': page.toString(),
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> getRecentlyAdded(String accessToken, String customerId, int page) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}recently-added",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'page': page.toString(),
+      },
+    );
+    return response;
+  }
 }
