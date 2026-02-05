@@ -5,6 +5,7 @@ import '../../../providers/dashboard_provider.dart';
 import 'flash_deal_item_widget.dart';
 import 'section_header_widget.dart';
 import 'wishlist_category_dialog.dart';
+import 'product_details_bottom_sheet.dart';
 
 class FlashDealsSection extends StatefulWidget {
   const FlashDealsSection({super.key});
@@ -78,6 +79,14 @@ class _FlashDealsSectionState extends State<FlashDealsSection> {
                        showDialog(
                          context: context,
                          builder: (context) => WishlistCategoryDialog(product: item),
+                       );
+                     },
+                                          onAddToCart: () {
+                       showModalBottomSheet(
+                         context: context,
+                         isScrollControlled: true,
+                         backgroundColor: Colors.transparent,
+                         builder: (context) => ProductDetailsBottomSheet(product: item),
                        );
                      },
                    );

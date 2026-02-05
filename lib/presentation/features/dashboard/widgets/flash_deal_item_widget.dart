@@ -190,12 +190,18 @@ class _FlashDealItemWidgetState extends State<FlashDealItemWidget> {
                   child: Column(
                     children: [
                        // Sold As (Teal)
-                       if (item.soldAs != null)
+                       if (item.soldAs != null && item.soldAs!.isNotEmpty)
                         Container(
                           width: double.infinity,
                           color: AppTheme.tealColor,
                           padding: EdgeInsets.all(5.w),
-                          child: Text(item.soldAs!, textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontSize: 10.sp)),
+                          child: Text(
+                            (item.soldAs == "Each") 
+                                ? "Each" 
+                                : "${item.soldAs} (${item.qtyPerOuter ?? "0"} Units)",
+                            textAlign: TextAlign.center, 
+                            style: TextStyle(color: Colors.white, fontSize: 10.sp),
+                          ),
                         ),
                        SizedBox(height: 20.h),
                        

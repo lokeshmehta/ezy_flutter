@@ -402,4 +402,127 @@ class DashboardProvider extends ChangeNotifier {
     _promotionsResponse?.results?.forEach((p) { if (p?.productId == productId) p?.isFavourite = state; });
     _recentlyAddedResponse?.results?.forEach((p) { if (p?.productId == productId) p?.isFavourite = state; });
   }
+
+  // Cart Methods
+  Future<bool> addToCart(String productId, String qty, String price, String orderedAs, String apiData) async {
+      _isLoading = true;
+      notifyListeners();
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        final accessToken = prefs.getString(StorageKeys.accessToken) ?? '';
+        final customerId = prefs.getString(StorageKeys.userId) ?? '';
+
+        final response = await _dataSource.addToCart(
+            accessToken: accessToken,
+            customerId: customerId,
+            productId: productId,
+            qty: qty,
+            price: price,
+            orderedAs: orderedAs,
+            apiData: apiData
+        );
+        
+        // Check "status" from response
+        if (response['status'] == 200) {
+             _updateProductCartState(productId, "Yes", qty);
+             // Also need to update cart count in prefs if returned
+             // Assuming success message or refresh logic needed?
+             // Android calls CartDetails or just updates local
+             _isLoading = false;
+             notifyListeners();
+             return true;
+        } else {
+             _errorMsg = response['message'] ?? "Failed to add to cart";
+        }
+      } catch (e) {
+          debugPrint("Error adding to cart: $e");
+          _errorMsg = "Failed to add to cart";
+      }
+      _isLoading = false;
+      notifyListeners();
+      return false;
+  }
+
+  Future<bool> updateCart(String productId, String qty, String brandId, String price, String orderedAs) async {
+      _isLoading = true;
+      notifyListeners();
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        final accessToken = prefs.getString(StorageKeys.accessToken) ?? '';
+        final customerId = prefs.getString(StorageKeys.userId) ?? '';
+
+        final response = await _dataSource.updateCartItem(
+            accessToken: accessToken,
+            customerId: customerId,
+            productId: productId,
+            brandId: brandId,
+            qty: qty,
+            price: price,
+            orderedAs: orderedAs
+        );
+        
+        if (response['status'] == 200) {
+             _updateProductCartState(productId, "Yes", qty);
+             _isLoading = false;
+             notifyListeners();
+             return true;
+        } else {
+             _errorMsg = response['message'] ?? "Failed to update cart";
+        }
+      } catch (e) {
+          debugPrint("Error updating cart: $e");
+          _errorMsg = "Failed to update cart";
+      }
+      _isLoading = false;
+      notifyListeners();
+      return false;
+  }
+
+  Future<bool> deleteCart(String productId, String brandId) async {
+       _isLoading = true;
+      notifyListeners();
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        final accessToken = prefs.getString(StorageKeys.accessToken) ?? '';
+        final customerId = prefs.getString(StorageKeys.userId) ?? '';
+
+        final response = await _dataSource.deleteCartItem(
+            accessToken: accessToken,
+            customerId: customerId,
+            productId: productId,
+            brandId: brandId
+        );
+        
+        if (response['status'] == 200) {
+             _updateProductCartState(productId, "No", "0");
+             _isLoading = false;
+             notifyListeners();
+             return true;
+        } else {
+             _errorMsg = response['message'] ?? "Failed to delete from cart";
+        }
+      } catch (e) {
+          debugPrint("Error deleting from cart: $e");
+          _errorMsg = "Failed to delete from cart";
+      }
+      _isLoading = false;
+      notifyListeners();
+      return false;
+  }
+
+  void _updateProductCartState(String productId, String addedToCart, String qty) {
+     void update(ProductItem? p) {
+         if (p?.productId == productId) {
+             p?.addedToCart = addedToCart;
+             p?.addedQty = qty;
+         }
+     }
+     
+    _bestSellersResponse?.results?.forEach(update);
+    _hotSellingResponse?.results?.forEach(update);
+    _newArrivalsResponse?.results?.forEach(update);
+    _flashDealsResponse?.results?.forEach(update);
+    _promotionsResponse?.results?.forEach(update);
+    _recentlyAddedResponse?.results?.forEach(update);
+  }
 }

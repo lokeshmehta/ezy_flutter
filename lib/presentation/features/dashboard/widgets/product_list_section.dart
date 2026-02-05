@@ -6,6 +6,7 @@ import '../../../providers/dashboard_provider.dart';
 import 'product_item_widget.dart';
 import 'section_header_widget.dart';
 import 'wishlist_category_dialog.dart';
+import 'product_details_bottom_sheet.dart';
 
 class ProductListSection extends StatefulWidget {
   final String title;
@@ -84,6 +85,14 @@ class _ProductListSectionState extends State<ProductListSection> {
                   showDialog(
                     context: context,
                     builder: (context) => WishlistCategoryDialog(product: product),
+                  );
+                },
+                onAddToCart: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => ProductDetailsBottomSheet(product: product),
                   );
                 },
               );

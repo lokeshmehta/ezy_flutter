@@ -54,7 +54,7 @@ class ProductItemWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Unit Header (Orange Bar)
-                if (item.soldAs != null && item.soldAs!.isNotEmpty)
+                if (item.soldAs != null && item.soldAs!.isNotEmpty && item.soldAs != "Each" && item.qtyPerOuter != null)
                    Container(
                      width: double.infinity,
                      height: 24.h,
@@ -63,7 +63,20 @@ class ProductItemWidget extends StatelessWidget {
                      ),
                      alignment: Alignment.center,
                      child: Text(
-                       "${item.soldAs ?? "Carton"} (${item.orderedAs ?? "0"} unit)",
+                       "${item.soldAs} (${item.qtyPerOuter} unit)",
+                       style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold),
+                     ),
+                   )
+                else if (item.soldAs == "Each")
+                   Container(
+                     width: double.infinity,
+                     height: 24.h,
+                     decoration: BoxDecoration(
+                        color: const Color(0xFFFCBD5F), 
+                     ),
+                     alignment: Alignment.center,
+                     child: Text(
+                       "Each",
                        style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold),
                      ),
                    ),

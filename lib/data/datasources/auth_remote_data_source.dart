@@ -260,4 +260,74 @@ class AuthRemoteDataSource {
     );
     return response;
   }
+
+  Future<Map<String, dynamic>> addToCart({
+    required String accessToken,
+    required String customerId,
+    required String productId,
+    required String qty,
+    required String price,
+    required String orderedAs,
+    required String apiData,
+    String accNum = "",
+  }) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}add-to-cart",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'product_id': productId,
+        'qty': qty,
+        'price': price,
+        'ordered_as': orderedAs,
+        'acc_num': accNum,
+        'api_data': apiData,
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> updateCartItem({
+    required String accessToken,
+    required String customerId,
+    required String productId,
+    required String brandId,
+    required String qty,
+    required String price,
+    required String orderedAs,
+    String accNum = "",
+  }) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}update-cart-item",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'product_id': productId,
+        'brand_id': brandId,
+        'qty': qty,
+        'price': price,
+        'ordered_as': orderedAs,
+        'acc_num': accNum,
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> deleteCartItem({
+    required String accessToken,
+    required String customerId,
+    required String productId,
+    required String brandId,
+  }) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}delete-cart-item",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'product_id': productId,
+        'brand_id': brandId,
+      },
+    );
+    return response;
+  }
 }

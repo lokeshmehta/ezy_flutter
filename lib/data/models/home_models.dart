@@ -147,6 +147,9 @@ class ProfileResult {
   String? flashDeals; 
   String? newArrivals; 
   String? recentlyAdded; 
+  String? customerMessageForAdditionalSuppliersCharge; 
+  String? showShippingSegment; 
+  String? showSoldAs;
 
   ProfileResult({
     this.customerId,
@@ -179,6 +182,9 @@ class ProfileResult {
     this.flashDeals,
     this.newArrivals,
     this.recentlyAdded,
+    this.customerMessageForAdditionalSuppliersCharge,
+    this.showShippingSegment,
+    this.showSoldAs,
   });
 
   factory ProfileResult.fromJson(Map<String, dynamic> json) {
@@ -213,6 +219,9 @@ class ProfileResult {
       flashDeals: json['flash_deals']?.toString(),
       newArrivals: json['new_arrivals']?.toString(),
       recentlyAdded: json['recently_added']?.toString(),
+      customerMessageForAdditionalSuppliersCharge: json['customer_message_for_additional_suppliers_charge']?.toString(),
+      showShippingSegment: json['show_shipping_segment']?.toString(),
+      showSoldAs: json['show_sold_as']?.toString(),
     );
   }
 }
@@ -280,6 +289,7 @@ class ProductItem {
     String? addedQty; 
     String? addedSubTotal; 
     String? orderedAs; 
+    String? qtyPerOuter; // Added for unit logic
     String? apiData;
     String? divisionId;
     String? groupId;
@@ -287,6 +297,7 @@ class ProductItem {
     String? gstPercentage;
     String? fromDate;
     String? toDate;
+    String? hasPromotion; // Added field
 
     ProductItem({
         this.productId,
@@ -310,6 +321,7 @@ class ProductItem {
         this.addedQty,
         this.addedSubTotal,
         this.orderedAs,
+        this.qtyPerOuter,
         this.apiData,
         this.divisionId,
         this.groupId,
@@ -317,6 +329,7 @@ class ProductItem {
         this.gstPercentage,
         this.fromDate,
         this.toDate,
+        this.hasPromotion,
     });
 
     factory ProductItem.fromJson(Map<String, dynamic> json) {
@@ -342,6 +355,7 @@ class ProductItem {
             addedQty: json['added_qty']?.toString(),
             addedSubTotal: json['added_sub_total']?.toString(),
             orderedAs: json['ordered_as']?.toString(),
+            qtyPerOuter: json['qty_per_outer']?.toString(),
             apiData: json['api_data']?.toString(),
             divisionId: json['division_id']?.toString(),
             groupId: json['group_id']?.toString(),
@@ -349,6 +363,7 @@ class ProductItem {
             gstPercentage: json['gst_percentage']?.toString(),
             fromDate: json['from_date']?.toString(),
             toDate: json['to_date']?.toString(),
+            hasPromotion: json['has_promotion']?.toString(),
         );
     }
 }
