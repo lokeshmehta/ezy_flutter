@@ -6,7 +6,7 @@ import '../../../core/constants/assets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/constants/url_api_key.dart';
-import '../../../data/models/home_models.dart';
+// import '../../../data/models/home_models.dart'; // Unused
 import '../../../core/network/image_cache_manager.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -257,7 +257,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                padding: const EdgeInsets.all(8.0),
                child: AspectRatio(
                  aspectRatio: 3/1, // Standard banner ratio
-                 child: _buildNetworkImage(banner.image),
+                 child: _buildNetworkImage(banner?.image),
                ),
              );
          }).toList(),

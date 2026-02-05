@@ -4,6 +4,7 @@ class AppAssets {
 
   // Images
   static const String appLogo = '$images/applogo.png';
+  static const String headerLogo = '$images/headerlogo.png';
   static const String splashLogo = '$images/splashlogo.png';
   static const String forgotIcon = '$images/forgot_icon.png';
   static const String placeholder = '$images/no_image.png';
