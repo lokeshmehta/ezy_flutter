@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/app_theme.dart';
 import '../../../../core/constants/url_api_key.dart';
 import '../../../../core/network/image_cache_manager.dart';
@@ -40,7 +41,7 @@ class ProductItemWidget extends StatelessWidget {
     
     return Container(
       width: width,
-      margin: const EdgeInsets.only(right: 10, bottom: 5),
+      margin: EdgeInsets.only(right: 10.w, bottom: 5.h),
       child: Card(
         elevation: 2,
         color: Colors.white,
@@ -48,7 +49,7 @@ class ProductItemWidget extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.all(5.0),
+            padding: EdgeInsets.all(5.0.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -59,12 +60,12 @@ class ProductItemWidget extends StatelessWidget {
                    Container(
                      width: double.infinity,
                      color: AppTheme.tealColor, // Needs AppTheme.tealColor
-                     padding: const EdgeInsets.all(5),
-                     margin: const EdgeInsets.only(bottom: 5),
+                     padding: EdgeInsets.all(5.w),
+                     margin: EdgeInsets.only(bottom: 5.h),
                      child: Text(
                        item.soldAs!, // Complicated logic for units in Android
                        textAlign: TextAlign.center,
-                       style: const TextStyle(color: Colors.white, fontSize: 12),
+                       style: TextStyle(color: Colors.white, fontSize: 12.sp),
                      ),
                    ),
 
@@ -72,7 +73,7 @@ class ProductItemWidget extends StatelessWidget {
                 Stack(
                   children: [
                      Container(
-                        height: 120,
+                        height: 120.h,
                         width: double.infinity,
                         alignment: Alignment.center,
                         child: _buildImage(item.image),
@@ -83,7 +84,7 @@ class ProductItemWidget extends StatelessWidget {
                   ],
                 ),
 
-                const SizedBox(height: 5),
+                SizedBox(height: 5.h),
 
                 // Vendor Name
                 if (item.brandName != null && item.brandName!.isNotEmpty)
@@ -91,18 +92,18 @@ class ProductItemWidget extends StatelessWidget {
                     item.brandName!,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: Colors.grey, fontSize: 11),
+                    style: TextStyle(color: Colors.grey, fontSize: 11.sp),
                   ),
 
                 // Product Name
-                const SizedBox(height: 2),
+                SizedBox(height: 2.h),
                 Text(
                   item.title ?? item.brandName ?? "",
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppTheme.textColor, 
-                      fontSize: 13, 
+                      fontSize: 13.sp, 
                       fontWeight: FontWeight.bold
                   ),
                 ),
@@ -110,28 +111,28 @@ class ProductItemWidget extends StatelessWidget {
                 // MOQ
                 if (item.minimumOrderQty != null && item.minimumOrderQty != "0" && item.minimumOrderQty != "1")
                    Padding(
-                     padding: const EdgeInsets.only(top: 5),
+                     padding: EdgeInsets.only(top: 5.h),
                      child: Text(
                        "MOQ : ${item.minimumOrderQty}",
-                       style: const TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold),
+                       style: TextStyle(color: Colors.red, fontSize: 12.sp, fontWeight: FontWeight.bold),
                      ),
                    ),
 
-                const SizedBox(height: 5),
+                SizedBox(height: 5.h),
 
                 // Price Section
                 if (!hasPromotion) ...[
                    Text(
                      _formatPrice(item.price),
-                     style: const TextStyle(color: AppTheme.textColor, fontSize: 12), // Use grey? Android uses 'darkgreycolor'
+                     style: TextStyle(color: AppTheme.textColor, fontSize: 12.sp), // Use grey? Android uses 'darkgreycolor'
                    ),
                 ] else ...[
                    // Promotion UI
                    Text(
                      _formatPrice(item.price),
-                     style: const TextStyle(
+                     style: TextStyle(
                        color: Colors.grey, 
-                       fontSize: 12,
+                       fontSize: 12.sp,
                        decoration: TextDecoration.lineThrough
                      ),
                    ),
@@ -139,23 +140,25 @@ class ProductItemWidget extends StatelessWidget {
                      children: [
                        Text(
                          _formatPrice(item.promotionPrice),
-                         style: const TextStyle(color: Colors.red, fontSize: 12),
+                         style: TextStyle(color: Colors.red, fontSize: 12.sp),
                        ),
-                       const SizedBox(width: 5),
+                       SizedBox(width: 5.w),
                        Container(
-                         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                         padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
                          color: Colors.red,
                          child: Text(
                            "-${_calculateDiscount(item.price, item.promotionPrice)}%",
-                           style: const TextStyle(color: Colors.white, fontSize: 10),
+                           style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold),
                          ),
                        )
                      ],
                    )
                 ],
+                
+                SizedBox(height: 5.h),
 
                 // Add To Cart & Fav
-                const SizedBox(height: 10),
+                SizedBox(height: 10.h),
                 Row(
                   children: [
                     // Quantity Counter (Hidden by default in Android unless logic triggers? 
@@ -167,23 +170,23 @@ class ProductItemWidget extends StatelessWidget {
                         onPressed: canAddToCart ? onAddToCart : null,
                         style: ElevatedButton.styleFrom(
                            backgroundColor: canAddToCart ? AppTheme.tealColor : Colors.red,
-                           minimumSize: const Size(0, 30),
-                           padding: const EdgeInsets.symmetric(horizontal: 5),
+                           minimumSize: Size(0, 30.h),
+                           padding: EdgeInsets.symmetric(horizontal: 5.w),
                         ),
                         child: Text(
                            isOutOfStock ? "Out Of Stock" : (item.addedToCart == "Yes" ? "Update Cart [${item.addedQty}]" : "Add To Cart"),
-                           style: const TextStyle(fontSize: 11, color: Colors.white),
+                           style: TextStyle(fontSize: 11.sp, color: Colors.white),
                            maxLines: 1,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 5),
+                    SizedBox(width: 5.w),
                     InkWell(
                       onTap: onFavorite,
                       child: Icon(
                         item.isFavourite == "Yes" ? Icons.favorite : Icons.favorite_border,
                         color: Colors.grey, // Check Android tint
-                        size: 24,
+                        size: 24.sp,
                       ),
                     )
                   ],
@@ -226,6 +229,7 @@ class ProductItemWidget extends StatelessWidget {
 
       return CachedNetworkImage(
         imageUrl: finalUrl,
+        height: 120.h,
         fit: BoxFit.contain, // scaleType="fitCenter"
         cacheManager: ImageCacheManager(),
         placeholder: (context, url) => Container(color: Colors.grey[200]),

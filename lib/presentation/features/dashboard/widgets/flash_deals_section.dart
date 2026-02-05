@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/dashboard_provider.dart';
 import 'flash_deal_item_widget.dart';
@@ -54,10 +55,10 @@ class _FlashDealsSectionState extends State<FlashDealsSection> {
               onNextTap: () => _scroll(true),
             ),
             SizedBox(
-              height: 230, // Large enough for FlashDealItemWidget
+              height: 280.h, // Dynamic height
               child: ListView.builder(
                 controller: _scrollController,
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding: EdgeInsets.symmetric(horizontal: 10.w),
                 scrollDirection: Axis.horizontal,
                 itemCount: products.length,
                 itemBuilder: (context, index) {

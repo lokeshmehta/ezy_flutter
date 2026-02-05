@@ -17,6 +17,7 @@ import 'widgets/popular_ads_section.dart';
 import 'widgets/standard_product_sections.dart';
 import '../products/products_list_screen.dart';
 import 'package:dots_indicator/dots_indicator.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:async';
 
 class DashboardScreen extends StatefulWidget {
@@ -143,7 +144,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                    _buildFooterBanners(provider),
                    const RecentlyAddedSection(), // Added Recently Added after footer banners
                    _buildBottomSuppliers(provider),
-                   const SizedBox(height: 100), // Bottom padding
+                   SizedBox(height: 100.h), // Bottom padding
                 ],
               ),
             ),
@@ -173,13 +174,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                        crossAxisAlignment: CrossAxisAlignment.center,
                        children: [
                           CircleAvatar(
-                            radius: 30,
+                            radius: 30.r,
                             backgroundColor: Colors.white,
                             backgroundImage: user?.image != null && user!.image!.isNotEmpty
                                 ? CachedNetworkImageProvider(_getImageUrl(user.image)) as ImageProvider
                                 : const AssetImage(AppAssets.userIcon),
                           ),
-                          const SizedBox(width: 10),
+                          SizedBox(width: 10.w),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -187,19 +188,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               children: [
                                 Text(
                                   "${user?.firstName ?? ''} ${user?.lastName ?? ''}", // Fixed: ProfileResult has firstName/lastName
-                                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                                  style: TextStyle(color: Colors.white, fontSize: 16.sp, fontWeight: FontWeight.bold),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
                                   user?.email ?? "user@example.com",
-                                  style: const TextStyle(color: Colors.white70, fontSize: 13),
+                                  style: TextStyle(color: Colors.white70, fontSize: 13.sp),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ],
                             ),
                           ),
                           IconButton(
-                            icon: Image.asset(AppAssets.menuCloseIcon, width: 20, height: 20, color: Colors.white),
+                            icon: Image.asset(AppAssets.menuCloseIcon, width: 20.w, height: 20.w, color: Colors.white),
                             onPressed: () => Navigator.pop(context),
                           )
                        ],
@@ -243,9 +244,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset(AppAssets.logoutMenuIcon, width: 20, height: 20, color: AppTheme.primaryColor),
-                      const SizedBox(width: 10),
-                      const Text("Logout", style: TextStyle(color: AppTheme.primaryColor, fontWeight: FontWeight.bold)),
+                      Image.asset(AppAssets.logoutMenuIcon, width: 20.w, height: 20.w, color: AppTheme.primaryColor),
+                      SizedBox(width: 10.w),
+                      Text("Logout", style: TextStyle(color: AppTheme.primaryColor, fontWeight: FontWeight.bold, fontSize: 14.sp)),
                     ],
                   ),
                 ),
@@ -274,10 +275,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _buildMarquee(DashboardProvider provider) {
      return Container(
        color: Colors.yellow[100],
-       padding: const EdgeInsets.all(10),
-       child: const Text(
+       padding: EdgeInsets.all(10.w),
+       child: Text(
          "Welcome to the EZY Orders",
-         style: TextStyle(color: Colors.red, fontStyle: FontStyle.italic, fontSize: 16),
+         style: TextStyle(color: Colors.red, fontStyle: FontStyle.italic, fontSize: 16.sp),
        ),
      );
   }
@@ -289,7 +290,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
      return Column(
        children: [
          SizedBox(
-           height: 220,
+           height: 220.h,
            child: PageView.builder(
              controller: _bannerController,
              onPageChanged: (index) {
@@ -336,9 +337,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               if (banner?.bottomCaption != null && banner!.bottomCaption!.isNotEmpty)
                                Text(
                                  banner.bottomCaption!,
-                                 style: const TextStyle(color: Colors.white, fontSize: 14),
+                                 style: TextStyle(color: Colors.white, fontSize: 14.sp),
                                ),
-                              const SizedBox(height: 10),
+                              SizedBox(height: 10.h),
                               ElevatedButton(
                                 onPressed: () {
                                   // Handle Shop Now Click matching Android Logic
@@ -366,9 +367,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
            dotsCount: provider.bannersResponse!.results!.length,
            position: _currentBannerIndex,
            decorator: DotsDecorator(
-             size: const Size.square(9.0),
-             activeSize: const Size(18.0, 9.0),
-             activeShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+             size: Size.square(9.0.w),
+             activeSize: Size(18.0.w, 9.0.w),
+             activeShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0.r)),
              activeColor: AppTheme.primaryColor,
              color: Colors.grey.withValues(alpha: 0.5),
            ),
@@ -414,8 +415,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
       }
 
       return Container(
-        height: 150, // @dimen/dimen_150
-        margin: const EdgeInsets.symmetric(vertical: 10),
+        height: 150.h, // @dimen/dimen_150
+        margin: EdgeInsets.symmetric(vertical: 10.h),
         child: PageView.builder(
            itemCount: provider.footerBannersResponse!.results!.length,
            itemBuilder: (context, index) {

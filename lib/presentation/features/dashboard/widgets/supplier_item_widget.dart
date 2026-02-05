@@ -22,7 +22,7 @@ class SupplierItemWidget extends StatelessWidget {
     // Width calculation logic from Android:
     // double buttonWidth = width / 2;
     // LayoutParams(buttonWidth - 40, wrap_content)
-    double itemWidth = (1.sw / 2) - 40.w;
+    double itemWidth = (1.sw / 2) - 25.w;
 
     return GestureDetector(
       onTap: () {
@@ -48,20 +48,21 @@ class SupplierItemWidget extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(4.r), // Default card radius
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: AppTheme.darkGrayColor, width: 1.5),
-                   borderRadius: BorderRadius.circular(1.r), // supplier_bg.xml radius
-                ),
-                child: Padding(
-                   padding: EdgeInsets.all(1.5.w), // android:layout_margin="@dimen/dimen_1_5"
-                   child: _buildImage(image),
-                ),
-              ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      height: 120.h,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: AppTheme.darkGrayColor, width: 1.5),
+                         borderRadius: BorderRadius.circular(1.r), // supplier_bg.xml radius
+                      ),
+                      child: Padding(
+                         padding: EdgeInsets.all(1.5.w), // android:layout_margin="@dimen/dimen_1_5"
+                         child: _buildImage(image),
+                      ),
+                    ),
               Padding(
                 padding: EdgeInsets.all(4.w),
                 child: Text(

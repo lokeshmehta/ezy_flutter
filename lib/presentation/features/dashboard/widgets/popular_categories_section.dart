@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/dashboard_provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'home_promotion_item_widget.dart';
 import 'section_header_widget.dart';
 
@@ -48,8 +49,7 @@ class _PopularCategoriesSectionState extends State<PopularCategoriesSection> {
 
         if (categories.isEmpty) return const SizedBox.shrink();
 
-        final double width = MediaQuery.of(context).size.width;
-        final double cardWidth = (width / 2) - 30;
+        final double cardWidth = (1.sw / 2) - 25.w;
 
         return Column(
           children: [
@@ -59,10 +59,10 @@ class _PopularCategoriesSectionState extends State<PopularCategoriesSection> {
               onNextTap: () => _scroll(true),
             ),
             SizedBox(
-              height: 200, 
+              height: 240.h, // Dynamic height
               child: ListView.builder(
                 controller: _scrollController,
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding: EdgeInsets.symmetric(horizontal: 10.w),
                 scrollDirection: Axis.horizontal,
                 itemCount: categories.length,
                 itemBuilder: (context, index) {

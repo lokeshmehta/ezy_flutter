@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../data/models/home_models.dart';
 import 'product_item_widget.dart';
 import 'section_header_widget.dart';
@@ -48,8 +49,7 @@ class _ProductListSectionState extends State<ProductListSection> {
       return const SizedBox.shrink();
     }
 
-    final double width = MediaQuery.of(context).size.width;
-    final double itemWidth = (width / 2) - 25;
+    final double itemWidth = (1.sw / 2) - 25.w;
 
     return Column(
       children: [
@@ -59,10 +59,10 @@ class _ProductListSectionState extends State<ProductListSection> {
           onNextTap: () => _scroll(true),
         ),
         SizedBox(
-          height: 250, // Height for ProductItem cards
+          height: 300.h, // Dynamic height
           child: ListView.builder(
             controller: _scrollController,
-            padding: const EdgeInsets.symmetric(horizontal: 10),
+            padding: EdgeInsets.symmetric(horizontal: 10.w),
             scrollDirection: Axis.horizontal,
             itemCount: widget.products!.length,
             itemBuilder: (context, index) {

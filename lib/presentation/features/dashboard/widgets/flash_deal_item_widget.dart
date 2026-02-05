@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/constants/app_theme.dart';
 import '../../../../core/constants/url_api_key.dart';
@@ -95,14 +96,14 @@ class _FlashDealItemWidgetState extends State<FlashDealItemWidget> {
       width: widget.width, // Usually wider than normal cards? Android uses match_parent in vertical list but inside dashboard it might be different.
       // FlashDealsProductsAdapter line 101 comment: width - 30. 
       // It seems mostly full width or large card.
-      margin: const EdgeInsets.only(right: 10, bottom: 5),
+      margin: EdgeInsets.only(right: 10.w, bottom: 5.h),
       child: Card(
         elevation: 2,
         color: Colors.white,
         child: InkWell(
           onTap: widget.onTap,
           child: Padding(
-            padding: const EdgeInsets.all(5.0),
+            padding: EdgeInsets.all(5.0.w),
             child: Row(
               children: [
                 // Left Side (Image & Info) - Weight 0.52
@@ -111,52 +112,52 @@ class _FlashDealItemWidgetState extends State<FlashDealItemWidget> {
                   child: Column(
                     children: [
                        SizedBox(
-                         height: 110,
+                         height: 110.h,
                          child: Stack(
                            children: [
                               Center(child: _buildImage(item.image)),
                               Positioned(
-                                left: 5, top: 5,
+                                left: 5.w, top: 5.h,
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+                                  padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 3.h),
                                   color: Colors.red,
-                                  child: const Text("Flash Deals", style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                                  child: Text("Flash Deals", style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold)),
                                 ),
                               )
                            ],
                          ),
                        ),
-                       const SizedBox(height: 5),
+                       SizedBox(height: 5.h),
                        
                        // Info
                        Column(
                          crossAxisAlignment: CrossAxisAlignment.start,
                          children: [
                             if (item.brandName != null)
-                             Text(item.brandName!, style: const TextStyle(color: Colors.grey, fontSize: 11)),
-                            Text(item.title ?? "", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13), maxLines: 2),
+                             Text(item.brandName!, style: TextStyle(color: Colors.grey, fontSize: 11.sp)),
+                            Text(item.title ?? "", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13.sp), maxLines: 2),
                             
                             // MOQ
                             if (item.minimumOrderQty != null && item.minimumOrderQty != "0")
-                             Text("MOQ : ${item.minimumOrderQty}", style: const TextStyle(color: Colors.red, fontSize: 12)),
+                             Text("MOQ : ${item.minimumOrderQty}", style: TextStyle(color: Colors.red, fontSize: 12.sp)),
                             
                             // Price
-                            const SizedBox(height: 5),
+                            SizedBox(height: 5.h),
                             // Flash Deal Logic: often has promotion
                             if (hasPromotion) ...[
-                               Text(_formatPrice(item.price), style: const TextStyle(decoration: TextDecoration.lineThrough, color: Colors.grey, fontSize: 12)),
+                               Text(_formatPrice(item.price), style: TextStyle(decoration: TextDecoration.lineThrough, color: Colors.grey, fontSize: 12.sp)),
                                Row(
                                  children: [
-                                   Text(_formatPrice(item.promotionPrice), style: const TextStyle(color: Colors.red, fontSize: 12)),
-                                   const SizedBox(width: 5),
-                                   Container(color: Colors.red, padding: const EdgeInsets.all(2), child: Text("-${_calculateDiscount(item.price, item.promotionPrice)}%", style: const TextStyle(color: Colors.white, fontSize: 8))),
+                                   Text(_formatPrice(item.promotionPrice), style: TextStyle(color: Colors.red, fontSize: 12.sp)),
+                                   SizedBox(width: 5.w),
+                                   Container(color: Colors.red, padding: EdgeInsets.all(2.w), child: Text("-${_calculateDiscount(item.price, item.promotionPrice)}%", style: TextStyle(color: Colors.white, fontSize: 8.sp))),
                                  ],
                                )
                             ] else 
-                               Text(_formatPrice(item.price), style: const TextStyle(color: AppTheme.textColor, fontSize: 13)),
+                               Text(_formatPrice(item.price), style: TextStyle(color: AppTheme.textColor, fontSize: 13.sp)),
 
                             // Add To Cart
-                            const SizedBox(height: 10),
+                            SizedBox(height: 10.h),
                             Row(
                               children: [
                                 Expanded(
@@ -164,15 +165,15 @@ class _FlashDealItemWidgetState extends State<FlashDealItemWidget> {
                                     onPressed: canAddToCart ? widget.onAddToCart : null,
                                     style: ElevatedButton.styleFrom(
                                         backgroundColor: canAddToCart ? AppTheme.tealColor : Colors.red,
-                                        minimumSize: const Size(0, 30)
+                                        minimumSize: Size(0, 30.h)
                                     ),
-                                    child: Text(isOutOfStock ? "Out Of Stock" : "Add To Cart", style: const TextStyle(fontSize: 10, color: Colors.white)),
+                                    child: Text(isOutOfStock ? "Out Of Stock" : "Add To Cart", style: TextStyle(fontSize: 10.sp, color: Colors.white)),
                                   ),
                                 ),
-                                const SizedBox(width: 5),
+                                SizedBox(width: 5.w),
                                 InkWell(
                                   onTap: widget.onFavorite,
-                                  child: Icon(item.isFavourite == "Yes" ? Icons.favorite : Icons.favorite_border, color: Colors.grey),
+                                  child: Icon(item.isFavourite == "Yes" ? Icons.favorite : Icons.favorite_border, color: Colors.grey, size: 24.sp),
                                 )
                               ],
                             )
@@ -183,7 +184,7 @@ class _FlashDealItemWidgetState extends State<FlashDealItemWidget> {
                 ),
                 
                 // Right Side (Timer & Stock) - Weight 0.48
-                const SizedBox(width: 5),
+                SizedBox(width: 5.w),
                 Expanded(
                   flex: 48,
                   child: Column(
@@ -193,20 +194,20 @@ class _FlashDealItemWidgetState extends State<FlashDealItemWidget> {
                         Container(
                           width: double.infinity,
                           color: AppTheme.tealColor,
-                          padding: const EdgeInsets.all(5),
-                          child: Text(item.soldAs!, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 10)),
+                          padding: EdgeInsets.all(5.w),
+                          child: Text(item.soldAs!, textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontSize: 10.sp)),
                         ),
-                       const SizedBox(height: 20),
+                       SizedBox(height: 20.h),
                        
                        // Availability
-                       const Text("Availability :", style: TextStyle(color: Colors.grey, fontSize: 14)),
-                       Text("${item.availableStockQty} In Stock", style: const TextStyle(color: AppTheme.tealColor, fontSize: 14, fontWeight: FontWeight.bold)),
+                       Text("Availability :", style: TextStyle(color: Colors.grey, fontSize: 14.sp)),
+                       Text("${item.availableStockQty} In Stock", style: TextStyle(color: AppTheme.tealColor, fontSize: 14.sp, fontWeight: FontWeight.bold)),
                        
-                       const SizedBox(height: 10),
-                       const Text("Hurry Up!\nOffers ends in :", textAlign: TextAlign.center, style: TextStyle(color: Colors.grey, fontSize: 14)),
+                       SizedBox(height: 10.h),
+                       Text("Hurry Up!\nOffers ends in :", textAlign: TextAlign.center, style: TextStyle(color: Colors.grey, fontSize: 14.sp)),
                        
                        // Timer
-                       const SizedBox(height: 10),
+                       SizedBox(height: 10.h),
                        Row(
                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                          children: [
@@ -230,8 +231,8 @@ class _FlashDealItemWidgetState extends State<FlashDealItemWidget> {
   Widget _buildTimerBox(String value, String label) {
     return Column(
       children: [
-        Text("$value :", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-        Text(label, style: const TextStyle(fontSize: 8, color: Colors.grey)),
+        Text("$value :", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.sp)),
+        Text(label, style: TextStyle(fontSize: 8.sp, color: Colors.grey)),
       ],
     );
   }

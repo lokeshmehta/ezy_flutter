@@ -2,6 +2,7 @@ import 'package:ezy_orders_flutter/presentation/features/dashboard/widgets/secti
 import 'package:ezy_orders_flutter/presentation/features/dashboard/widgets/supplier_item_widget.dart';
 import 'package:ezy_orders_flutter/presentation/providers/dashboard_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 class SuppliersSection extends StatefulWidget {
@@ -52,10 +53,10 @@ class _SuppliersSectionState extends State<SuppliersSection> {
               onNextTap: () => _scroll(true),
             ),
             SizedBox(
-              height: 180, // Same height as Android layout
+              height: 220.h, // Dynamic height
               child: ListView.builder(
                 controller: _scrollController,
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding: EdgeInsets.symmetric(horizontal: 10.w),
                 scrollDirection: Axis.horizontal,
                 itemCount: suppliers.length,
                 itemBuilder: (context, index) {

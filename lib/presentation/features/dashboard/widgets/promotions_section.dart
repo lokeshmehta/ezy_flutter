@@ -3,7 +3,8 @@ import 'package:provider/provider.dart';
 import '../../../providers/dashboard_provider.dart';
 import 'home_promotion_item_widget.dart';
 import 'section_header_widget.dart';
-import 'package:intl/intl.dart'; // Identify if intl is available or use basic split
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart'; 
 
 class PromotionsSection extends StatefulWidget {
   const PromotionsSection({super.key});
@@ -54,8 +55,7 @@ class _PromotionsSectionState extends State<PromotionsSection> {
         }
 
         final promotions = response.results!;
-        final double width = MediaQuery.of(context).size.width;
-        final double cardWidth = (width / 2) - 30;
+        final double cardWidth = (1.sw / 2) - 25.w;
 
         return Column(
           children: [
@@ -65,10 +65,10 @@ class _PromotionsSectionState extends State<PromotionsSection> {
               onNextTap: () => _scroll(true),
             ),
             SizedBox(
-              height: 200, // 120 image + text + shop now
+              height: 240.h, // Dynamic height
               child: ListView.builder(
                 controller: _scrollController,
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding: EdgeInsets.symmetric(horizontal: 10.w),
                 scrollDirection: Axis.horizontal,
                 itemCount: promotions.length,
                 itemBuilder: (context, index) {

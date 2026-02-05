@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/app_theme.dart';
 
 class SectionHeaderWidget extends StatelessWidget {
@@ -18,14 +19,14 @@ class SectionHeaderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+      padding: EdgeInsets.symmetric(horizontal: 15.0.w, vertical: 10.0.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 16,
+            style: TextStyle(
+              fontSize: 16.sp,
               fontWeight: FontWeight.bold,
               color: AppTheme.textColor,
             ),
@@ -38,7 +39,7 @@ class SectionHeaderWidget extends StatelessWidget {
                     icon: Icons.arrow_back_ios_new,
                     onTap: onPrevTap!,
                   ),
-                const SizedBox(width: 10),
+                SizedBox(width: 10.w),
                 if (onNextTap != null)
                   _buildNavButton(
                     icon: Icons.arrow_forward_ios,
@@ -54,10 +55,10 @@ class SectionHeaderWidget extends StatelessWidget {
   Widget _buildNavButton({required IconData icon, required VoidCallback onTap}) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(20.r),
       child: Container(
-        width: 36,
-        height: 36,
+        width: 36.w,
+        height: 36.w,
         decoration: const BoxDecoration(
           color: Color(0xFFFCBD5F), // Orange/Amber from screenshot
           shape: BoxShape.circle,
@@ -65,7 +66,7 @@ class SectionHeaderWidget extends StatelessWidget {
         child: Center(
           child: Icon(
             icon,
-            size: 16,
+            size: 16.sp,
             color: Colors.white,
           ),
         ),
