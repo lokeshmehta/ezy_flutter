@@ -35,13 +35,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _buildNetworkImage(String? path, {BoxFit fit = BoxFit.cover}) {
     final url = _getImageUrl(path);
     if (url.isEmpty) {
-      return Image.asset(AppAssets.placeholder, fit: fit); 
+      return Image.asset(
+        AppAssets.placeholder,
+        fit: fit,
+        errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, color: Colors.grey),
+      ); 
     }
     return CachedNetworkImage(
       imageUrl: url,
       fit: fit,
-      errorWidget: (context, url, error) => Image.asset(AppAssets.placeholder, fit: fit),
-       placeholder: (context, url) => Container(color: Colors.grey[200]),
+      errorWidget: (context, url, error) => Image.asset(
+        AppAssets.placeholder,
+        fit: fit,
+        errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, color: Colors.grey),
+      ),
+      placeholder: (context, url) => Container(color: Colors.grey[200]),
     );
   }
 
