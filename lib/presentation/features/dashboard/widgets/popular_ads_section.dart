@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../providers/dashboard_provider.dart';
 import 'dashboard_banner_item_widget.dart';
+import 'section_header_widget.dart';
 
 class PopularAdsSection extends StatelessWidget {
   const PopularAdsSection({super.key});
@@ -19,24 +21,16 @@ class PopularAdsSection extends StatelessWidget {
 
         return Column(
           children: [
-            // Header? Android does not show header for Popular Ads, it just shows list?
-            // DashboardActivity.kt: Line 1851: updatelist("Popular Ads")
-            // updatelist sets adapter.
-            // XML: popularAdsRv.
-            // No header visible in layout_dashboard.xml for popularAdsRv explicitly?
-            // Actually, there is `popular_ads_lay` which contains `popularAdsRv`.
-            // Does it have a header?
-            // Checking activity_dashboard.xml...
-            // Lay 1160: popularAdsRv inside LinearLayout. No TextView header nearby.
-            // BannerslistAdapter sets "Popular Ads" as tagline? No, BannerslistAdapter is simple.
-            // BannerslistAdapter_two (Suppliers) has "Supplier Logos".
-            // Popular ads usually just banners.
-            // I will omit header unless verification shows otherwise.
-            
+            SectionHeaderWidget(
+              title: "Popular Ads",
+              showNavButtons: true, // Show arrows if more than 1
+              onPrevTap: () {}, // Implement scroll logic if needed
+              onNextTap: () {},
+            ),
             SizedBox(
-              height: 220, 
+              height: 180.h, // Adjusted to match design
               child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding: EdgeInsets.symmetric(horizontal: 10.w),
                 scrollDirection: Axis.horizontal,
                 itemCount: items.length,
                 itemBuilder: (context, index) {

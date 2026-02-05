@@ -106,13 +106,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
       key: _scaffoldKey,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.menu),
+          icon: Icon(Icons.menu_rounded, size: 24.sp, weight: 300), // Thinner menu icon
           onPressed: () => _scaffoldKey.currentState?.openDrawer(),
         ),
-        title: Image.asset(AppAssets.headerLogo, height: 40),
+        title: Image.asset(AppAssets.headerLogo, height: 36.h),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications),
+            icon: Icon(Icons.notifications_none_rounded, size: 24.sp, weight: 300), // Thinner notification icon
             onPressed: () {},
           ),
         ],
@@ -274,11 +274,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget _buildMarquee(DashboardProvider provider) {
      return Container(
-       color: Colors.yellow[100],
-       padding: EdgeInsets.all(10.w),
+       color: const Color(0xFFFFF1F1), // Very pale pink/white matching Image 2
+       width: double.infinity,
+       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
        child: Text(
          "Welcome to the EZY Orders",
-         style: TextStyle(color: Colors.red, fontStyle: FontStyle.italic, fontSize: 16.sp),
+         style: TextStyle(
+           color: Colors.red, 
+           fontWeight: FontWeight.normal, 
+           fontSize: 12.sp
+         ),
        ),
      );
   }
@@ -290,7 +295,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
      return Column(
        children: [
          SizedBox(
-           height: 220.h,
+           height: 180.h, // Adjusted height to match compact look
            child: PageView.builder(
              controller: _bannerController,
              onPageChanged: (index) {
@@ -302,79 +307,95 @@ class _DashboardScreenState extends State<DashboardScreen> {
              itemBuilder: (context, index) {
                 final banner = provider.bannersResponse!.results![index];
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 0.0), // Android had margins, but let's check visual
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                       _buildNetworkImage(banner?.image, fit: BoxFit.fill),
-                       Container( // Dark overlay for text readability if needed, or just layout
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [Colors.transparent, Color.fromRGBO(0, 0, 0, 0.3)],
-                            ),
-                          ),
-                       ),
-                       Positioned(
-                         bottom: 20,
-                         left: 20,
-                         right: 20,
-                         child: Column(
-                           crossAxisAlignment: CrossAxisAlignment.start, 
-                           mainAxisSize: MainAxisSize.min,
-                           children: [
-                             if (banner?.topCaption != null && banner!.topCaption!.isNotEmpty)
-                               Text(
-                                 banner.topCaption!,
-                                 style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-                               ),
-                             if (banner?.name != null && banner!.name!.isNotEmpty)
-                               Text(
-                                 banner.name!, // Android uses Html.fromHtml
-                                 style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold), 
-                               ),
-                              if (banner?.bottomCaption != null && banner!.bottomCaption!.isNotEmpty)
-                               Text(
-                                 banner.bottomCaption!,
-                                 style: TextStyle(color: Colors.white, fontSize: 14.sp),
-                               ),
-                              SizedBox(height: 10.h),
-                              ElevatedButton(
-                                onPressed: () {
-                                  // Handle Shop Now Click matching Android Logic
-                                  // CommonMethods.groupIDs = banner.groupId
-                                  // CommonMethods.categoryIDs = banner.divisionId
-                                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Shop Now: ${banner?.name}")));
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppTheme.secondaryColor, // Verify Color
-                                  foregroundColor: Colors.white,
-                                ),
-                                child: const Text("SHOP NOW"),
-                              )
-                           ],
-                         ),
-                       )
-                    ],
+                  padding: EdgeInsets.symmetric(horizontal: 10.w), // Matches Image 2 side margins
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8.r),
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                         _buildNetworkImage(banner?.image, fit: BoxFit.fill),
+                         // Overlay Card (Bottom Left)
+                         Positioned(
+                           bottom: 15.h,
+                           left: 15.w,
+                           child: Container(
+                             width: 140.w, // Approximate width from screenshot
+                             padding: EdgeInsets.all(12.w),
+                             decoration: BoxDecoration(
+                               color: Colors.white,
+                               borderRadius: BorderRadius.circular(10.r),
+                               boxShadow: [
+                                 BoxShadow(
+                                   color: Colors.black.withValues(alpha: 0.1),
+                                   blurRadius: 10,
+                                   offset: const Offset(0, 5),
+                                 )
+                               ],
+                             ),
+                             child: Column(
+                               crossAxisAlignment: CrossAxisAlignment.start, 
+                               mainAxisSize: MainAxisSize.min,
+                               children: [
+                                 if (banner?.topCaption != null && banner!.topCaption!.isNotEmpty)
+                                   Text(
+                                     banner.topCaption!,
+                                     style: TextStyle(color: Colors.grey, fontSize: 10.sp),
+                                   ),
+                                 Text(
+                                   banner?.name ?? "",
+                                   style: TextStyle(
+                                     color: Colors.black, 
+                                     fontSize: 13.sp, 
+                                     fontWeight: FontWeight.bold
+                                   ),
+                                   maxLines: 1,
+                                   overflow: TextOverflow.ellipsis,
+                                 ),
+                                 SizedBox(height: 8.h),
+                                 InkWell(
+                                   onTap: () {
+                                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Shop Now: ${banner?.name}")));
+                                   },
+                                   child: Container(
+                                     padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                                     decoration: BoxDecoration(
+                                       color: const Color(0xFFFCBD5F), // Orange color
+                                       borderRadius: BorderRadius.circular(20.r),
+                                     ),
+                                     child: Text(
+                                       "SHOP NOW",
+                                       style: TextStyle(
+                                         color: Colors.white, 
+                                         fontSize: 10.sp, 
+                                         fontWeight: FontWeight.bold
+                                       ),
+                                     ),
+                                   ),
+                                 )
+                               ],
+                             ),
+                           ),
+                         )
+                      ],
+                    ),
                   ),
                 );
              },
            ),
          ),
-         const SizedBox(height: 10),
+         SizedBox(height: 8.h),
          DotsIndicator(
            dotsCount: provider.bannersResponse!.results!.length,
            position: _currentBannerIndex,
            decorator: DotsDecorator(
-             size: Size.square(9.0.w),
-             activeSize: Size(18.0.w, 9.0.w),
-             activeShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0.r)),
-             activeColor: AppTheme.primaryColor,
-             color: Colors.grey.withValues(alpha: 0.5),
+             size: Size.square(6.0.w), // Smaller dots
+             activeSize: Size(12.0.w, 6.0.w), // Ellipse for active
+             activeShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3.0.r)),
+             activeColor: const Color(0xFF1B4E9B), // Dark blue from Image 2
+             color: Colors.grey.withValues(alpha: 0.3),
            ),
          ),
-         const SizedBox(height: 10),
+         SizedBox(height: 10.h),
        ],
      );
   }
@@ -440,14 +461,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _buildBottomNav() {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
-      selectedItemColor: AppTheme.primaryColor,
+      selectedItemColor: const Color(0xFF1B4E9B), // Dark blue
       unselectedItemColor: Colors.grey,
-      currentIndex: 0, // Always home for Dashboard
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-        BottomNavigationBarItem(icon: Icon(Icons.list_alt), label: "Order Now"),
-        BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: "My Cart"),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: "My Account"),
+      currentIndex: 0,
+      selectedLabelStyle: TextStyle(fontSize: 10.sp),
+      unselectedLabelStyle: TextStyle(fontSize: 10.sp),
+      items: [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home_outlined, size: 24.sp),
+          activeIcon: Icon(Icons.home, size: 24.sp),
+          label: "Home"
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.list_alt_outlined, size: 24.sp),
+          label: "Order Now"
+        ),
+        BottomNavigationBarItem(
+          icon: Badge(
+            label: Text("1", style: TextStyle(fontSize: 8.sp)),
+            backgroundColor: Colors.red,
+            child: Icon(Icons.shopping_cart_outlined, size: 24.sp),
+          ),
+          label: "My Cart"
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person_outline, size: 24.sp),
+          label: "My Account"
+        ),
       ],
       onTap: (index) {
         switch (index) {

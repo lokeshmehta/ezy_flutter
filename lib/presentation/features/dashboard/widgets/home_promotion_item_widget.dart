@@ -49,23 +49,23 @@ class HomePromotionItemWidget extends StatelessWidget {
                 // Title
                 Text(
                   title,
-                  maxLines: 2,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: 14.sp, // _13sdp approx
+                    fontSize: 12.sp,
                     fontWeight: FontWeight.bold,
                     color: AppTheme.textColor,
                   ),
                 ),
                 
                 // Subtitle (Date or Count)
-                SizedBox(height: 5.h),
+                SizedBox(height: 2.h),
                 Text(
                   subtitle,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: 12.sp,
+                    fontSize: 10.sp,
                     color: Colors.grey,
                   ),
                 ),
@@ -73,20 +73,18 @@ class HomePromotionItemWidget extends StatelessWidget {
                 // Shop Now Section
                 const Spacer(),
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
                       "Shop Now",
                       style: TextStyle(
-                        fontSize: 14.sp, // _13sdp
-                        color: Colors.blue, // @color/blue
-                        fontWeight: FontWeight.bold,
+                        fontSize: 11.sp,
+                        color: Colors.blue,
+                        fontWeight: FontWeight.normal,
                       ),
                     ),
-                    SizedBox(width: 3.w),
-                    Transform.rotate(
-                       angle: -1.5708, // 270 degrees in radians (Android rotation="270")
-                       child: Icon(Icons.arrow_drop_down, color: Colors.blue, size: 16.sp),
-                    )
+                    SizedBox(width: 2.w),
+                    Icon(Icons.arrow_forward_ios, color: Colors.blue, size: 8.sp),
                   ],
                 ),
                 SizedBox(height: 5.h),

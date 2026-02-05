@@ -43,7 +43,7 @@ class ProductItemWidget extends StatelessWidget {
       width: width,
       margin: EdgeInsets.only(right: 10.w, bottom: 5.h),
       child: Card(
-        elevation: 2,
+        elevation: 1,
         color: Colors.white,
         margin: EdgeInsets.zero,
         child: InkWell(
@@ -53,34 +53,46 @@ class ProductItemWidget extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Sold As (Teal Banner)
-                // Placeholder: If 'soldAs' exists and is relevant. 
-                // Android uses a card view for this.
+                // Unit Header (Orange Bar)
                 if (item.soldAs != null && item.soldAs!.isNotEmpty)
                    Container(
                      width: double.infinity,
-                     color: AppTheme.tealColor, // Needs AppTheme.tealColor
-                     padding: EdgeInsets.all(5.w),
-                     margin: EdgeInsets.only(bottom: 5.h),
+                     height: 24.h,
+                     decoration: BoxDecoration(
+                        color: const Color(0xFFFCBD5F), // Orange bar from Image 2
+                     ),
+                     alignment: Alignment.center,
                      child: Text(
-                       item.soldAs!, // Complicated logic for units in Android
-                       textAlign: TextAlign.center,
-                       style: TextStyle(color: Colors.white, fontSize: 12.sp),
+                       item.soldAs ?? "Carton",
+                       style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold),
                      ),
                    ),
 
-                // Image Layer (FrameLayout in Android)
+                // Image Layer
                 Stack(
                   children: [
                      Container(
-                        height: 120.h,
+                        height: 100.h,
                         width: double.infinity,
                         alignment: Alignment.center,
                         child: _buildImage(item.image),
                      ),
-                     // Tagline (Top Right) "Hot Selling" etc.
-                     // Android sets this dynamically based on category.
-                     // We can pass `tagline` as param if needed. 
+                     // Red Status Badge (Top Left)
+                     Positioned(
+                       top: 0,
+                       left: 0,
+                       child: Container(
+                         padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                         decoration: BoxDecoration(
+                           color: Colors.red,
+                           borderRadius: BorderRadius.only(bottomRight: Radius.circular(8.r)),
+                         ),
+                         child: Text(
+                           "Best Seller", // Example status
+                           style: TextStyle(color: Colors.white, fontSize: 9.sp, fontWeight: FontWeight.bold),
+                         ),
+                       ),
+                     ),
                   ],
                 ),
 
@@ -103,7 +115,7 @@ class ProductItemWidget extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                       color: AppTheme.textColor, 
-                      fontSize: 13.sp, 
+                      fontSize: 12.sp, 
                       fontWeight: FontWeight.bold
                   ),
                 ),
@@ -158,35 +170,33 @@ class ProductItemWidget extends StatelessWidget {
                 SizedBox(height: 5.h),
 
                 // Add To Cart & Fav
-                SizedBox(height: 10.h),
+                SizedBox(height: 8.h),
                 Row(
                   children: [
-                    // Quantity Counter (Hidden by default in Android unless logic triggers? 
-                    // Android layout has `dashCartLay` visibility gone by default, shown based on logic)
-                    // For now, mirroring "Add To Cart" button.
-                    
                     Expanded(
-                      child: ElevatedButton(
-                        onPressed: canAddToCart ? onAddToCart : null,
-                        style: ElevatedButton.styleFrom(
-                           backgroundColor: canAddToCart ? AppTheme.tealColor : Colors.red,
-                           minimumSize: Size(0, 30.h),
-                           padding: EdgeInsets.symmetric(horizontal: 5.w),
-                        ),
-                        child: Text(
-                           isOutOfStock ? "Out Of Stock" : (item.addedToCart == "Yes" ? "Update Cart [${item.addedQty}]" : "Add To Cart"),
-                           style: TextStyle(fontSize: 11.sp, color: Colors.white),
-                           maxLines: 1,
+                      child: InkWell(
+                        onTap: canAddToCart ? onAddToCart : null,
+                        child: Container(
+                          height: 30.h,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: canAddToCart ? const Color(0xFFFCBD5F) : Colors.red[300],
+                            borderRadius: BorderRadius.circular(20.r),
+                          ),
+                          child: Text(
+                             isOutOfStock ? "OUT OF STOCK" : "ADD TO CART",
+                             style: TextStyle(fontSize: 10.sp, color: Colors.white, fontWeight: FontWeight.bold),
+                          ),
                         ),
                       ),
                     ),
-                    SizedBox(width: 5.w),
+                    SizedBox(width: 8.w),
                     InkWell(
                       onTap: onFavorite,
                       child: Icon(
                         item.isFavourite == "Yes" ? Icons.favorite : Icons.favorite_border,
-                        color: Colors.grey, // Check Android tint
-                        size: 24.sp,
+                        color: Colors.grey,
+                        size: 22.sp,
                       ),
                     )
                   ],
@@ -203,10 +213,10 @@ class ProductItemWidget extends StatelessWidget {
   }
 
   String _formatPrice(String? price) {
-    if (price == null) return "\$0.00";
+    if (price == null) return "AUD 0.00";
     double? p = double.tryParse(price);
-    if (p == null) return "\$0.00";
-    return "\$${p.toStringAsFixed(2)}";
+    if (p == null) return "AUD 0.00";
+    return "AUD ${p.toStringAsFixed(2)}";
   }
 
   String _calculateDiscount(String? original, String? promo) {

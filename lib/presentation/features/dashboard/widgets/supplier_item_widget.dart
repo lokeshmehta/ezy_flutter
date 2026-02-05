@@ -64,16 +64,16 @@ class SupplierItemWidget extends StatelessWidget {
                       ),
                     ),
               Padding(
-                padding: EdgeInsets.all(4.w),
+                padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 8.h),
                 child: Text(
                   brandName ?? "",
                   textAlign: TextAlign.center,
-                  maxLines: 2,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    color: AppTheme.textColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13.sp, // textSize="@dimen/_13sdp"
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.normal,
+                    fontSize: 10.sp, 
                   ),
                 ),
               ),

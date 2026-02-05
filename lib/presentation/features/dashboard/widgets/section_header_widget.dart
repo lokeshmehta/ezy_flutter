@@ -19,14 +19,14 @@ class SectionHeaderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 15.0.w, vertical: 10.0.h),
+      padding: EdgeInsets.symmetric(horizontal: 15.0.w, vertical: 5.0.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             title,
             style: TextStyle(
-              fontSize: 16.sp,
+              fontSize: 14.sp,
               fontWeight: FontWeight.bold,
               color: AppTheme.textColor,
             ),
