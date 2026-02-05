@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/dashboard_provider.dart';
-import '../../../core/constants/app_theme.dart';
+import '../../../config/theme/app_theme.dart';
 import '../../../core/constants/assets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -29,7 +29,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   String _getImageUrl(String? path) {
     if (path == null || path.isEmpty) return "";
     if (path.startsWith("http") || path.startsWith("https")) return path;
-    return "${UrlApiKey.companyMainUrl}$path";
+    return "${UrlApiKey.mainUrl}$path";
   }
 
   Widget _buildNetworkImage(String? path, {BoxFit fit = BoxFit.cover}) {
@@ -241,7 +241,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           builder: (context, provider, _) { 
               final profile = provider.profileResponse?.results?.isNotEmpty == true ? provider.profileResponse!.results![0] : null;
               return Container(
-                 color: AppTheme.tealColor, // @color/tealcolor
+                 color: AppTheme.secondaryColor, // @color/tealcolor
                  padding: const EdgeInsets.all(20),
                  child: Column(
                    crossAxisAlignment: CrossAxisAlignment.start,
@@ -295,14 +295,68 @@ class _DashboardScreenState extends State<DashboardScreen> {
        return const SizedBox.shrink();
      }
      return SizedBox(
-       height: 200,
+       height: 220,
        child: PageView.builder(
          itemCount: provider.bannersResponse!.results!.length,
          itemBuilder: (context, index) {
             final banner = provider.bannersResponse!.results![index];
             return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _buildNetworkImage(banner?.image),
+              padding: const EdgeInsets.symmetric(horizontal: 0.0), // Android had margins, but let's check visual
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                   _buildNetworkImage(banner?.image, fit: BoxFit.fill),
+                   Container( // Dark overlay for text readability if needed, or just layout
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [Colors.transparent, Color.fromRGBO(0, 0, 0, 0.3)],
+                        ),
+                      ),
+                   ),
+                   Positioned(
+                     bottom: 20,
+                     left: 20,
+                     right: 20,
+                     child: Column(
+                       crossAxisAlignment: CrossAxisAlignment.start, 
+                       mainAxisSize: MainAxisSize.min,
+                       children: [
+                         if (banner?.topCaption != null && banner!.topCaption!.isNotEmpty)
+                           Text(
+                             banner.topCaption!,
+                             style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                           ),
+                         if (banner?.name != null && banner!.name!.isNotEmpty)
+                           Text(
+                             banner.name!, // Android uses Html.fromHtml
+                             style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold), 
+                           ),
+                          if (banner?.bottomCaption != null && banner!.bottomCaption!.isNotEmpty)
+                           Text(
+                             banner.bottomCaption!,
+                             style: const TextStyle(color: Colors.white, fontSize: 14),
+                           ),
+                          const SizedBox(height: 10),
+                          ElevatedButton(
+                            onPressed: () {
+                              // Handle Shop Now Click matching Android Logic
+                              // CommonMethods.groupIDs = banner.groupId
+                              // CommonMethods.categoryIDs = banner.divisionId
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Shop Now: ${banner?.name}")));
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppTheme.secondaryColor, // Verify Color
+                              foregroundColor: Colors.white,
+                            ),
+                            child: const Text("SHOP NOW"),
+                          )
+                       ],
+                     ),
+                   )
+                ],
+              ),
             );
          },
        ),

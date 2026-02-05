@@ -29,6 +29,7 @@ class BannerItem {
   String? productId; // product_id
   String? sortOrder; // sort_order
   String? externalLink; // external_link
+  String? products; // products
 
   BannerItem({
     this.bannerId,
@@ -42,6 +43,7 @@ class BannerItem {
     this.productId,
     this.sortOrder,
     this.externalLink,
+    this.products,
   });
 
   factory BannerItem.fromJson(Map<String, dynamic> json) {
@@ -57,6 +59,7 @@ class BannerItem {
       productId: json['product_id']?.toString(),
       sortOrder: json['sort_order']?.toString(),
       externalLink: json['external_link']?.toString(),
+      products: json['products']?.toString(),
     );
   }
 }
