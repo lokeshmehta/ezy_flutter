@@ -4,8 +4,34 @@ import '../../../providers/dashboard_provider.dart';
 import 'home_promotion_item_widget.dart';
 import 'section_header_widget.dart';
 
-class PopularCategoriesSection extends StatelessWidget {
+class PopularCategoriesSection extends StatefulWidget {
   const PopularCategoriesSection({super.key});
+
+  @override
+  State<PopularCategoriesSection> createState() => _PopularCategoriesSectionState();
+}
+
+class _PopularCategoriesSectionState extends State<PopularCategoriesSection> {
+  final ScrollController _scrollController = ScrollController();
+
+  void _scroll(bool forward) {
+    const double scrollAmount = 250;
+    final double target = forward 
+        ? _scrollController.offset + scrollAmount 
+        : _scrollController.offset - scrollAmount;
+    
+    _scrollController.animateTo(
+      target.clamp(0.0, _scrollController.position.maxScrollExtent),
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,8 +42,6 @@ class PopularCategoriesSection extends StatelessWidget {
           return const SizedBox.shrink();
         }
 
-        // Filtering based on count != 0 is done in Android (Activity Line 1187)
-        // datalist.results.get(i)?.category_products_count!!.toString().equals("0") check
         final categories = response.results!.where((item) {
            return item != null && item.categoryProductsCount != "0";
         }).toList();
@@ -31,12 +55,13 @@ class PopularCategoriesSection extends StatelessWidget {
           children: [
             SectionHeaderWidget(
               title: "Popular Categories",
-              onPrevTap: () {},
-              onNextTap: () {},
+              onPrevTap: () => _scroll(false),
+              onNextTap: () => _scroll(true),
             ),
             SizedBox(
               height: 200, 
               child: ListView.builder(
+                controller: _scrollController,
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 scrollDirection: Axis.horizontal,
                 itemCount: categories.length,
@@ -50,7 +75,6 @@ class PopularCategoriesSection extends StatelessWidget {
                    return HomePromotionItemWidget(
                      imageUrl: item.image,
                      title: item.groupLevel1 ?? item.popularCategory ?? "", 
-                     // Android maps group_level_1 to name (Activity Line 1192)
                      subtitle: subtitle,
                      width: cardWidth,
                      onTap: () {

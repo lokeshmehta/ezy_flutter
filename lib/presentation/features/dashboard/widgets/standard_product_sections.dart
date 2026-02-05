@@ -15,16 +15,11 @@ class BestSellersSection extends StatelessWidget {
           return const SizedBox.shrink();
         }
 
-        final items = response.results!.where((i) => i != null).map((i) => i!).toList();
+
 
         return ProductListSection(
           title: "Best Sellers",
-          items: items,
-          onTap: (item) {
-             // Navigation to Product Details
-          },
-          onAddToCart: (item) {},
-          onFavorite: (item) {},
+          products: provider.bestSellersResponse?.results,
         );
       },
     );
@@ -43,14 +38,11 @@ class NewArrivalsSection extends StatelessWidget {
           return const SizedBox.shrink();
         }
 
-        final items = response.results!.where((i) => i != null).map((i) => i!).toList();
+
 
         return ProductListSection(
           title: "New Arrivals",
-          items: items,
-          onTap: (item) {},
-          onAddToCart: (item) {},
-          onFavorite: (item) {},
+          products: provider.newArrivalsResponse?.results,
         );
       },
     );
@@ -69,14 +61,11 @@ class HotSellingSection extends StatelessWidget {
           return const SizedBox.shrink();
         }
 
-        final items = response.results!.where((i) => i != null).map((i) => i!).toList();
+
 
         return ProductListSection(
           title: "Hot Selling",
-          items: items,
-          onTap: (item) {},
-          onAddToCart: (item) {},
-          onFavorite: (item) {},
+          products: provider.hotSellingResponse?.results,
         );
       },
     );
@@ -95,14 +84,11 @@ class RecentlyAddedSection extends StatelessWidget {
           return const SizedBox.shrink();
         }
 
-        final items = response.results!.where((i) => i != null).map((i) => i!).toList();
+
 
         return ProductListSection(
           title: "Recently Added",
-          items: items,
-          onTap: (item) {},
-          onAddToCart: (item) {},
-          onFavorite: (item) {},
+          products: provider.recentlyAddedResponse?.results,
         );
       },
     );

@@ -3,50 +3,78 @@ import '../../../../data/models/home_models.dart';
 import 'product_item_widget.dart';
 import 'section_header_widget.dart';
 
-class ProductListSection extends StatelessWidget {
+class ProductListSection extends StatefulWidget {
   final String title;
-  final List<ProductItem> items;
-  final Function(ProductItem) onTap;
-  final Function(ProductItem) onAddToCart;
-  final Function(ProductItem) onFavorite;
+  final List<ProductItem?>? products;
+  final VoidCallback? onSeeAll;
 
   const ProductListSection({
     super.key,
     required this.title,
-    required this.items,
-    required this.onTap,
-    required this.onAddToCart,
-    required this.onFavorite,
+    required this.products,
+    this.onSeeAll,
   });
 
   @override
-  Widget build(BuildContext context) {
-    if (items.isEmpty) return const SizedBox.shrink();
+  State<ProductListSection> createState() => _ProductListSectionState();
+}
 
-    final width = MediaQuery.of(context).size.width;
-    final itemWidth = (width / 2) - 30;
+class _ProductListSectionState extends State<ProductListSection> {
+  final ScrollController _scrollController = ScrollController();
+
+  void _scroll(bool forward) {
+    if (!_scrollController.hasClients) return;
+    const double scrollAmount = 300;
+    final double target = forward 
+        ? _scrollController.offset + scrollAmount 
+        : _scrollController.offset - scrollAmount;
+    
+    _scrollController.animateTo(
+      target.clamp(0.0, _scrollController.position.maxScrollExtent),
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.products == null || widget.products!.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final double width = MediaQuery.of(context).size.width;
+    final double itemWidth = (width / 2) - 25;
 
     return Column(
       children: [
         SectionHeaderWidget(
-          title: title,
-          onPrevTap: () {},
-          onNextTap: () {},
+          title: widget.title,
+          onPrevTap: () => _scroll(false),
+          onNextTap: () => _scroll(true),
         ),
         SizedBox(
-          height: 270, // Estimate height: 120 img + text + price + button ~ 250-270
+          height: 250, // Height for ProductItem cards
           child: ListView.builder(
+            controller: _scrollController,
             padding: const EdgeInsets.symmetric(horizontal: 10),
             scrollDirection: Axis.horizontal,
-            itemCount: items.length,
+            itemCount: widget.products!.length,
             itemBuilder: (context, index) {
-              final item = items[index];
+              final product = widget.products![index];
+              if (product == null) return const SizedBox.shrink();
+
               return ProductItemWidget(
-                item: item,
+                item: product,
                 width: itemWidth,
-                onTap: () => onTap(item),
-                onAddToCart: () => onAddToCart(item),
-                onFavorite: () => onFavorite(item),
+                onTap: () {
+                   // Navigate to Product Details
+                },
               );
             },
           ),

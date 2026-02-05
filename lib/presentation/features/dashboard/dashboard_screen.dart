@@ -16,6 +16,8 @@ import 'widgets/flash_deals_section.dart';
 import 'widgets/popular_ads_section.dart';
 import 'widgets/standard_product_sections.dart';
 import '../products/products_list_screen.dart';
+import 'package:dots_indicator/dots_indicator.dart';
+import 'dart:async';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -26,13 +28,43 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  late PageController _bannerController;
+  Timer? _bannerTimer;
+  int _currentBannerIndex = 0;
 
   @override
   void initState() {
     super.initState();
+    _bannerController = PageController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<DashboardProvider>().init();
+      _startBannerTimer();
     });
+  }
+
+  void _startBannerTimer() {
+    _bannerTimer?.cancel();
+    _bannerTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      final provider = context.read<DashboardProvider>();
+      if (provider.bannersResponse?.results != null && provider.bannersResponse!.results!.isNotEmpty) {
+        int nextIndex = _currentBannerIndex + 1;
+        if (nextIndex >= provider.bannersResponse!.results!.length) {
+          nextIndex = 0;
+        }
+        _bannerController.animateToPage(
+          nextIndex,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _bannerTimer?.cancel();
+    _bannerController.dispose();
+    super.dispose();
   }
 
   String _getImageUrl(String? path) {
@@ -254,72 +286,95 @@ class _DashboardScreenState extends State<DashboardScreen> {
      if (provider.bannersResponse?.results == null || provider.bannersResponse!.results!.isEmpty) {
        return const SizedBox.shrink();
      }
-     return SizedBox(
-       height: 220,
-       child: PageView.builder(
-         itemCount: provider.bannersResponse!.results!.length,
-         itemBuilder: (context, index) {
-            final banner = provider.bannersResponse!.results![index];
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 0.0), // Android had margins, but let's check visual
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                   _buildNetworkImage(banner?.image, fit: BoxFit.fill),
-                   Container( // Dark overlay for text readability if needed, or just layout
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [Colors.transparent, Color.fromRGBO(0, 0, 0, 0.3)],
-                        ),
-                      ),
-                   ),
-                   Positioned(
-                     bottom: 20,
-                     left: 20,
-                     right: 20,
-                     child: Column(
-                       crossAxisAlignment: CrossAxisAlignment.start, 
-                       mainAxisSize: MainAxisSize.min,
-                       children: [
-                         if (banner?.topCaption != null && banner!.topCaption!.isNotEmpty)
-                           Text(
-                             banner.topCaption!,
-                             style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-                           ),
-                         if (banner?.name != null && banner!.name!.isNotEmpty)
-                           Text(
-                             banner.name!, // Android uses Html.fromHtml
-                             style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold), 
-                           ),
-                          if (banner?.bottomCaption != null && banner!.bottomCaption!.isNotEmpty)
-                           Text(
-                             banner.bottomCaption!,
-                             style: const TextStyle(color: Colors.white, fontSize: 14),
-                           ),
-                          const SizedBox(height: 10),
-                          ElevatedButton(
-                            onPressed: () {
-                              // Handle Shop Now Click matching Android Logic
-                              // CommonMethods.groupIDs = banner.groupId
-                              // CommonMethods.categoryIDs = banner.divisionId
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Shop Now: ${banner?.name}")));
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppTheme.secondaryColor, // Verify Color
-                              foregroundColor: Colors.white,
+     return Column(
+       children: [
+         SizedBox(
+           height: 220,
+           child: PageView.builder(
+             controller: _bannerController,
+             onPageChanged: (index) {
+               setState(() {
+                 _currentBannerIndex = index;
+               });
+             },
+             itemCount: provider.bannersResponse!.results!.length,
+             itemBuilder: (context, index) {
+                final banner = provider.bannersResponse!.results![index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 0.0), // Android had margins, but let's check visual
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                       _buildNetworkImage(banner?.image, fit: BoxFit.fill),
+                       Container( // Dark overlay for text readability if needed, or just layout
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [Colors.transparent, Color.fromRGBO(0, 0, 0, 0.3)],
                             ),
-                            child: const Text("SHOP NOW"),
-                          )
-                       ],
-                     ),
-                   )
-                ],
-              ),
-            );
-         },
-       ),
+                          ),
+                       ),
+                       Positioned(
+                         bottom: 20,
+                         left: 20,
+                         right: 20,
+                         child: Column(
+                           crossAxisAlignment: CrossAxisAlignment.start, 
+                           mainAxisSize: MainAxisSize.min,
+                           children: [
+                             if (banner?.topCaption != null && banner!.topCaption!.isNotEmpty)
+                               Text(
+                                 banner.topCaption!,
+                                 style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                               ),
+                             if (banner?.name != null && banner!.name!.isNotEmpty)
+                               Text(
+                                 banner.name!, // Android uses Html.fromHtml
+                                 style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold), 
+                               ),
+                              if (banner?.bottomCaption != null && banner!.bottomCaption!.isNotEmpty)
+                               Text(
+                                 banner.bottomCaption!,
+                                 style: const TextStyle(color: Colors.white, fontSize: 14),
+                               ),
+                              const SizedBox(height: 10),
+                              ElevatedButton(
+                                onPressed: () {
+                                  // Handle Shop Now Click matching Android Logic
+                                  // CommonMethods.groupIDs = banner.groupId
+                                  // CommonMethods.categoryIDs = banner.divisionId
+                                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Shop Now: ${banner?.name}")));
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppTheme.secondaryColor, // Verify Color
+                                  foregroundColor: Colors.white,
+                                ),
+                                child: const Text("SHOP NOW"),
+                              )
+                           ],
+                         ),
+                       )
+                    ],
+                  ),
+                );
+             },
+           ),
+         ),
+         const SizedBox(height: 10),
+         DotsIndicator(
+           dotsCount: provider.bannersResponse!.results!.length,
+           position: _currentBannerIndex,
+           decorator: DotsDecorator(
+             size: const Size.square(9.0),
+             activeSize: const Size(18.0, 9.0),
+             activeShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+             activeColor: AppTheme.primaryColor,
+             color: Colors.grey.withValues(alpha: 0.5),
+           ),
+         ),
+         const SizedBox(height: 10),
+       ],
      );
   }
 
@@ -340,7 +395,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget _buildProductSections(DashboardProvider provider) {
      return Column(
-       children: const [
+       children: [
           PromotionsSection(),
           PopularCategoriesSection(),
           BestSellersSection(),

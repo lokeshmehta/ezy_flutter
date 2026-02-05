@@ -2,49 +2,66 @@ import 'package:ezy_orders_flutter/presentation/features/dashboard/widgets/secti
 import 'package:ezy_orders_flutter/presentation/features/dashboard/widgets/supplier_item_widget.dart';
 import 'package:ezy_orders_flutter/presentation/providers/dashboard_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
-class SuppliersSection extends StatelessWidget {
+class SuppliersSection extends StatefulWidget {
   const SuppliersSection({super.key});
+
+  @override
+  State<SuppliersSection> createState() => _SuppliersSectionState();
+}
+
+class _SuppliersSectionState extends State<SuppliersSection> {
+  final ScrollController _scrollController = ScrollController();
+
+  void _scroll(bool forward) {
+    const double scrollAmount = 200;
+    final double target = forward
+        ? _scrollController.offset + scrollAmount
+        : _scrollController.offset - scrollAmount;
+
+    _scrollController.animateTo(
+      target.clamp(0.0, _scrollController.position.maxScrollExtent),
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<DashboardProvider>(
       builder: (context, provider, child) {
-        final supplierLogosResponse = provider.supplierLogosResponse;
-        
-        if (supplierLogosResponse?.results == null ||
-            supplierLogosResponse!.results!.isEmpty) {
+        final response = provider.supplierLogosResponse;
+        if (response == null || response.results == null || response.results!.isEmpty) {
           return const SizedBox.shrink();
         }
 
-        final items = supplierLogosResponse.results!;
+        final suppliers = response.results!;
 
         return Column(
           children: [
-            SizedBox(height: 10.h),
-            SectionHeaderWidget(
-              title: "Suppliers", // Hardcoded as per Android code logic "Suppliers"
-              onPrevTap: () {
-                // TODO: Implement previous scroll logic
-              },
-              onNextTap: () {
-                // TODO: Implement next scroll logic
-              },
-              showNavButtons: items.length > 2,
+             SectionHeaderWidget(
+              title: "Suppliers",
+              onPrevTap: () => _scroll(false),
+              onNextTap: () => _scroll(true),
             ),
-            SizedBox(height: 10.h),
             SizedBox(
-              height: 180.h, // Adjusted height to fit Card + Text (120image + text + padding + card margins)
+              height: 180, // Same height as Android layout
               child: ListView.builder(
+                controller: _scrollController,
+                padding: const EdgeInsets.symmetric(horizontal: 10),
                 scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.symmetric(horizontal: 5.w),
-                itemCount: items.length,
+                itemCount: suppliers.length,
                 itemBuilder: (context, index) {
-                  final item = items[index];
+                  final item = suppliers[index];
                   if (item == null) return const SizedBox.shrink();
-                  
+
                   return SupplierItemWidget(
                     image: item.image,
                     brandName: item.brandName,
@@ -53,7 +70,6 @@ class SuppliersSection extends StatelessWidget {
                 },
               ),
             ),
-            SizedBox(height: 10.h),
           ],
         );
       },

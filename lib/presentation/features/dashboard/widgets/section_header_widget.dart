@@ -34,30 +34,41 @@ class SectionHeaderWidget extends StatelessWidget {
             Row(
               children: [
                 if (onPrevTap != null)
-                  InkWell(
-                    onTap: onPrevTap,
-                    child: Transform.rotate(
-                      angle: 3.14159 / 2, // 90 degrees
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        child: const Icon(Icons.arrow_back_ios, size: 16, color: AppTheme.primaryColor), // Placeholder for custom drawable
-                      ),
-                    ),
+                  _buildNavButton(
+                    icon: Icons.arrow_back_ios_new,
+                    onTap: onPrevTap!,
                   ),
-                 if (onNextTap != null)
-                  InkWell(
-                    onTap: onNextTap,
-                    child: Transform.rotate(
-                      angle: -3.14159 / 2, // -90 degrees
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        child: const Icon(Icons.arrow_back_ios, size: 16, color: AppTheme.primaryColor),
-                      ),
-                    ),
+                const SizedBox(width: 10),
+                if (onNextTap != null)
+                  _buildNavButton(
+                    icon: Icons.arrow_forward_ios,
+                    onTap: onNextTap!,
                   ),
               ],
             ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildNavButton({required IconData icon, required VoidCallback onTap}) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        width: 36,
+        height: 36,
+        decoration: const BoxDecoration(
+          color: Color(0xFFFCBD5F), // Orange/Amber from screenshot
+          shape: BoxShape.circle,
+        ),
+        child: Center(
+          child: Icon(
+            icon,
+            size: 16,
+            color: Colors.white,
+          ),
+        ),
       ),
     );
   }

@@ -4,8 +4,35 @@ import '../../../providers/dashboard_provider.dart';
 import 'flash_deal_item_widget.dart';
 import 'section_header_widget.dart';
 
-class FlashDealsSection extends StatelessWidget {
+class FlashDealsSection extends StatefulWidget {
   const FlashDealsSection({super.key});
+
+  @override
+  State<FlashDealsSection> createState() => _FlashDealsSectionState();
+}
+
+class _FlashDealsSectionState extends State<FlashDealsSection> {
+  final ScrollController _scrollController = ScrollController();
+
+  void _scroll(bool forward) {
+    if (!_scrollController.hasClients) return;
+    const double scrollAmount = 300;
+    final double target = forward 
+        ? _scrollController.offset + scrollAmount 
+        : _scrollController.offset - scrollAmount;
+    
+    _scrollController.animateTo(
+      target.clamp(0.0, _scrollController.position.maxScrollExtent),
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,42 +43,33 @@ class FlashDealsSection extends StatelessWidget {
           return const SizedBox.shrink();
         }
 
-        final items = response.results!;
-        final width = MediaQuery.of(context).size.width;
-        // Flash Deals usually wider card? 
-        // Adapter logic: ButtonWidth = width (full width?) 
-        // Line 98: val width: Int = displaymetrics.widthPixels
-        // Line 99: val buttonWidth = width
-        // Line 102: params(buttonWidth - 30, ...)
-        // So Flash Deals are FULL WIDTH cards (minus padding). Paging horizontal?
-        // XML: flashDealsRv
-        // It's likely a horizontal list of full-width cards, acting like a carousel/slider but user scrolls.
-        
-        final itemWidth = width - 30;
+        final products = response.results!;
+        final double width = MediaQuery.of(context).size.width;
 
         return Column(
           children: [
             SectionHeaderWidget(
               title: "Flash Deals",
-              onPrevTap: () {},
-              onNextTap: () {},
+              onPrevTap: () => _scroll(false),
+              onNextTap: () => _scroll(true),
             ),
             SizedBox(
-              height: 180, // Estimate height
+              height: 230, // Large enough for FlashDealItemWidget
               child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
+                controller: _scrollController,
+                padding: const EdgeInsets.symmetric(horizontal: 10),
                 scrollDirection: Axis.horizontal,
-                itemCount: items.length,
+                itemCount: products.length,
                 itemBuilder: (context, index) {
-                   final item = items[index];
+                   final item = products[index];
                    if (item == null) return const SizedBox.shrink();
 
                    return FlashDealItemWidget(
                      item: item,
-                     width: itemWidth,
-                     onTap: () {},
-                     onAddToCart: () {},
-                     onFavorite: () {},
+                     width: width - 40,
+                     onTap: () {
+                        // Navigate to Product Details
+                     },
                    );
                 },
               ),
