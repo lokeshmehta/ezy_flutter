@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../data/datasources/auth_remote_data_source.dart';
 import '../../../data/models/home_models.dart';
+import '../../../data/models/wishlist_models.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
 import '../../../core/constants/storage_keys.dart';
@@ -30,6 +31,9 @@ class DashboardProvider extends ChangeNotifier {
   DashboardProductsResponse? _recentlyAddedResponse;
   PopularAdvertosementsResponse? _popularAdvertisementsResponse;
 
+  // Wishlist State
+  WishlistCategoriesResponse? _wishlistCategoriesResponse;
+  bool _isFetchingWishlistCategories = false;
   // Company Config
   String? _companyImage;
 
@@ -67,6 +71,9 @@ class DashboardProvider extends ChangeNotifier {
   String? get companyImage => _companyImage;
   String? get supplierLogosPosition => _profileResponse?.results?[0]?.supplierLogosPosition;
 
+  // Wishlist Getters
+  List<WishlistCategory?>? get wishlistCategories => _wishlistCategoriesResponse?.results;
+  bool get isFetchingWishlistCategories => _isFetchingWishlistCategories;
 
   DashboardProvider(this._dataSource);
 
@@ -299,4 +306,100 @@ class DashboardProvider extends ChangeNotifier {
     }
   }
 
+  // Wishlist Methods
+  Future<void> fetchWishlistCategories(String productId) async {
+    _isFetchingWishlistCategories = true;
+    _wishlistCategoriesResponse = null;
+    notifyListeners();
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final accessToken = prefs.getString(StorageKeys.accessToken) ?? '';
+      final customerId = prefs.getString(StorageKeys.userId) ?? '';
+
+      final response = await _dataSource.getWishlistCategories(accessToken, customerId, productId);
+      _wishlistCategoriesResponse = WishlistCategoriesResponse.fromJson(response);
+    } catch (e) {
+      debugPrint("Error fetching wishlist categories: $e");
+      _errorMsg = "Failed to load wishlist categories";
+    } finally {
+      _isFetchingWishlistCategories = false;
+      notifyListeners();
+    }
+  }
+
+  void toggleWishlistCategory(String? categoryId) {
+    if (_wishlistCategoriesResponse?.results == null) return;
+    
+    for (var category in _wishlistCategoriesResponse!.results!) {
+      if (category == null) continue;
+      if (category.categoryId == categoryId) {
+        category.isSelected = !category.isSelected;
+        break;
+      }
+    }
+    notifyListeners();
+  }
+
+  Future<bool> submitWishlistUpdate(String productId, String newCategoryName) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final accessToken = prefs.getString(StorageKeys.accessToken) ?? '';
+      final customerId = prefs.getString(StorageKeys.userId) ?? '';
+
+      // Collect selected category IDs
+      String categoryIds = "";
+      if (_wishlistCategoriesResponse?.results != null) {
+        final selectedIds = _wishlistCategoriesResponse!.results!
+            .where((c) => c?.isSelected == true)
+            .map((c) => c?.categoryId)
+            .whereType<String>();
+        
+        if (selectedIds.isNotEmpty) {
+          categoryIds = '${selectedIds.join(',')},';
+        }
+      }
+
+      final response = await _dataSource.addToWishlist(
+        accessToken: accessToken,
+        customerId: customerId,
+        productId: productId,
+        categoryName: newCategoryName,
+        categoryIds: categoryIds,
+      );
+
+      final addResponse = AddToWishlistResponse.fromJson(response);
+      if (addResponse.status == 200) {
+        // Update local favorite state (simplified: if any selected or new name provided)
+        final isFav = categoryIds.isNotEmpty || newCategoryName.isNotEmpty;
+        _updateProductFavoriteState(productId, isFav ? "Yes" : "No");
+        
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      } else {
+        _errorMsg = addResponse.successMessage ?? "Failed to update wishlist";
+      }
+    } catch (e) {
+      debugPrint("Error submitting wishlist update: $e");
+      _errorMsg = "Failed to update wishlist";
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+    return false;
+  }
+
+  void _updateProductFavoriteState(String productId, String state) {
+    // Update state in all loaded sections
+    _bestSellersResponse?.results?.forEach((p) { if (p?.productId == productId) p?.isFavourite = state; });
+    _hotSellingResponse?.results?.forEach((p) { if (p?.productId == productId) p?.isFavourite = state; });
+    _newArrivalsResponse?.results?.forEach((p) { if (p?.productId == productId) p?.isFavourite = state; });
+    _flashDealsResponse?.results?.forEach((p) { if (p?.productId == productId) p?.isFavourite = state; });
+    _promotionsResponse?.results?.forEach((p) { if (p?.productId == productId) p?.isFavourite = state; });
+    _recentlyAddedResponse?.results?.forEach((p) { if (p?.productId == productId) p?.isFavourite = state; });
+  }
 }

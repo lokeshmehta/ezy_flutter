@@ -228,4 +228,36 @@ class AuthRemoteDataSource {
     );
     return response;
   }
+
+  Future<Map<String, dynamic>> getWishlistCategories(String accessToken, String customerId, String productId) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}wishlist-categories",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'product_id': productId,
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> addToWishlist({
+    required String accessToken,
+    required String customerId,
+    required String productId,
+    required String categoryName,
+    required String categoryIds,
+  }) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}add-to-wishlist",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'product_id': productId,
+        'category_name': categoryName,
+        'category_ids': categoryIds,
+      },
+    );
+    return response;
+  }
 }

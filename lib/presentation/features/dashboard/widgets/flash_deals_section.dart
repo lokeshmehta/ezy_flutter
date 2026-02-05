@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../providers/dashboard_provider.dart';
 import 'flash_deal_item_widget.dart';
 import 'section_header_widget.dart';
+import 'wishlist_category_dialog.dart';
 
 class FlashDealsSection extends StatefulWidget {
   const FlashDealsSection({super.key});
@@ -70,6 +71,14 @@ class _FlashDealsSectionState extends State<FlashDealsSection> {
                      width: width - 40,
                      onTap: () {
                         // Navigate to Product Details
+                     },
+                     onFavorite: () {
+                       final provider = context.read<DashboardProvider>();
+                       provider.fetchWishlistCategories(item.productId!);
+                       showDialog(
+                         context: context,
+                         builder: (context) => WishlistCategoryDialog(product: item),
+                       );
                      },
                    );
                 },

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 import '../../../../data/models/home_models.dart';
+import '../../../providers/dashboard_provider.dart';
 import 'product_item_widget.dart';
 import 'section_header_widget.dart';
+import 'wishlist_category_dialog.dart';
 
 class ProductListSection extends StatefulWidget {
   final String title;
@@ -74,6 +77,14 @@ class _ProductListSectionState extends State<ProductListSection> {
                 width: itemWidth,
                 onTap: () {
                    // Navigate to Product Details
+                },
+                onFavorite: () {
+                  final provider = context.read<DashboardProvider>();
+                  provider.fetchWishlistCategories(product.productId!);
+                  showDialog(
+                    context: context,
+                    builder: (context) => WishlistCategoryDialog(product: product),
+                  );
                 },
               );
             },

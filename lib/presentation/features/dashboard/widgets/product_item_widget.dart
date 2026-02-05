@@ -63,7 +63,7 @@ class ProductItemWidget extends StatelessWidget {
                      ),
                      alignment: Alignment.center,
                      child: Text(
-                       item.soldAs ?? "Carton",
+                       "${item.soldAs ?? "Carton"} (${item.orderedAs ?? "0"} unit)",
                        style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold),
                      ),
                    ),
