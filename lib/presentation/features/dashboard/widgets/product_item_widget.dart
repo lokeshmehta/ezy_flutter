@@ -20,7 +20,10 @@ class ProductItemWidget extends StatelessWidget {
     this.onTap,
     this.onAddToCart,
     this.onFavorite,
+    this.badgeLabel,
   });
+
+  final String? badgeLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +66,7 @@ class ProductItemWidget extends StatelessWidget {
                      ),
                      alignment: Alignment.center,
                      child: Text(
-                       "${item.soldAs} (${item.qtyPerOuter} unit)",
+                       "${item.soldAs} (${item.qtyPerOuter} Units)",
                        style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold),
                      ),
                    )
@@ -90,22 +93,23 @@ class ProductItemWidget extends StatelessWidget {
                         alignment: Alignment.center,
                         child: _buildImage(item.image),
                      ),
-                     // Red Status Badge (Top Left)
-                     Positioned(
-                       top: 0,
-                       left: 0,
-                       child: Container(
-                         padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
-                         decoration: BoxDecoration(
-                           color: Colors.red,
-                           borderRadius: BorderRadius.only(bottomRight: Radius.circular(8.r)),
-                         ),
-                         child: Text(
-                           "Best Seller", // Example status
-                           style: TextStyle(color: Colors.white, fontSize: 9.sp, fontWeight: FontWeight.bold),
+                     // Status Badge (Top Left)
+                     if (badgeLabel != null && badgeLabel!.isNotEmpty)
+                       Positioned(
+                         top: 0,
+                         left: 0,
+                         child: Container(
+                           padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                           decoration: BoxDecoration(
+                             color: Colors.red,
+                             borderRadius: BorderRadius.only(bottomRight: Radius.circular(8.r)),
+                           ),
+                           child: Text(
+                             badgeLabel!,
+                             style: TextStyle(color: Colors.white, fontSize: 9.sp, fontWeight: FontWeight.bold),
+                           ),
                          ),
                        ),
-                     ),
                   ],
                 ),
 
@@ -197,7 +201,7 @@ class ProductItemWidget extends StatelessWidget {
                             borderRadius: BorderRadius.circular(20.r),
                           ),
                           child: Text(
-                             isOutOfStock ? "OUT OF STOCK" : "ADD TO CART",
+                             isOutOfStock ? "Out Of Stock" : "Add To Cart",
                              style: TextStyle(fontSize: 10.sp, color: Colors.white, fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -208,7 +212,7 @@ class ProductItemWidget extends StatelessWidget {
                       onTap: onFavorite,
                       child: Icon(
                         item.isFavourite == "Yes" ? Icons.favorite : Icons.favorite_border,
-                        color: Colors.grey,
+                        color: item.isFavourite == "Yes" ? Colors.red : AppTheme.primaryColor,
                         size: 22.sp,
                       ),
                     )

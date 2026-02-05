@@ -363,7 +363,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                        borderRadius: BorderRadius.circular(20.r),
                                      ),
                                      child: Text(
-                                       "SHOP NOW",
+                                       "Shop Now",
                                        style: TextStyle(
                                          color: Colors.white, 
                                          fontSize: 10.sp, 

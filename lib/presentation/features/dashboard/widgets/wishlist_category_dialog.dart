@@ -4,13 +4,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/constants/app_theme.dart';
 import '../../../../data/models/home_models.dart';
-import '../../../../data/models/home_models.dart';
 import '../../../providers/dashboard_provider.dart';
 
 class WishlistCategoryDialog extends StatefulWidget {
   final ProductItem product;
 
-  const WishlistCategoryDialog({Key? key, required this.product}) : super(key: key);
+  const WishlistCategoryDialog({super.key, required this.product});
 
   @override
   State<WishlistCategoryDialog> createState() => _WishlistCategoryDialogState();
@@ -186,7 +185,7 @@ class _WishlistCategoryDialogState extends State<WishlistCategoryDialog> {
       _newCategoryController.text.trim(),
     );
     if (success) {
-      if (mounted) Navigator.pop(context);
+      if (context.mounted) Navigator.pop(context);
       // Show success message like Android
       if (context.mounted) {
          ScaffoldMessenger.of(context).showSnackBar(

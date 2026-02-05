@@ -43,7 +43,7 @@ class SupplierItemWidget extends StatelessWidget {
         width: itemWidth,
         margin: EdgeInsets.only(right: 10.w), // android:layout_marginRight="@dimen/top_10" (approx 10dp)
         child: Card(
-          elevation: 3,
+          elevation: 1,
           color: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(4.r), // Default card radius
@@ -68,7 +68,7 @@ class SupplierItemWidget extends StatelessWidget {
                 child: Text(
                   brandName ?? "",
                   textAlign: TextAlign.center,
-                  maxLines: 1,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: Colors.grey[600],

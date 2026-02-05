@@ -18,7 +18,10 @@ class ProductListSection extends StatefulWidget {
     required this.title,
     required this.products,
     this.onSeeAll,
+    this.badgeLabel,
   });
+
+  final String? badgeLabel;
 
   @override
   State<ProductListSection> createState() => _ProductListSectionState();
@@ -95,6 +98,7 @@ class _ProductListSectionState extends State<ProductListSection> {
                     builder: (context) => ProductDetailsBottomSheet(product: product),
                   );
                 },
+                badgeLabel: widget.badgeLabel,
               );
             },
           ),

@@ -20,6 +20,7 @@ class BestSellersSection extends StatelessWidget {
         return ProductListSection(
           title: "Best Sellers",
           products: provider.bestSellersResponse?.results,
+          badgeLabel: "Best Seller",
         );
       },
     );
@@ -43,6 +44,7 @@ class NewArrivalsSection extends StatelessWidget {
         return ProductListSection(
           title: "New Arrivals",
           products: provider.newArrivalsResponse?.results,
+          badgeLabel: "New Arrivals",
         );
       },
     );
@@ -66,6 +68,7 @@ class HotSellingSection extends StatelessWidget {
         return ProductListSection(
           title: "Hot Selling",
           products: provider.hotSellingResponse?.results,
+          badgeLabel: "Hot Selling",
         );
       },
     );
@@ -89,6 +92,7 @@ class RecentlyAddedSection extends StatelessWidget {
         return ProductListSection(
           title: "Recently Added",
           products: provider.recentlyAddedResponse?.results,
+          badgeLabel: null,
         );
       },
     );
