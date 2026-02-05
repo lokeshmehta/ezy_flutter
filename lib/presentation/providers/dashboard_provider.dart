@@ -4,6 +4,7 @@ import '../../../data/models/home_models.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
 import '../../../core/constants/storage_keys.dart';
+import '../../../core/constants/url_api_key.dart';
 
 class DashboardProvider extends ChangeNotifier {
   final AuthRemoteDataSource _dataSource;
@@ -117,6 +118,19 @@ class DashboardProvider extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       _companyImage = prefs.getString(StorageKeys.companyImage);
+      
+      // Update Global URLs from Preferences (Android Parity)
+      final companyUrl = prefs.getString(StorageKeys.companyUrl);
+      if (companyUrl != null && companyUrl.isNotEmpty) {
+          // Android: UrlApiKey.MAIN_URL = prefs.CompanyUrl + "/"
+          UrlApiKey.mainUrl = "$companyUrl/"; 
+          UrlApiKey.companyMainUrl = "$companyUrl/";
+          
+          // Android: UrlApiKey.BASE_URL = prefs.CompanyUrl + "/api/"
+          UrlApiKey.baseUrl = "$companyUrl/api/";
+          
+          debugPrint("Updated UrlApiKey.mainUrl to: ${UrlApiKey.mainUrl}");
+      }
     } catch (e) {
        debugPrint("Error loading company config: $e");
     }

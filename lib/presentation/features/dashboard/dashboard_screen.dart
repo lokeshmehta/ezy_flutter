@@ -28,7 +28,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   String _getImageUrl(String? path) {
-    if (path == null || path.isEmpty) return "";
+    if (path == null || path.isEmpty) {
+      debugPrint("Image URL Path is Null or Empty");
+      return "";
+    }
+    debugPrint("Processing Image Path: $path");
     if (path.startsWith("http") || path.startsWith("https")) return path;
     return "${UrlApiKey.mainUrl}$path";
   }
@@ -59,245 +63,89 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: AppTheme.primaryColor, // @color/blue
-      drawer: _buildDrawer(context),
-      body: SafeArea(
-        child: Container(
-          color: Colors.white,
-          child: Column(
-            children: [
-              _buildAppBar(context),
-              Expanded(
-                child: Consumer<DashboardProvider>(
-                  builder: (context, provider, child) {
-                    if (provider.isLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-
-                    // if (provider.errorMsg != null) {
-                    //   return Center(child: Text(provider.errorMsg!));
-                    // }
-
-                    return SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildMarqueeText(provider),
-                          _buildBanners(provider),
-                          _buildTopSuppliers(provider), // Best Sellers text in Android but ID says topsuppliers
-                          _buildHomeCategories(provider),
-                          _buildSection(
-                            context,
-                            "Best Sellers", // Title from layout xml ID: promotionTitle (Text "Best Sellers") - Wait, duplicates?
-                            // Android XML has multiple "Best Sellers" titles hardcoded for different sections.
-                            // We should check what the section actually is.
-                            // ID: promotionsLlay -> "Promotions"
-                            "Promotions",
-                            provider.promotionsResponse?.results,
-                          ),
-                           _buildPopularCategoriesSection(context, provider),
-                          _buildSection(
-                            context,
-                            "Best Sellers",
-                            "Best Sellers",
-                            provider.bestSellersResponse?.results,
-                          ),
-                          _buildSection(
-                            context,
-                            "Flash Deals",
-                            "Flash Deals",
-                            provider.flashDealsResponse?.results,
-                          ),
-                          _buildSection(
-                            context,
-                            "Hot Selling",
-                            "Hot Selling",
-                            provider.hotSellingResponse?.results,
-                          ),
-                           _buildSection(
-                            context,
-                            "New Arrivals",
-                            "New Arrivals",
-                            provider.newArrivalsResponse?.results,
-                          ),
-                           _buildSection(
-                            context,
-                            "Recently Added",
-                            "Recently Added",
-                            provider.recentlyAddedResponse?.results,
-                          ),
-                          _buildFooterBanners(provider),
-                          const SizedBox(height: 20),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-              _buildBottomBar(context),
-            ],
-          ),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () => _scaffoldKey.currentState?.openDrawer(),
         ),
-      ),
-    );
-  }
-
-  Widget _buildAppBar(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      color: Colors.white,
-      child: Row(
-        children: [
+        title: Image.asset(AppAssets.headerLogo, height: 40),
+        actions: [
           IconButton(
-            icon: const Icon(Icons.menu, color: AppTheme.primaryColor),
-            onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-          ),
-          const Spacer(),
-          // Logo
-          Consumer<DashboardProvider>(
-            builder: (context, provider, _) { 
-                 final logoUrl = provider.companyImage;
-                 
-                  if (logoUrl != null && logoUrl.isNotEmpty) {
-                    return CachedNetworkImage(
-                      imageUrl: logoUrl.contains("http") ? logoUrl : "${UrlApiKey.companyMainUrl}$logoUrl",
-                      height: 50,
-                      fit: BoxFit.contain,
-                      errorWidget: (context, url, error) => Image.asset(AppAssets.splashLogo, height: 50),
-                    );
-                  }
-                  return Image.asset(AppAssets.splashLogo, height: 50);
-            }
-          ),
-          const Spacer(),
-          // Notification & Cart
-           IconButton(
-            icon: const Icon(Icons.notifications, color: AppTheme.primaryColor),
+            icon: const Icon(Icons.notifications),
             onPressed: () {},
           ),
         ],
       ),
+      drawer: _buildDrawer(),
+      body: Consumer<DashboardProvider>(
+        builder: (context, provider, child) {
+          if (provider.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (provider.errorMsg != null) {
+            // Android parity: Show toast/dialog but allow retry? For now simplified error screen
+             return Center(child: Text(provider.errorMsg!));
+          }
+
+          return RefreshIndicator(
+            onRefresh: () async {
+               provider.init();
+            },
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                   _buildMarquee(provider),
+                   _buildBanners(provider),
+                   _buildSuppliers(provider),
+                   _buildHomeCategories(provider),
+                   _buildFooterBanners(provider),
+                   const SizedBox(height: 100), // Bottom padding
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+      bottomNavigationBar: _buildBottomNav(),
     );
   }
 
-  Widget _buildDrawer(BuildContext context) {
+  Widget _buildDrawer() {
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
+      child: Column(
         children: [
-          _buildDrawerHeader(context),
-          ListTile(
-            leading: const Icon(Icons.home, color: AppTheme.primaryColor),
-            title: const Text('Home', style: TextStyle(color: AppTheme.primaryColor)),
-            onTap: () {
-               Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.qr_code, color: AppTheme.primaryColor),
-            title: const Text('Scan to Order', style: TextStyle(color: AppTheme.primaryColor)),
-            onTap: () {},
-          ),
+           UserAccountsDrawerHeader(
+             accountName: const Text("User Name"), // Todo: Bind from Provider
+             accountEmail: const Text("user@example.com"),
+             currentAccountPicture: const CircleAvatar(
+               child: Icon(Icons.person),
+             ),
+             decoration: const BoxDecoration(color: AppTheme.primaryColor),
+           ),
            ListTile(
-            leading: const Icon(Icons.local_offer, color: AppTheme.primaryColor),
-            title: const Text('Promotions', style: TextStyle(color: AppTheme.primaryColor)),
-            onTap: () {},
-          ),
-           ListTile(
-            leading: const Icon(Icons.notifications, color: AppTheme.primaryColor),
-            title: const Text('Notifications', style: TextStyle(color: AppTheme.primaryColor)),
-            onTap: () {},
-          ),
-           ListTile(
-            leading: const Icon(Icons.shopping_cart, color: AppTheme.primaryColor),
-            title: const Text('Order Now', style: TextStyle(color: AppTheme.primaryColor)),
-            onTap: () {},
-          ),
-           ListTile(
-            leading: const Icon(Icons.favorite, color: AppTheme.primaryColor),
-            title: const Text('My Favorites', style: TextStyle(color: AppTheme.primaryColor)),
-            onTap: () {},
-          ),
-           ListTile(
-            leading: const Icon(Icons.list_alt, color: AppTheme.primaryColor),
-            title: const Text('My Orders', style: TextStyle(color: AppTheme.primaryColor)),
-            onTap: () {},
-          ),
-           ListTile(
-            leading: const Icon(Icons.question_answer, color: AppTheme.primaryColor),
-            title: const Text('FAQ', style: TextStyle(color: AppTheme.primaryColor)),
-            onTap: () {},
-          ),
-           ListTile(
-            leading: const Icon(Icons.info, color: AppTheme.primaryColor),
-            title: const Text('About', style: TextStyle(color: AppTheme.primaryColor)),
-            onTap: () {},
-          ),
-           ListTile(
-            leading: const Icon(Icons.logout, color: AppTheme.primaryColor),
-            title: const Text('Logout', style: TextStyle(color: AppTheme.primaryColor)),
-            onTap: () {
-               // Implement Logout
-               context.go('/');
-            },
-          ),
+             leading: const Icon(Icons.logout),
+             title: const Text("Logout"),
+             onTap: () {
+               // Todo: Implement Logout
+               context.go('/login');
+             },
+           )
         ],
       ),
     );
   }
 
-  Widget _buildDrawerHeader(BuildContext context) {
-      return Consumer<DashboardProvider>(
-          builder: (context, provider, _) { 
-              final profile = provider.profileResponse?.results?.isNotEmpty == true ? provider.profileResponse!.results![0] : null;
-              return Container(
-                 color: AppTheme.secondaryColor, // @color/tealcolor
-                 padding: const EdgeInsets.all(20),
-                 child: Column(
-                   crossAxisAlignment: CrossAxisAlignment.start,
-                   children: [
-                     const SizedBox(height: 30),
-                     CircleAvatar(
-                       radius: 30,
-                       backgroundImage: (profile?.image != null && profile!.image!.isNotEmpty)
-                           ? CachedNetworkImageProvider(profile.image!.contains("http") ? profile.image! : "${UrlApiKey.companyMainUrl}${profile.image}")
-                           : null,
-                       child: (profile?.image == null || profile!.image!.isEmpty) ? const Icon(Icons.person, size: 40) : null,
-                     ),
-                     const SizedBox(height: 10),
-                     Text(
-                       "${profile?.firstName ?? 'Guest'} ${profile?.lastName ?? ''}",
-                       style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-                     ),
-                     Text(
-                       profile?.email ?? '',
-                       style: const TextStyle(color: Colors.white70, fontSize: 14),
-                     ),
-                   ],
-                 ),
-              );
-          });
-  }
 
-  Widget _buildMarqueeText(DashboardProvider provider) {
-    // Logic from Android: if (datalist.results?.get(0)?.show_marque_text=="Yes")
-    final profile = provider.profileResponse?.results?.isNotEmpty == true ? provider.profileResponse!.results![0] : null;
-    if (profile?.showMarqueText == "Yes" && profile?.marqueText != null) {
-      return Container(
-        color: Colors.yellow[100], // Default or parse from profile.marqueTextBackgroundColor
-        width: double.infinity,
-        padding: const EdgeInsets.all(8.0),
-        child: Text(
-          profile!.marqueText!,
-           style: TextStyle(
-             color: Colors.red, // parse profile.marqueTextColor
-             fontSize: 16, // parse profile.marqueTextSize
-             fontStyle: FontStyle.italic, // parse format
-           ),
-        ),
-      );
-    }
-    return const SizedBox.shrink();
+  Widget _buildMarquee(DashboardProvider provider) {
+     return Container(
+       color: Colors.yellow[100],
+       padding: const EdgeInsets.all(10),
+       child: const Text(
+         "Welcome to the EZY Orders",
+         style: TextStyle(color: Colors.red, fontStyle: FontStyle.italic, fontSize: 16),
+       ),
+     );
   }
 
   Widget _buildBanners(DashboardProvider provider) {
@@ -373,213 +221,59 @@ class _DashboardScreenState extends State<DashboardScreen> {
      );
   }
 
-  Widget _buildTopSuppliers(DashboardProvider provider) {
-      // Android ID: topsuppliersRv (Horizontal)
-      // Logic: show if supplier_logos == "Show" (Wait, this might be separate from Suppliers List section?)
-      // Android line 330: id topSuppliersLay
-      // Check ViewModel: viewmodel?.supplierLogosApiCall()
-      if (provider.supplierLogosResponse?.results == null || provider.supplierLogosResponse!.results!.isEmpty) {
-        return const SizedBox.shrink();
-      }
-      return _buildSectionLayout("Suppliers",
-          SizedBox(
-            height: 100,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: provider.supplierLogosResponse!.results!.length,
-              itemBuilder: (context, index) {
-                  final item = provider.supplierLogosResponse!.results![index];
-                  return Container(
-                    width: 100,
-                    margin: const EdgeInsets.symmetric(horizontal: 5),
-                     child: _buildNetworkImage(item?.image),
-                  );
-              },
-            ),
-          )
-      );
-  }
-
-  Widget _buildHomeCategories(DashboardProvider provider) {
-      if (provider.homeBlocksResponse?.results == null || provider.homeBlocksResponse!.results!.isEmpty) {
-        return const SizedBox.shrink();
-      }
-      return SizedBox(
-        height: 80,
-         child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: provider.homeBlocksResponse!.results!.length,
-              itemBuilder: (context, index) {
-                  final item = provider.homeBlocksResponse!.results![index];
-                  return Container(
-                    width: 80,
-                    margin: const EdgeInsets.symmetric(horizontal: 5),
-                     child: _buildNetworkImage(item?.image),
-                  );
-              },
-         ),
-      );
-  }
-
-  // Updated to support ProductItem
-  Widget _buildSection(BuildContext context, String title, String categoryKey, List<ProductItem?>? items) {
-      if (items == null || items.isEmpty) return const SizedBox.shrink();
-
-      return _buildSectionLayout(title,
-        SizedBox(
-          height: 180, 
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              final item = items[index];
-              return Container(
-                width: 120,
-                margin: const EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: _buildNetworkImage(item?.image),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Text(
-                        item?.title ?? '',
-                        style: const TextStyle(fontSize: 12),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    Text(
-                       "\$${item?.price ?? '0.00'}",
-                       style: const TextStyle(fontWeight: FontWeight.bold),
-                    )
-                  ],
-                ),
-              );
-            },
-          ),
-        )
-      );
-  }
-
-  // New method for Popular Categories
-  Widget _buildPopularCategoriesSection(BuildContext context, DashboardProvider provider) {
-       final items = provider.popularCategoriesResponse?.results;
-       if (items == null || items.isEmpty) return const SizedBox.shrink();
-
-       return _buildSectionLayout("Popular Categories",
-        SizedBox(
-          height: 120, 
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              final item = items[index];
-              return Container(
-                width: 100,
-                margin: const EdgeInsets.all(5),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: 80,
-                      width: 80,
-                      child: _buildNetworkImage(item?.image),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Text(
-                        item?.popularCategory ?? '', 
-                        style: const TextStyle(fontSize: 12),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        )
-      );
-  }
-
-  Widget _buildSectionLayout(String title, Widget content) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-              Row(
-                children: [
-                   const Icon(Icons.arrow_back_ios, size: 16),
-                   const Icon(Icons.arrow_forward_ios, size: 16),
-                ],
-              )
-            ],
-          ),
-        ),
-        content,
-      ],
+  Widget _buildSuppliers(DashboardProvider provider) {
+    // Placeholder for Suppliers
+    return const Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Text("Suppliers", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
     );
+     // Note: Implementation pending
   }
-  
-  Widget _buildFooterBanners(DashboardProvider provider) {
-       if (provider.footerBannersResponse?.results == null || provider.footerBannersResponse!.results!.isEmpty) {
-       return const SizedBox.shrink();
-     }
-     return SizedBox(
-       height: 150,
-       child: PageView.builder(
-         itemCount: provider.footerBannersResponse!.results!.length,
-         itemBuilder: (context, index) {
-            final banner = provider.footerBannersResponse!.results![index];
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _buildNetworkImage(banner?.image),
-            );
-         },
-       ),
+   
+  Widget _buildHomeCategories(DashboardProvider provider) {
+    if (provider.profileResponse == null) return const SizedBox.shrink();
+    final profile = provider.profileResponse!.results!.isNotEmpty ? provider.profileResponse!.results![0] : null;
+
+    if (profile == null) return const SizedBox.shrink();
+
+    // Mapping Android conditional logic
+    // if (profile.popularCategories == "Show") ...
+     return Column(
+       children: [
+          if (profile.popularCategories == "Show") 
+             const Padding(padding: EdgeInsets.all(8), child: Text("Popular Categories")), // Placeholder
+          if (profile.bestSellers == "Show")
+             const Padding(padding: EdgeInsets.all(8), child: Text("Best Sellers")),
+       ],
      );
   }
 
-  Widget _buildBottomBar(BuildContext context) {
-    return Container(
-      height: 60,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: Colors.grey, width: 0.5)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildBottomItem(Icons.home, "Home", true),
-          _buildBottomItem(Icons.list_alt, "My Orders", false),
-          _buildBottomItem(Icons.shopping_cart, "My Cart", false),
-          _buildBottomItem(Icons.person, "My Account", false),
-        ],
-      ),
-    );
+  Widget _buildFooterBanners(DashboardProvider provider) {
+      if (provider.footerBannersResponse?.results == null) return const SizedBox.shrink();
+      
+      return Column(
+         children: provider.footerBannersResponse!.results!.map((banner) {
+             return Padding(
+               padding: const EdgeInsets.all(8.0),
+               child: AspectRatio(
+                 aspectRatio: 3/1, // Standard banner ratio
+                 child: _buildNetworkImage(banner.image),
+               ),
+             );
+         }).toList(),
+      );
   }
 
-  Widget _buildBottomItem(IconData icon, String label, bool isSelected) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(icon, color: isSelected ? AppTheme.primaryColor : Colors.grey),
-        Text(label, style: TextStyle(
-          color: isSelected ? AppTheme.primaryColor : Colors.grey,
-          fontSize: 12
-        ))
+  Widget _buildBottomNav() {
+    return BottomNavigationBar(
+      items: const [
+        BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+        BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: "Cart"),
+        BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
       ],
+      onTap: (index) {
+        // Handle Navigation
+      },
     );
   }
 }

@@ -50,6 +50,7 @@ dependencies:
   # Utils
   logger: ^2.4.0
   intl: ^0.19.0
+  flutter_cache_manager: ^3.4.1
 
 
 dev_dependencies:
