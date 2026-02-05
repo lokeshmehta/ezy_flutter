@@ -65,6 +65,7 @@ class DashboardProvider extends ChangeNotifier {
   DashboardProductsResponse? get recentlyAddedResponse => _recentlyAddedResponse;
   PopularAdvertosementsResponse? get popularAdvertisementsResponse => _popularAdvertisementsResponse;
   String? get companyImage => _companyImage;
+  String? get supplierLogosPosition => _profileResponse?.results?[0]?.supplierLogosPosition;
 
 
   DashboardProvider(this._dataSource);

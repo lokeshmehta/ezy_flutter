@@ -285,6 +285,8 @@ class ProductItem {
     String? groupId;
     String? sku;
     String? gstPercentage;
+    String? fromDate;
+    String? toDate;
 
     ProductItem({
         this.productId,
@@ -313,6 +315,8 @@ class ProductItem {
         this.groupId,
         this.sku,
         this.gstPercentage,
+        this.fromDate,
+        this.toDate,
     });
 
     factory ProductItem.fromJson(Map<String, dynamic> json) {
@@ -343,6 +347,8 @@ class ProductItem {
             groupId: json['group_id']?.toString(),
             sku: json['sku']?.toString(),
             gstPercentage: json['gst_percentage']?.toString(),
+            fromDate: json['from_date']?.toString(),
+            toDate: json['to_date']?.toString(),
         );
     }
 }
@@ -443,8 +449,9 @@ class BrandItem {
     String? topBrand;
     String? majorBrand;
     String? status;
+    String? companyId;
 
-    BrandItem({this.brandId, this.brandName, this.image, this.brandNumber, this.topBrand, this.majorBrand, this.status});
+    BrandItem({this.brandId, this.brandName, this.image, this.brandNumber, this.topBrand, this.majorBrand, this.status, this.companyId});
 
     factory BrandItem.fromJson(Map<String, dynamic> json) {
         return BrandItem(
@@ -455,6 +462,7 @@ class BrandItem {
             topBrand: json['top_brand']?.toString(),
             majorBrand: json['major_brand']?.toString(),
             status: json['status']?.toString(),
+            companyId: json['company_id']?.toString(),
         );
     }
 }
@@ -480,7 +488,7 @@ class SupplierLogosResponse {
 class PopularAdvertosementsResponse {
     int? status;
     String? message;
-    List<BannerItem?>? results;
+    List<SupplierItem?>? results;
 
     PopularAdvertosementsResponse({this.status, this.message, this.results});
     factory PopularAdvertosementsResponse.fromJson(Map<String, dynamic> json) {
@@ -488,8 +496,24 @@ class PopularAdvertosementsResponse {
             status: json['status'],
             message: json['message'],
             results: json['results'] != null
-                ? (json['results'] as List).map((i) => i != null ? BannerItem.fromJson(i) : null).toList()
+                ? (json['results'] as List).map((i) => i != null ? SupplierItem.fromJson(i) : null).toList()
                 : null,
         );
     }
+}
+
+class SupplierItem {
+  String? image;
+  String? externalLink;
+  String? brandid;
+
+  SupplierItem({this.image, this.externalLink, this.brandid});
+
+  factory SupplierItem.fromJson(Map<String, dynamic> json) {
+    return SupplierItem(
+      image: json['image']?.toString(),
+      externalLink: json['external_link']?.toString(),
+      brandid: json['brand_id']?.toString(),
+    );
+  }
 }

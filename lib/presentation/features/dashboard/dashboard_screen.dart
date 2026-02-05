@@ -8,6 +8,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/constants/url_api_key.dart';
 // import '../../../data/models/home_models.dart'; // Unused
 import '../../../core/network/image_cache_manager.dart';
+import 'widgets/suppliers_section.dart';
+import 'widgets/promotions_section.dart';
+import 'widgets/popular_categories_section.dart';
+import 'widgets/home_blocks_section.dart';
+import 'widgets/flash_deals_section.dart';
+import 'widgets/popular_ads_section.dart';
+import 'widgets/standard_product_sections.dart';
+import '../products/products_list_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -97,9 +105,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 children: [
                    _buildMarquee(provider),
                    _buildBanners(provider),
-                   _buildSuppliers(provider),
-                   _buildHomeCategories(provider),
+                   _buildTopSuppliers(provider),
+                   const HomeBlocksSection(),
+                   _buildProductSections(provider),
                    _buildFooterBanners(provider),
+                   const RecentlyAddedSection(), // Added Recently Added after footer banners
+                   _buildBottomSuppliers(provider),
                    const SizedBox(height: 100), // Bottom padding
                 ],
               ),
@@ -312,58 +323,99 @@ class _DashboardScreenState extends State<DashboardScreen> {
      );
   }
 
-  Widget _buildSuppliers(DashboardProvider provider) {
-    // Placeholder for Suppliers
-    return const Padding(
-      padding: EdgeInsets.all(8.0),
-      child: Text("Suppliers", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-    );
-     // Note: Implementation pending
+  Widget _buildTopSuppliers(DashboardProvider provider) {
+    if (provider.supplierLogosPosition == "Top") {
+      return const SuppliersSection();
+    }
+    return const SizedBox.shrink();
+  }
+
+  Widget _buildBottomSuppliers(DashboardProvider provider) {
+    if (provider.supplierLogosPosition != "Top") {
+      return const SuppliersSection();
+    }
+    return const SizedBox.shrink();
   }
    
-  Widget _buildHomeCategories(DashboardProvider provider) {
-    if (provider.profileResponse == null) return const SizedBox.shrink();
-    final profile = provider.profileResponse!.results!.isNotEmpty ? provider.profileResponse!.results![0] : null;
 
-    if (profile == null) return const SizedBox.shrink();
-
-    // Mapping Android conditional logic
-    // if (profile.popularCategories == "Show") ...
+  Widget _buildProductSections(DashboardProvider provider) {
      return Column(
-       children: [
-          if (profile.popularCategories == "Show") 
-             const Padding(padding: EdgeInsets.all(8), child: Text("Popular Categories")), // Placeholder
-          if (profile.bestSellers == "Show")
-             const Padding(padding: EdgeInsets.all(8), child: Text("Best Sellers")),
+       children: const [
+          PromotionsSection(),
+          PopularCategoriesSection(),
+          BestSellersSection(),
+          FlashDealsSection(),
+          HotSellingSection(),
+          NewArrivalsSection(),
+          PopularAdsSection(),
        ],
      );
   }
 
   Widget _buildFooterBanners(DashboardProvider provider) {
-      if (provider.footerBannersResponse?.results == null) return const SizedBox.shrink();
-      
-      return Column(
-         children: provider.footerBannersResponse!.results!.map((banner) {
+      if (provider.footerBannersResponse?.results == null ||
+          provider.footerBannersResponse!.results!.isEmpty) {
+        return const SizedBox.shrink();
+      }
+
+      return Container(
+        height: 150, // @dimen/dimen_150
+        margin: const EdgeInsets.symmetric(vertical: 10),
+        child: PageView.builder(
+           itemCount: provider.footerBannersResponse!.results!.length,
+           itemBuilder: (context, index) {
+             final banner = provider.footerBannersResponse!.results![index];
+             if (banner?.image == null) return const SizedBox.shrink();
+
              return Padding(
-               padding: const EdgeInsets.all(8.0),
-               child: AspectRatio(
-                 aspectRatio: 3/1, // Standard banner ratio
-                 child: _buildNetworkImage(banner?.image),
+               padding: const EdgeInsets.symmetric(horizontal: 5.0),
+               child: InkWell(
+                 onTap: () {
+                    // Handle footer banner click
+                 },
+                 child: _buildNetworkImage(banner!.image, fit: BoxFit.contain),
                ),
              );
-         }).toList(),
+           },
+        ),
       );
   }
 
   Widget _buildBottomNav() {
     return BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
+      selectedItemColor: AppTheme.primaryColor,
+      unselectedItemColor: Colors.grey,
+      currentIndex: 0, // Always home for Dashboard
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-        BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: "Cart"),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
+        BottomNavigationBarItem(icon: Icon(Icons.list_alt), label: "Order Now"),
+        BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: "My Cart"),
+        BottomNavigationBarItem(icon: Icon(Icons.person), label: "My Account"),
       ],
       onTap: (index) {
-        // Handle Navigation
+        switch (index) {
+          case 0:
+             // Already on Home
+            break;
+          case 1:
+            // Order Now -> Products List
+             Navigator.push(
+               context,
+               MaterialPageRoute(builder: (context) => const ProductsListScreen()),
+             );
+            break;
+          case 2:
+            // My Cart -> Proceed to Buy / Cart
+            // context.push('/cart'); // Example
+             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Cart Feature Coming Soon")));
+            break;
+          case 3:
+            // My Account
+             // Navigator.push(context, MaterialPageRoute(builder: (context) => const MyAccountScreen()));
+             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Account Feature Coming Soon")));
+            break;
+        }
       },
     );
   }
