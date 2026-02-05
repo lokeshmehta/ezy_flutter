@@ -53,7 +53,7 @@ class _SuppliersSectionState extends State<SuppliersSection> {
               onNextTap: () => _scroll(true),
             ),
             SizedBox(
-              height: 220.h, // Dynamic height
+              height: 160.h, // Dynamic height reduced for Round 2
               child: ListView.builder(
                 controller: _scrollController,
                 padding: EdgeInsets.symmetric(horizontal: 10.w),

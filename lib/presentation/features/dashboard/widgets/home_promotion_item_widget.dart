@@ -71,7 +71,7 @@ class HomePromotionItemWidget extends StatelessWidget {
                 ),
 
                 // Shop Now Section
-                const Spacer(),
+                SizedBox(height: 8.h),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [

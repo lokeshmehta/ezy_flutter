@@ -52,7 +52,7 @@ class SupplierItemWidget extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
-                      height: 120.h,
+                      height: 90.h,
                       decoration: BoxDecoration(
                         color: Colors.white,
                         border: Border.all(color: AppTheme.darkGrayColor, width: 1.5),
@@ -64,7 +64,7 @@ class SupplierItemWidget extends StatelessWidget {
                       ),
                     ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 8.h),
+                padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
                 child: Text(
                   brandName ?? "",
                   textAlign: TextAlign.center,
@@ -73,7 +73,7 @@ class SupplierItemWidget extends StatelessWidget {
                   style: TextStyle(
                     color: Colors.grey[600],
                     fontWeight: FontWeight.normal,
-                    fontSize: 10.sp, 
+                    fontSize: 11.sp, 
                   ),
                 ),
               ),
@@ -95,7 +95,7 @@ class SupplierItemWidget extends StatelessWidget {
 
     return CachedNetworkImage(
       imageUrl: finalUrl,
-      height: 120.h, // android:layout_height="@dimen/dimen_120"
+      height: 90.h, // reduced for compact look
       width: double.infinity,
       fit: BoxFit.fill, // android:scaleType="fitXY"
       placeholder: (context, url) => Center(
