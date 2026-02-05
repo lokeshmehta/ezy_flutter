@@ -23,6 +23,20 @@ class AppAssets {
   static const String cartIcon = '$images/carticon.png';
   static const String homeIcon = '$images/home_icon.png';
   
+  // Drawer Icons
+  static const String scanIcon = '$images/sm_scan.png';
+  static const String favIcon = '$images/sm_fav.png';
+  static const String myOrdersIcon = '$images/sm_orderhisticon.png';
+  static const String orderNowIcon = '$images/sm_ordernow.png';
+  static const String promoIcon = '$images/sm_promo.png';
+  static const String notifyIcon = '$images/sm_notify.png';
+  static const String faqIcon = '$images/sm_faq.png';
+  static const String helpIcon = '$images/sm_helpicon.png';
+  static const String feedbackIcon = '$images/sm_feedback.png';
+  static const String aboutIcon = '$images/sm_aboutusicon.png';
+  static const String logoutMenuIcon = '$images/logout_menu.png';
+  static const String menuCloseIcon = '$images/ic_menuclose.png';
+  
   // SVGs
   // static const String icon = '$svgs/icon.svg';
 }

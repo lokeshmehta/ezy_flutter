@@ -115,24 +115,115 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Drawer(
       child: Column(
         children: [
-           UserAccountsDrawerHeader(
-             accountName: const Text("User Name"), // Todo: Bind from Provider
-             accountEmail: const Text("user@example.com"),
-             currentAccountPicture: const CircleAvatar(
-               child: Icon(Icons.person),
-             ),
-             decoration: const BoxDecoration(color: AppTheme.primaryColor),
-           ),
-           ListTile(
-             leading: const Icon(Icons.logout),
-             title: const Text("Logout"),
-             onTap: () {
-               // Todo: Implement Logout
-               context.go('/login');
+           Consumer<DashboardProvider>(
+             builder: (context, provider, _) {
+                final user = provider.profileResponse?.results?.isNotEmpty == true 
+                    ? provider.profileResponse!.results![0] 
+                    : null;
+                
+                return Container(
+                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                   decoration: const BoxDecoration(color: AppTheme.secondaryColor), // Teal
+                   child: SafeArea(
+                     bottom: false,
+                     child: Row(
+                       crossAxisAlignment: CrossAxisAlignment.center,
+                       children: [
+                          CircleAvatar(
+                            radius: 30,
+                            backgroundColor: Colors.white,
+                            backgroundImage: user?.image != null && user!.image!.isNotEmpty
+                                ? CachedNetworkImageProvider(_getImageUrl(user.image)) as ImageProvider
+                                : const AssetImage(AppAssets.userIcon),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  "${user?.firstName ?? ''} ${user?.lastName ?? ''}", // Fixed: ProfileResult has firstName/lastName
+                                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                Text(
+                                  user?.email ?? "user@example.com",
+                                  style: const TextStyle(color: Colors.white70, fontSize: 13),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            icon: Image.asset(AppAssets.menuCloseIcon, width: 20, height: 20, color: Colors.white),
+                            onPressed: () => Navigator.pop(context),
+                          )
+                       ],
+                     ),
+                   ),
+                );
              },
-           )
+           ),
+           Expanded(
+             child: SingleChildScrollView(
+               child: Column(
+                 children: [
+                    _buildDrawerItem(AppAssets.scanIcon, "Scan to Order", () {}),
+                    _buildDrawerItem(AppAssets.favIcon, "My Wishlist", () {}),
+                    _buildDrawerItem(AppAssets.myOrdersIcon, "My Orders", () {}),
+                    _buildDrawerItem(AppAssets.orderNowIcon, "Order Now", () {}),
+                    _buildDrawerItem(AppAssets.promoIcon, "Promotions", () {}),
+                    _buildDrawerItem(AppAssets.notifyIcon, "Notifications", () {}),
+                    _buildDrawerItem(AppAssets.faqIcon, "FAQ", () {}),
+                    _buildDrawerItem(AppAssets.helpIcon, "Help & Support", () {}),
+                    _buildDrawerItem(AppAssets.feedbackIcon, "Send Feedback", () {}),
+                    _buildDrawerItem(AppAssets.aboutIcon, "About Us", () {}),
+                 ],
+               ),
+             ),
+           ),
+           // Footer Logout
+            Container(
+              padding: const EdgeInsets.all(16),
+              child: InkWell(
+                onTap: () {
+                    // Logic to Clear Prefs and Logout
+                    context.go('/login');
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset(AppAssets.logoutMenuIcon, width: 20, height: 20, color: AppTheme.primaryColor),
+                      const SizedBox(width: 10),
+                      const Text("Logout", style: TextStyle(color: AppTheme.primaryColor, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+           const SizedBox(height: 10),
         ],
       ),
+    );
+  }
+
+  Widget _buildDrawerItem(String iconPath, String title, VoidCallback onTap) {
+    return ListTile(
+      leading: Image.asset(iconPath, width: 20, height: 20, color: AppTheme.primaryColor), // Blue tint
+      title: Text(
+        title, 
+        style: const TextStyle(color: AppTheme.primaryColor, fontSize: 15, fontWeight: FontWeight.w500),
+      ),
+      onTap: onTap,
+      dense: true,
+      horizontalTitleGap: 0,
     );
   }
 
