@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/constants/url_api_key.dart';
 import '../../../data/models/home_models.dart';
+import '../../../core/network/image_cache_manager.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -43,6 +44,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
     return CachedNetworkImage(
       imageUrl: url,
+      cacheManager: ImageCacheManager(), // Use custom cache manager with SSL bypass
       fit: fit,
       errorWidget: (context, url, error) => Image.asset(
         AppAssets.placeholder,
