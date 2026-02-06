@@ -253,7 +253,7 @@ class SortItem {
   factory SortItem.fromJson(Map<String, dynamic> json) {
     return SortItem(
       value: json['value']?.toString(),
-      label: json['label']?.toString(),
+      label: json['label']?.toString() ?? json['name']?.toString() ?? json['text']?.toString() ?? json['value']?.toString(),
       selected: json['selected']?.toString() ?? "No",
     );
   }
