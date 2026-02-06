@@ -8,6 +8,7 @@ import '../../presentation/features/splash/splash_screen.dart';
 import '../../presentation/features/dashboard/dashboard_screen.dart';
 import '../../presentation/features/dashboard/my_wishlist_screen.dart';
 import '../../presentation/features/cart/cart_screen.dart';
+import '../../presentation/features/checkout/checkout_screen.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -45,6 +46,10 @@ class AppRouter {
       GoRoute(
         path: '/cart',
         builder: (context, state) => const CartScreen(),
+      ),
+      GoRoute(
+        path: '/checkout',
+        builder: (context, state) => const CheckoutScreen(),
       ),
     ],
   );

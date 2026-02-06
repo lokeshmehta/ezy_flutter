@@ -138,9 +138,9 @@ class _CartScreenState extends State<CartScreen> {
                         backgroundColor: AppTheme.primaryColor,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
                       ),
-                      onPressed: () {
-                         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Checkout flow not yet implemented")));
-                      },
+                       onPressed: () {
+                          context.push('/checkout');
+                       },
                       child: Text(
                         "PROCEED TO CHECKOUT",
                         style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold, color: Colors.white),

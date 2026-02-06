@@ -556,4 +556,100 @@ class AuthRemoteDataSource {
     );
     return response;
   }
+  // Checkout APIs
+  Future<Map<String, dynamic>> getDeliveryLocations(String accessToken, String customerId) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}delivery-locations",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> checkCouponCode(String accessToken, String customerId, String couponCode) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}check-coupon-code",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'coupon_code': couponCode,
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> updateDeliveryLocation({
+    required String accessToken,
+    required String customerId,
+    required String deliveryLocationId,
+    required String locationDeliveryCharge,
+  }) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}update-delivery-location",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'delivery_location_id': deliveryLocationId,
+        'location_delivery_charge': locationDeliveryCharge,
+      },
+    );
+    return response;
+  }
+
+  // Create Order - The Massive one
+  Future<Map<String, dynamic>> createOrder({
+    required String accessToken,
+    required String customerId,
+    required String paymentType,
+    required String street,
+    required String street2,
+    required String suburb,
+    required String state,
+    required String postcode,
+    required String shippingFirstName,
+    required String shippingLastName,
+    required String shippingPhone,
+    required String shippingEmail,
+    required String shippingStreet,
+    required String shippingStreet2,
+    required String shippingSuburb,
+    required String shippingState,
+    required String shippingPostcode,
+    required String remarks,
+    String customerSource = "Android",
+    String deviceType = "Android", 
+    String browserType = "Device",
+    String ipAddress = "",
+  }) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}create-order",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'payment_type': paymentType,
+        'street': street,
+        'street2': street2,
+        'suburb': suburb,
+        'state': state,
+        'postcode': postcode,
+        'shipping_first_name': shippingFirstName,
+        'shipping_last_name': shippingLastName,
+        'shipping_phone': shippingPhone,
+        'shipping_email': shippingEmail,
+        'shipping_street': shippingStreet,
+        'shipping_street2': shippingStreet2,
+        'shipping_suburb': shippingSuburb,
+        'shipping_state': shippingState,
+        'shipping_postcode': shippingPostcode,
+        'remarks': remarks,
+        'order_source': customerSource,
+        'device_type': Platform.operatingSystem, // Uses dart:io
+        'browser_type': browserType,
+        'ip_address': ipAddress,
+      },
+    );
+    return response;
+  }
 }

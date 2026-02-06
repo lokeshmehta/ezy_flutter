@@ -23,6 +23,7 @@ class CartProvider extends ChangeNotifier {
       : null;
 
   List<CartItem> _flattenedCartItems = [];
+  List<CartItem> get flattenedCartItems => _flattenedCartItems;
   List<CartItem> get cartItems => _flattenedCartItems;
 
   // Cart Stats (Getters for UI)
@@ -38,6 +39,8 @@ class CartProvider extends ChangeNotifier {
   String get couponName => cartResult?.couponName ?? "";
   String get couponDiscount => cartResult?.couponDiscount ?? "0.00";
   String get suppliersExceededCharge => cartResult?.suppliersExceededShippingCharge ?? "0.00";
+
+
 
   Future<void> init() async {
     await fetchCartDetails();

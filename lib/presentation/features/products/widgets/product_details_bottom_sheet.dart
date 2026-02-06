@@ -6,7 +6,7 @@ import '../../../../core/constants/app_theme.dart';
 import '../../../../core/constants/url_api_key.dart';
 import '../../../../core/utils/common_methods.dart';
 import '../../../../data/models/home_models.dart';
-import '../../../../data/models/product_models.dart';
+
 import '../../../providers/product_list_provider.dart';
 import '../../../providers/dashboard_provider.dart';
 

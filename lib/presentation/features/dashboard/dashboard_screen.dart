@@ -440,13 +440,13 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
                                      final productProvider = context.read<ProductListProvider>();
                                      productProvider.clearFilters();
                                      
-                                     if (banner?.groupId != null && banner?.groupId != 0) {
+                                     if (banner?.groupId != null && banner?.groupId != "0") {
                                        productProvider.setGroup(banner!.groupId.toString());
                                      }
                                      if (banner?.products != null && banner!.products!.isNotEmpty) {
                                        productProvider.setSelectedProducts(banner.products!);
                                      }
-                                     if (banner?.divisionId != null && banner?.divisionId != 0) {
+                                     if (banner?.divisionId != null && banner?.divisionId != "0") {
                                        productProvider.setCategory(banner!.divisionId.toString());
                                      }
                                      

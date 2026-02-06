@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/constants/app_theme.dart';
-import '../../../../data/models/product_models.dart';
+
 import '../../../providers/product_list_provider.dart';
 
 class FilterDialog extends StatefulWidget {

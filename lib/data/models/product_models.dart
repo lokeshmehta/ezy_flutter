@@ -292,7 +292,7 @@ class ProductDetailItem extends ProductItem {
   List<ProductItem?>? similarProducts;
   List<ProductItem?>? sameCategoryProducts;
   String? item;
-  String? sku;
+  // String? sku; // Removed override
   String? unitsShipper;
   String? innerBarcode;
   String? shipperBarcode;
@@ -331,12 +331,13 @@ class ProductDetailItem extends ProductItem {
     super.qtyPerOuter,
     super.orderedAs,
     super.apiData,
+    super.sku, 
     this.productFields,
     this.productSpecifications,
     this.similarProducts,
     this.sameCategoryProducts,
     this.item,
-    this.sku,
+    // this.sku, // Removed
     this.unitsShipper,
     this.innerBarcode,
     this.shipperBarcode,
