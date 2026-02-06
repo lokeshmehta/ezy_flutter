@@ -14,4 +14,5 @@ class AppTheme {
   static const Color white = Color(0xFFFFFFFF); // @color/white
   static const Color lightGrayBg = Color(0xFFE5E7EB); // @color/light_graycolor
   static const Color redColor = Color(0xFFE4134A); // @color/redcolor
+  static const Color orangeColor = Color(0xFFFCBD5F); 
 }

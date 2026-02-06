@@ -49,7 +49,7 @@ class _WishlistCategoryDialogState extends State<WishlistCategoryDialog> {
                 ),
                 IconButton(
                   onPressed: () => Navigator.pop(context),
-                  icon: Icon(Icons.close, size: 24.sp, color: Colors.grey),
+                  icon: Icon(Icons.close, size: 24.sp, color: AppTheme.darkGrayColor),
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
                   visualDensity: VisualDensity.compact,
@@ -87,7 +87,7 @@ class _WishlistCategoryDialogState extends State<WishlistCategoryDialog> {
                         controlAffinity: ListTileControlAffinity.leading,
                         contentPadding: EdgeInsets.zero,
                         dense: true,
-                        activeColor: const Color(0xFFFCBD5F),
+                        activeColor: AppTheme.orangeColor,
                       );
                     },
                   ),
@@ -120,7 +120,7 @@ class _WishlistCategoryDialogState extends State<WishlistCategoryDialog> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFCBD5F),
+                    backgroundColor: AppTheme.orangeColor,
                     padding: EdgeInsets.symmetric(horizontal: 12.w),
                     minimumSize: Size(0, 35.h),
                     shape: RoundedRectangleBorder(
@@ -142,14 +142,14 @@ class _WishlistCategoryDialogState extends State<WishlistCategoryDialog> {
                     onPressed: () => Navigator.pop(context),
                     style: OutlinedButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: 10.h),
-                      side: const BorderSide(color: Colors.grey),
+                      side: const BorderSide(color: AppTheme.darkGrayColor),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5.r),
                       ),
                     ),
                     child: Text(
                       "Cancel",
-                      style: TextStyle(fontSize: 13.sp, color: Colors.grey),
+                      style: TextStyle(fontSize: 13.sp, color: AppTheme.darkGrayColor),
                     ),
                   ),
                 ),
@@ -158,7 +158,7 @@ class _WishlistCategoryDialogState extends State<WishlistCategoryDialog> {
                   child: ElevatedButton(
                     onPressed: () => _submitUpdate(context),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFCBD5F),
+                      backgroundColor: AppTheme.orangeColor,
                       padding: EdgeInsets.symmetric(vertical: 10.h),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5.r),

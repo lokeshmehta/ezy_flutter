@@ -65,7 +65,7 @@ class ProductItemWidget extends StatelessWidget {
                      width: double.infinity,
                      height: 24.h,
                      decoration: BoxDecoration(
-                        color: const Color(0xFFFCBD5F), // Orange bar from Image 2
+                        color: AppTheme.orangeColor, // Orange bar from Image 2
                      ),
                      alignment: Alignment.center,
                      child: Text(
@@ -78,7 +78,7 @@ class ProductItemWidget extends StatelessWidget {
                      width: double.infinity,
                      height: 24.h,
                      decoration: BoxDecoration(
-                        color: const Color(0xFFFCBD5F), 
+                        color: AppTheme.orangeColor, 
                      ),
                      alignment: Alignment.center,
                      child: Text(
@@ -104,7 +104,7 @@ class ProductItemWidget extends StatelessWidget {
                          child: Container(
                            padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
                            decoration: BoxDecoration(
-                             color: Colors.red,
+                             color: AppTheme.redColor,
                              borderRadius: BorderRadius.only(bottomRight: Radius.circular(8.r)),
                            ),
                            child: Text(
@@ -146,7 +146,7 @@ class ProductItemWidget extends StatelessWidget {
                      padding: EdgeInsets.only(top: 5.h),
                      child: Text(
                        "MOQ : ${item.minimumOrderQty}",
-                       style: TextStyle(color: Colors.red, fontSize: 12.sp, fontWeight: FontWeight.bold),
+                       style: TextStyle(color: AppTheme.redColor, fontSize: 12.sp, fontWeight: FontWeight.bold),
                      ),
                    ),
 
@@ -172,12 +172,12 @@ class ProductItemWidget extends StatelessWidget {
                      children: [
                        Text(
                          _formatPrice(item.promotionPrice),
-                         style: TextStyle(color: Colors.red, fontSize: 12.sp),
+                         style: TextStyle(color: AppTheme.redColor, fontSize: 12.sp),
                        ),
                        SizedBox(width: 5.w),
                        Container(
                          padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
-                         color: Colors.red,
+                         color: AppTheme.redColor,
                          child: Text(
                            "-${_calculateDiscount(item.price, item.promotionPrice)}%",
                            style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold),
@@ -200,11 +200,15 @@ class ProductItemWidget extends StatelessWidget {
                           height: 30.h,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: canAddToCart ? const Color(0xFFFCBD5F) : Colors.red[300],
+                            color: canAddToCart ? AppTheme.tealColor : AppTheme.redColor.withOpacity(0.5),
                             borderRadius: BorderRadius.circular(20.r),
                           ),
                           child: Text(
-                             isOutOfStock ? "Out Of Stock" : "Add To Cart",
+                             isOutOfStock 
+                                 ? "Out Of Stock" 
+                                 : (item.addedToCart == "Yes" 
+                                     ? "Update Cart [${item.addedQty ?? '1'}]" 
+                                     : "Add To Cart"),
                              style: TextStyle(fontSize: 10.sp, color: Colors.white, fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -215,7 +219,7 @@ class ProductItemWidget extends StatelessWidget {
                       onTap: onFavorite,
                       child: Icon(
                         item.isFavourite == "Yes" ? Icons.favorite : Icons.favorite_border,
-                        color: item.isFavourite == "Yes" ? Colors.red : AppTheme.primaryColor,
+                        color: item.isFavourite == "Yes" ? AppTheme.redColor : AppTheme.primaryColor,
                         size: 22.sp,
                       ),
                     )

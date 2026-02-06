@@ -146,15 +146,15 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                            children: [
                              Text(
                                "AUD ${_currentPromoPrice.toStringAsFixed(2)}",
-                               style: TextStyle(color: Colors.red, fontSize: 14.sp, fontWeight: FontWeight.bold),
+                               style: TextStyle(color: AppTheme.redColor, fontSize: 14.sp, fontWeight: FontWeight.bold),
                              ),
                              SizedBox(width: 5.w),
                              Container(
                                padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
-                               color: Colors.red,
+                               color: AppTheme.redColor,
                                child: Text(
                                  "-${_calculateDiscount(_currentPrice, _currentPromoPrice)}%",
-                                 style: TextStyle(color: Colors.white, fontSize: 10.sp),
+                                 style: TextStyle(color: AppTheme.white, fontSize: 10.sp),
                                ),
                              )
                            ],
@@ -285,7 +285,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                    ),
                    child: Text(
                      isAdded ? "Update Cart [$_quantity]" : "Add To Cart",
-                     style: TextStyle(color: Colors.white, fontSize: 14.sp, fontWeight: FontWeight.bold),
+                     style: TextStyle(color: AppTheme.white, fontSize: 14.sp, fontWeight: FontWeight.bold),
                    ),
                  ),
                ),
@@ -299,10 +299,10 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                    child: Container(
                      padding: EdgeInsets.all(10.w),
                      decoration: BoxDecoration(
-                       border: Border.all(color: Colors.red),
+                       border: Border.all(color: AppTheme.redColor),
                        borderRadius: BorderRadius.circular(5.r),
                      ),
-                     child: Icon(Icons.delete, color: Colors.red),
+                     child: Icon(Icons.delete, color: AppTheme.redColor),
                    ),
                  )
                ]
@@ -380,7 +380,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
               _quantity.toString(),
               _currentPromoPrice.toStringAsFixed(2),
               _selectedSoldAs,
-              widget.product.apiData ?? ""
+              widget.product.apiData ?? "",
+              widget.product.brandId ?? ""
            );
        }
        Navigator.pop(context);

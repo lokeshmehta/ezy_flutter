@@ -404,7 +404,7 @@ class DashboardProvider extends ChangeNotifier {
   }
 
   // Cart Methods
-  Future<bool> addToCart(String productId, String qty, String price, String orderedAs, String apiData) async {
+  Future<bool> addToCart(String productId, String qty, String price, String orderedAs, String apiData, String brandId) async {
       _isLoading = true;
       notifyListeners();
       try {
@@ -425,9 +425,21 @@ class DashboardProvider extends ChangeNotifier {
         // Check "status" from response
         if (response['status'] == 200) {
              _updateProductCartState(productId, "Yes", qty);
-             // Also need to update cart count in prefs if returned
-             // Assuming success message or refresh logic needed?
-             // Android calls CartDetails or just updates local
+             
+             // Update Local Profile Suppliers State (Scenario requirement)
+             // Update Local Profile Suppliers State (Scenario requirement)
+             if (_profileResponse != null) {
+                 List<String> currentSuppliers = _profileResponse!.suppliers?.split(',') ?? [];
+                 if (currentSuppliers.length == 1 && currentSuppliers[0].isEmpty) currentSuppliers = [];
+                 
+                 if (!currentSuppliers.contains(brandId)) {
+                     currentSuppliers.add(brandId);
+                     _profileResponse!.suppliers = currentSuppliers.join(',');
+                     int count = int.tryParse(_profileResponse!.suppliersCount ?? "0") ?? 0;
+                     _profileResponse!.suppliersCount = (count + 1).toString();
+                 }
+             }
+
              _isLoading = false;
              notifyListeners();
              return true;
