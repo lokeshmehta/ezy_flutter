@@ -80,7 +80,7 @@ class SortDialog extends StatelessWidget {
                               children: [
                                 Expanded(
                                   child: Text(
-                                    option.label ?? "",
+                                    option.name ?? "",
                                     style: TextStyle(
                                       color: isSelected ? AppTheme.primaryColor : AppTheme.textColor,
                                       fontSize: 14.sp,

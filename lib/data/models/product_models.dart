@@ -245,15 +245,15 @@ class ProductSortResponse {
 
 class SortItem {
   String? value;
-  String? label;
+  String? name;
   String? selected;
 
-  SortItem({this.value, this.label, this.selected = "No"});
+  SortItem({this.value, this.name, this.selected = "No"});
 
   factory SortItem.fromJson(Map<String, dynamic> json) {
     return SortItem(
       value: json['value']?.toString(),
-      label: json['label']?.toString() ?? json['name']?.toString() ?? json['text']?.toString() ?? json['value']?.toString(),
+      name: json['name']?.toString(),
       selected: json['selected']?.toString() ?? "No",
     );
   }
