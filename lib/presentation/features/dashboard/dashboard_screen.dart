@@ -21,6 +21,7 @@ import 'widgets/home_blocks_section.dart';
 import 'widgets/flash_deals_section.dart';
 import 'widgets/popular_ads_section.dart';
 import 'widgets/standard_product_sections.dart';
+import 'widgets/logout_dialog.dart';
 import '../products/products_list_screen.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -279,8 +280,17 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
               padding: const EdgeInsets.all(16),
               child: InkWell(
                 onTap: () {
-                    // Logic to Clear Prefs and Logout
-                    context.go('/login');
+                    showDialog(
+                      context: context,
+                      builder: (context) => LogoutDialog(
+                        onYes: () async {
+                           await context.read<DashboardProvider>().logout();
+                           if (context.mounted) {
+                             context.go('/login');
+                           }
+                        },
+                      ),
+                    );
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),

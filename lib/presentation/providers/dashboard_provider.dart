@@ -859,4 +859,37 @@ class DashboardProvider extends ChangeNotifier {
       return false;
     }
   }
+
+  Future<void> logout() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      
+      // Clear Crucial Auth Data
+      await prefs.setString(StorageKeys.userId, "0");
+      await prefs.setString(StorageKeys.accessToken, "");
+      
+      // Reset Provider State
+      _profileResponse = null;
+      _bannersResponse = null;
+      _footerBannersResponse = null;
+      _homeBlocksResponse = null;
+      _promotionsResponse = null;
+      _bestSellersResponse = null;
+      _flashDealsResponse = null;
+      _newArrivalsResponse = null;
+      _hotSellingResponse = null;
+      _popularCategoriesResponse = null;
+      _supplierLogosResponse = null;
+      _recentlyAddedResponse = null;
+      _popularAdvertisementsResponse = null;
+      _notificationsResponse = null;
+      _faqCategoriesResponse = null;
+      _faqDetailsResponse = null;
+      _aboutUsResponse = null;
+      
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Error during logout: $e");
+    }
+  }
 }
