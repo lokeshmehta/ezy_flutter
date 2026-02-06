@@ -66,7 +66,7 @@ class _ProductListSectionState extends State<ProductListSection> {
           onNextTap: () => _scroll(true),
         ),
         SizedBox(
-          height: 260.h, // Dynamic height
+          height: 340.h, // Increased for safety
           child: ListView.builder(
             controller: _scrollController,
             padding: EdgeInsets.symmetric(horizontal: 10.w),

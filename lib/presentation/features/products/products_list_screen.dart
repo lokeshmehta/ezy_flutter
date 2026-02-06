@@ -347,7 +347,7 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 0.62,
+        mainAxisExtent: 330.h, // Fixed height per tile, safe for all widths
         crossAxisSpacing: 10.w,
         mainAxisSpacing: 10.h,
       ),

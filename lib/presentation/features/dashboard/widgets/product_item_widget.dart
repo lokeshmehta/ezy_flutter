@@ -128,11 +128,14 @@ class ProductItemWidget extends StatelessWidget {
 
                 // Vendor Name
                 if (item.brandName != null && item.brandName!.isNotEmpty)
-                  Text(
-                    item.brandName!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: Colors.grey, fontSize: 11.sp),
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 2.h),
+                    child: Text(
+                      item.brandName!,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: Colors.grey, fontSize: 11.sp),
+                    ),
                   ),
 
                 // Product Name
@@ -162,37 +165,50 @@ class ProductItemWidget extends StatelessWidget {
 
                 // Price Section
                 if (!hasPromotion) ...[
-                   Text(
-                     _formatPrice(item.price),
-                     style: TextStyle(color: AppTheme.textColor, fontSize: 12.sp), // Use grey? Android uses 'darkgreycolor'
+                   FittedBox(
+                     fit: BoxFit.scaleDown,
+                     alignment: Alignment.centerLeft,
+                     child: Text(
+                       _formatPrice(item.price),
+                       style: TextStyle(color: AppTheme.textColor, fontSize: 12.sp), 
+                     ),
                    ),
                 ] else ...[
                    // Promotion UI
-                   Text(
-                     _formatPrice(item.price),
-                     style: TextStyle(
-                       color: Colors.grey, 
-                       fontSize: 12.sp,
-                       decoration: TextDecoration.lineThrough
+                   FittedBox(
+                     fit: BoxFit.scaleDown,
+                     alignment: Alignment.centerLeft,
+                     child: Row(
+                       children: [
+                         Text(
+                           _formatPrice(item.price),
+                           style: TextStyle(
+                             color: Colors.grey, 
+                             fontSize: 12.sp,
+                             decoration: TextDecoration.lineThrough
+                           ),
+                         ),
+                         SizedBox(width: 5.w),
+                         Row(
+                           children: [
+                             Text(
+                               _formatPrice(item.promotionPrice),
+                               style: TextStyle(color: AppTheme.redColor, fontSize: 12.sp),
+                             ),
+                             SizedBox(width: 5.w),
+                             Container(
+                               padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
+                               color: AppTheme.redColor,
+                               child: Text(
+                                 "-${_calculateDiscount(item.price, item.promotionPrice)}%",
+                                 style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold),
+                               ),
+                             )
+                           ],
+                         )
+                       ],
                      ),
                    ),
-                   Row(
-                     children: [
-                       Text(
-                         _formatPrice(item.promotionPrice),
-                         style: TextStyle(color: AppTheme.redColor, fontSize: 12.sp),
-                       ),
-                       SizedBox(width: 5.w),
-                       Container(
-                         padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
-                         color: AppTheme.redColor,
-                         child: Text(
-                           "-${_calculateDiscount(item.price, item.promotionPrice)}%",
-                           style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold),
-                         ),
-                       )
-                     ],
-                   )
                 ],
                 
                 SizedBox(height: 5.h),
@@ -205,19 +221,26 @@ class ProductItemWidget extends StatelessWidget {
                       child: InkWell(
                         onTap: canAddToCart ? onAddToCart : null,
                         child: Container(
-                          height: 30.h,
+                          height: 40.h, // Standardized height
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: canAddToCart ? AppTheme.tealColor : AppTheme.redColorOpacity50,
-                            borderRadius: BorderRadius.circular(20.r),
+                            color: canAddToCart ? AppTheme.tealColor : AppTheme.redColor,
+                            borderRadius: BorderRadius.circular(4.r), // Standardized radius
                           ),
-                          child: Text(
-                             isOutOfStock 
-                                 ? "Out Of Stock" 
-                                 : (item.addedToCart == "Yes" 
-                                     ? "Update Cart [${item.addedQty ?? '1'}]" 
-                                     : "Add To Cart"),
-                             style: TextStyle(fontSize: 10.sp, color: Colors.white, fontWeight: FontWeight.bold),
+                          child: FittedBox(
+                             fit: BoxFit.scaleDown,
+                             child: Text(
+                                isOutOfStock 
+                                    ? "Out Of Stock" 
+                                    : (item.addedToCart == "Yes" 
+                                        ? "Update Cart [${item.addedQty ?? '1'}]" 
+                                        : "Add To Cart"),
+                                style: TextStyle(
+                                  fontSize: 11.sp, 
+                                  color: Colors.white, 
+                                  fontWeight: FontWeight.bold
+                                ),
+                             ),
                           ),
                         ),
                       ),
@@ -225,10 +248,10 @@ class ProductItemWidget extends StatelessWidget {
                     SizedBox(width: 8.w),
                     InkWell(
                       onTap: onFavorite,
-                      child: Icon(
-                        item.isFavourite == "Yes" ? Icons.favorite : Icons.favorite_border,
-                        color: item.isFavourite == "Yes" ? AppTheme.redColor : AppTheme.primaryColor,
-                        size: 22.sp,
+                      child: Image.asset(
+                        item.isFavourite == "Yes" ? "assets/images/favadded.png" : "assets/images/fav_new.png",
+                        width: 40.h, // Matched height
+                        height: 40.h,
                       ),
                     )
                   ],
