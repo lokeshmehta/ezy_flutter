@@ -7,6 +7,7 @@ import '../../presentation/features/splash/splash_screen.dart';
 
 import '../../presentation/features/dashboard/dashboard_screen.dart';
 import '../../presentation/features/dashboard/my_wishlist_screen.dart';
+import '../../presentation/features/cart/cart_screen.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -41,7 +42,10 @@ class AppRouter {
         builder: (context, state) => const MyWishlistScreen(),
       ),
 
-      // Other routes...
+      GoRoute(
+        path: '/cart',
+        builder: (context, state) => const CartScreen(),
+      ),
     ],
   );
 }

@@ -604,8 +604,8 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
             break;
           case 2:
             // My Cart -> Proceed to Buy / Cart
-            // context.push('/cart'); // Example
-             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Cart Feature Coming Soon")));
+            context.push('/cart'); 
+            // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Cart Feature Coming Soon")));
             break;
           case 3:
             // My Account

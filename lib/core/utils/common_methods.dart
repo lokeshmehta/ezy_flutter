@@ -44,4 +44,10 @@ class CommonMethods {
     final discount = ((priceVal - promoVal) / priceVal) * 100;
     return discount.toStringAsFixed(0);
   }
+  static String checkNullempty(String? value) {
+    if (value == null || value.isEmpty || value == "null") {
+      return "";
+    }
+    return value;
+  }
 }

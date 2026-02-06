@@ -545,4 +545,15 @@ class AuthRemoteDataSource {
     );
     return response;
   }
+  // Cart Details
+  Future<Map<String, dynamic>> getCartDetails(String accessToken, String customerId) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}cart-details",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+      },
+    );
+    return response;
+  }
 }
