@@ -539,8 +539,16 @@ class DashboardProvider extends ChangeNotifier {
   }
 
   // My Wishlist Logic
-  List<ProductItem> _myWishlistItems = [];
-  List<ProductItem> get myWishlistItems => _myWishlistItems;
+  List<ProductItem> _allWishlistItems = [];
+  List<ProductItem> _filteredWishlistItems = [];
+  List<ProductItem> get myWishlistItems => _filteredWishlistItems;
+  
+  List<WishlistCategory> _myWishlistCategories = [];
+  List<WishlistCategory> get myWishlistCategories => _myWishlistCategories;
+  
+  String _selectedWishlistCategoryId = "";
+  String get selectedWishlistCategoryId => _selectedWishlistCategoryId;
+
   bool _isFetchingMyWishlist = false;
   bool get isFetchingMyWishlist => _isFetchingMyWishlist;
 
@@ -552,17 +560,35 @@ class DashboardProvider extends ChangeNotifier {
       final accessToken = prefs.getString(StorageKeys.accessToken) ?? '';
       final customerId = prefs.getString(StorageKeys.userId) ?? '';
 
-      final response = await _dataSource.getProfile(accessToken, customerId);
-      final profileResponse = ProfileResponse.fromJson(response);
-      
+      // 1. Fetch Items
+      final profileFuture = _dataSource.getProfile(accessToken, customerId);
+      // 2. Fetch Categories
+      final categoriesFuture = _dataSource.getGlobalWishlistCategories(accessToken, customerId);
+
+      final results = await Future.wait([profileFuture, categoriesFuture]);
+
+      // Process Items
+      final profileResponse = ProfileResponse.fromJson(results[0]);
       if (profileResponse.results != null && profileResponse.results!.isNotEmpty) {
           final result = profileResponse.results![0];
           if (result != null && result.wishlist != null) {
-              _myWishlistItems = result.wishlist!.whereType<ProductItem>().toList();
+              _allWishlistItems = result.wishlist!.whereType<ProductItem>().toList();
           } else {
-              _myWishlistItems = [];
+              _allWishlistItems = [];
           }
       }
+
+      // Process Categories
+      try {
+        final catResponse = WishlistCategoriesResponse.fromJson(results[1]);
+        _myWishlistCategories = catResponse.results?.whereType<WishlistCategory>().toList() ?? [];
+      } catch (e) {
+         debugPrint("Error parsing global categories: $e");
+         _myWishlistCategories = []; 
+      }
+      
+      _applyWishlistFilter();
+
     } catch (e) {
       debugPrint("Error fetching my wishlist: $e");
       _errorMsg = "Failed to load wishlist";
@@ -570,6 +596,34 @@ class DashboardProvider extends ChangeNotifier {
       _isFetchingMyWishlist = false;
       notifyListeners();
     }
+  }
+
+  void setSelectedWishlistCategory(String categoryId) {
+    _selectedWishlistCategoryId = categoryId;
+    _applyWishlistFilter();
+    notifyListeners();
+  }
+
+  void _applyWishlistFilter() {
+    if (_selectedWishlistCategoryId.isEmpty) {
+      _filteredWishlistItems = List.from(_allWishlistItems);
+    } else {
+      _filteredWishlistItems = _allWishlistItems.where((item) => 
+          item.wishlistCategoryId == _selectedWishlistCategoryId).toList();
+    }
+  }
+
+  // Checkbox Selection Logic
+  final Set<String> _selectedWishlistItemIds = {};
+  bool isWishlistItemSelected(String id) => _selectedWishlistItemIds.contains(id);
+
+  void toggleWishlistItemSelection(String wishlistId) {
+      if (_selectedWishlistItemIds.contains(wishlistId)) {
+          _selectedWishlistItemIds.remove(wishlistId);
+      } else {
+          _selectedWishlistItemIds.add(wishlistId);
+      }
+      notifyListeners();
   }
 
   Future<bool> deleteWishlistItem(String wishlistId) async {
@@ -588,9 +642,11 @@ class DashboardProvider extends ChangeNotifier {
       
       final jsonResponse = response; 
       if (jsonResponse['status'] == 200) {
-         _myWishlistItems.removeWhere((item) => item.wishlistId == wishlistId);
-         await fetchWishlistCategories(""); 
-         await fetchMyWishlist(); 
+         _allWishlistItems.removeWhere((item) => item.wishlistId == wishlistId);
+         _applyWishlistFilter();
+         
+         // If we need to refresh full state:
+         // await fetchMyWishlist(); 
          
          _isLoading = false;
          notifyListeners();

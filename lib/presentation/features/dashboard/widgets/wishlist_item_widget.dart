@@ -12,6 +12,9 @@ class WishlistItemWidget extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onAddToCart;
   final VoidCallback? onDelete;
+  final bool isSelected;
+  final VoidCallback? onSelect;
+  final String? categoryName;
 
   const WishlistItemWidget({
     super.key,
@@ -20,6 +23,9 @@ class WishlistItemWidget extends StatelessWidget {
     this.onTap,
     this.onAddToCart,
     this.onDelete,
+    this.isSelected = false,
+    this.onSelect,
+    this.categoryName,
   });
 
   @override
@@ -30,150 +36,147 @@ class WishlistItemWidget extends StatelessWidget {
     final bool canAddToCart = item.supplierAvailable == "1" && item.productAvailable == "1" && !isOutOfStock;
     final bool hasPromotion = item.promotionPrice != null && double.tryParse(item.promotionPrice ?? "0")! > 0;
     
+    // Determine category name to display (Parity: Show if 'All' categories selected)
+    // For now, allow it to be passed in or just show it if available.
+    // Provider logic handles filtering, but Widget might need to know "current context".
+    // Android shows it if `favCategoty == ""`
+    
     return Container(
       width: width,
-      margin: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.h), // Grid spacing
+      margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h), // List spacing
       child: Card(
         elevation: 1,
         color: Colors.white,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(0.r), 
+          borderRadius: BorderRadius.circular(2.r), 
         ),
         child: InkWell(
           onTap: onTap,
           child: Padding(
-            padding: EdgeInsets.all(5.0.w),
+            padding: EdgeInsets.all(8.0.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Unit Header (Orange Bar)
-                if (item.soldAs != null && item.soldAs!.isNotEmpty && item.soldAs != "Each" && item.qtyPerOuter != null)
-                   Container(
-                     width: double.infinity,
-                     height: 24.h,
-                     decoration: BoxDecoration(
-                        color: AppTheme.orangeColor,
-                     ),
-                     alignment: Alignment.center,
-                     child: Text(
-                       "${item.soldAs} (${item.qtyPerOuter} Units)",
-                       style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold),
-                     ),
-                   )
-                else if (item.soldAs == "Each")
-                   Container(
-                     width: double.infinity,
-                     height: 24.h,
-                     decoration: BoxDecoration(
-                        color: AppTheme.orangeColor, 
-                     ),
-                     alignment: Alignment.center,
-                     child: Text(
-                       "Each",
-                       style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold),
-                     ),
-                   ),
-
-                // Image Layer
-                Stack(
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                     // 1. Checkbox
+                     // Using a custom container to match look or standard Checkbox
+                     SizedBox(
+                       width: 24.w,
+                       height: 24.w,
+                       child: Checkbox(
+                         value: isSelected, 
+                         onChanged: (val) {
+                            if (onSelect != null) onSelect!();
+                         },
+                         activeColor: AppTheme.primaryColor,
+                         side: BorderSide(color: Colors.grey, width: 1.5),
+                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
+                       ),
+                     ),
+                     SizedBox(width: 8.w),
+
+                     // 2. Image
                      Container(
-                        height: 100.h,
-                        width: double.infinity,
+                        height: 80.h,
+                        width: 80.w,
                         alignment: Alignment.center,
                         child: _buildImage(item.image),
                      ),
-                     // No badges explicitly mentioned for Wishlist, but if they exist in item, we could show.
-                     // Android adapter doesn't seem to show badges in wishlist usually, but parity suggests we keep it simple.
+                     SizedBox(width: 10.w),
+
+                     // 3. Details Column
+                     Expanded(
+                       child: Column(
+                         crossAxisAlignment: CrossAxisAlignment.start,
+                         children: [
+                            Text(
+                              item.brandName ?? "",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(color: Colors.grey, fontSize: 11.sp),
+                            ),
+                            SizedBox(height: 2.h),
+                            Text(
+                              item.title ?? "",
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                  color: AppTheme.textColor, 
+                                  fontSize: 13.sp, 
+                                  fontWeight: FontWeight.bold
+                              ),
+                            ),
+                            SizedBox(height: 5.h),
+                             // Price Section
+                            if (!hasPromotion) ...[
+                               Text(
+                                 _formatPrice(item.price),
+                                 style: TextStyle(color: AppTheme.textColor, fontSize: 12.sp),
+                               ),
+                            ] else ...[
+                               // Formatting for promo
+                               Row(
+                                 children: [
+                                   Text(
+                                     _formatPrice(item.price),
+                                     style: TextStyle(
+                                       color: Colors.grey, 
+                                       fontSize: 12.sp,
+                                       decoration: TextDecoration.lineThrough
+                                     ),
+                                   ),
+                                   SizedBox(width: 5.w),
+                                   Text(
+                                     _formatPrice(item.promotionPrice),
+                                     style: TextStyle(color: AppTheme.redColor, fontSize: 12.sp, fontWeight: FontWeight.bold),
+                                   ),
+                                 ],
+                               )
+                            ],
+                         ],
+                       ),
+                     ),
+                     
+                     // 4. Delete Icon (Heart Red)
+                     InkWell(
+                        onTap: onDelete,
+                        child: Padding(
+                          padding: EdgeInsets.all(5.w),
+                          child: Icon(
+                            Icons.favorite, // Filled Red Heart logic
+                            color: AppTheme.redColor,
+                            size: 24.sp,
+                          ),
+                        ),
+                     )
                   ],
                 ),
-
-                SizedBox(height: 5.h),
-
-                // Vendor Name
-                if (item.brandName != null && item.brandName!.isNotEmpty)
-                  Text(
-                    item.brandName!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: Colors.grey, fontSize: 11.sp),
-                  ),
-
-                // Product Name
-                SizedBox(height: 2.h),
-                Text(
-                  item.title ?? item.brandName ?? "",
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                      color: AppTheme.textColor, 
-                      fontSize: 12.sp, 
-                      fontWeight: FontWeight.bold
-                  ),
-                ),
-
-                // MOQ
-                if (item.minimumOrderQty != null && item.minimumOrderQty != "0" && item.minimumOrderQty != "1")
-                   Padding(
-                     padding: EdgeInsets.only(top: 5.h),
-                     child: Text(
-                       "MOQ : ${item.minimumOrderQty}",
-                       style: TextStyle(color: AppTheme.redColor, fontSize: 12.sp, fontWeight: FontWeight.bold),
-                     ),
-                   ),
-
-                SizedBox(height: 5.h),
-
-                // Price Section
-                if (!hasPromotion) ...[
-                   Text(
-                     _formatPrice(item.price),
-                     style: TextStyle(color: AppTheme.textColor, fontSize: 12.sp),
-                   ),
-                ] else ...[
-                   Text(
-                     _formatPrice(item.price),
-                     style: TextStyle(
-                       color: Colors.grey, 
-                       fontSize: 12.sp,
-                       decoration: TextDecoration.lineThrough
-                     ),
-                   ),
-                   Row(
-                     children: [
-                       Text(
-                         _formatPrice(item.promotionPrice),
-                         style: TextStyle(color: AppTheme.redColor, fontSize: 12.sp),
-                       ),
-                       SizedBox(width: 5.w),
-                       Container(
-                         padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
-                         color: AppTheme.redColor,
-                         child: Text(
-                           "-${_calculateDiscount(item.price, item.promotionPrice)}%",
-                           style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold),
-                         ),
-                       )
-                     ],
-                   )
-                ],
                 
-                SizedBox(height: 5.h),
-
-                // Add To Cart & Delete
-                SizedBox(height: 8.h),
+                SizedBox(height: 10.h),
+                
+                // Bottom Row: Button & Category Name
                 Row(
-                  children: [
-                    Expanded(
-                      child: InkWell(
+                   children: [
+                      // Button
+                      InkWell(
                         onTap: canAddToCart ? onAddToCart : null,
                         child: Container(
-                          height: 30.h,
+                          height: 32.h,
+                          padding: EdgeInsets.symmetric(horizontal: 15.w),
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: canAddToCart ? AppTheme.tealColor : AppTheme.redColorOpacity50,
+                            color: canAddToCart ? AppTheme.orangeColor : AppTheme.redColorOpacity50,
                             borderRadius: BorderRadius.circular(20.r),
+                            boxShadow: [
+                               BoxShadow(
+                                 color: AppTheme.shadowBlack,
+                                 blurRadius: 4,
+                                 offset: Offset(0, 2)
+                               )
+                            ]
                           ),
                           child: Text(
                              isOutOfStock 
@@ -181,22 +184,20 @@ class WishlistItemWidget extends StatelessWidget {
                                  : (item.addedToCart == "Yes" 
                                      ? "Update Cart [${item.addedQty ?? '1'}]" 
                                      : "Add To Cart"),
-                             style: TextStyle(fontSize: 10.sp, color: Colors.white, fontWeight: FontWeight.bold),
+                             style: TextStyle(fontSize: 11.sp, color: Colors.white, fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),
-                    ),
-                    SizedBox(width: 8.w),
-                    InkWell(
-                      onTap: onDelete,
-                      child: Icon(
-                        Icons.delete_outline, // Trash icon for Wishlist
-                        color: Colors.grey,
-                        size: 22.sp,
-                      ),
-                    )
-                  ],
+                   ],
                 ),
+                if (categoryName != null && categoryName!.isNotEmpty)
+                   Padding(
+                     padding: EdgeInsets.only(top: 5.h),
+                     child: Text(
+                       "[$categoryName]",
+                       style: TextStyle(color: Colors.black, fontSize: 11.sp, fontWeight: FontWeight.bold),
+                     ),
+                   ),
               ],
             ),
           ),
@@ -212,14 +213,6 @@ class WishlistItemWidget extends StatelessWidget {
     return "AUD ${p.toStringAsFixed(2)}";
   }
 
-  String _calculateDiscount(String? original, String? promo) {
-     if (original == null || promo == null) return "0";
-     double o = double.tryParse(original) ?? 0;
-     double p = double.tryParse(promo) ?? 0;
-     if (o == 0) return "0";
-     int discount = (((o - p) / o) * 100).toInt();
-     return discount.toString();
-  }
 
   Widget _buildImage(String? path) {
       if (path == null || path.isEmpty) {
