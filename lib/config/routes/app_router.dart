@@ -6,6 +6,7 @@ import '../../presentation/features/auth/forgot_password_screen.dart';
 import '../../presentation/features/splash/splash_screen.dart';
 
 import '../../presentation/features/dashboard/dashboard_screen.dart';
+import '../../presentation/features/dashboard/my_wishlist_screen.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -34,6 +35,10 @@ class AppRouter {
       GoRoute(
         path: '/dashboard',
         builder: (context, state) => const DashboardScreen(),
+      ),
+      GoRoute(
+        path: '/my-wishlist',
+        builder: (context, state) => const MyWishlistScreen(),
       ),
 
       // Other routes...

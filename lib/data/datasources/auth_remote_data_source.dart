@@ -330,4 +330,31 @@ class AuthRemoteDataSource {
     );
     return response;
   }
+
+  Future<Map<String, dynamic>> deleteFromWishlist({
+    required String accessToken,
+    required String customerId,
+    required String wishlistId,
+  }) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}delete-from-wishlist",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'wishlist_id': wishlistId,
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> getGlobalWishlistCategories(String accessToken, String customerId) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}wishlist-categories",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+      },
+    );
+    return response;
+  }
 }

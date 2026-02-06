@@ -537,4 +537,74 @@ class DashboardProvider extends ChangeNotifier {
     _promotionsResponse?.results?.forEach(update);
     _recentlyAddedResponse?.results?.forEach(update);
   }
+
+  // My Wishlist Logic
+  List<ProductItem> _myWishlistItems = [];
+  List<ProductItem> get myWishlistItems => _myWishlistItems;
+  bool _isFetchingMyWishlist = false;
+  bool get isFetchingMyWishlist => _isFetchingMyWishlist;
+
+  Future<void> fetchMyWishlist() async {
+    _isFetchingMyWishlist = true;
+    notifyListeners();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final accessToken = prefs.getString(StorageKeys.accessToken) ?? '';
+      final customerId = prefs.getString(StorageKeys.userId) ?? '';
+
+      final response = await _dataSource.getProfile(accessToken, customerId);
+      final profileResponse = ProfileResponse.fromJson(response);
+      
+      if (profileResponse.results != null && profileResponse.results!.isNotEmpty) {
+          final result = profileResponse.results![0];
+          if (result != null && result.wishlist != null) {
+              _myWishlistItems = result.wishlist!.whereType<ProductItem>().toList();
+          } else {
+              _myWishlistItems = [];
+          }
+      }
+    } catch (e) {
+      debugPrint("Error fetching my wishlist: $e");
+      _errorMsg = "Failed to load wishlist";
+    } finally {
+      _isFetchingMyWishlist = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> deleteWishlistItem(String wishlistId) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final accessToken = prefs.getString(StorageKeys.accessToken) ?? '';
+      final customerId = prefs.getString(StorageKeys.userId) ?? '';
+
+      final response = await _dataSource.deleteFromWishlist(
+        accessToken: accessToken,
+        customerId: customerId,
+        wishlistId: wishlistId,
+      );
+      
+      final jsonResponse = response; 
+      if (jsonResponse['status'] == 200) {
+         _myWishlistItems.removeWhere((item) => item.wishlistId == wishlistId);
+         await fetchWishlistCategories(""); 
+         await fetchMyWishlist(); 
+         
+         _isLoading = false;
+         notifyListeners();
+         return true;
+      } else {
+         _errorMsg = jsonResponse['message'] ?? "Failed to delete item";
+      }
+    } catch (e) {
+       debugPrint("Error deleting wishlist item: $e");
+       _errorMsg = "Failed to delete item";
+    } finally {
+       _isLoading = false;
+       notifyListeners();
+    }
+    return false;
+  }
 }

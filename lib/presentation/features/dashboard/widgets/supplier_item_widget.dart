@@ -49,7 +49,7 @@ class SupplierItemWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(2.r),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.18),
+              color: AppTheme.shadowBlack,
               offset: const Offset(0, 6), // 👈 shadow goes DOWN
               blurRadius: 8,
               spreadRadius: -2, // 👈 prevents side shadow

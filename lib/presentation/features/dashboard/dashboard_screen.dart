@@ -231,7 +231,10 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
                child: Column(
                  children: [
                     _buildDrawerItem(AppAssets.scanIcon, "Scan to Order", () {}),
-                    _buildDrawerItem(AppAssets.favIcon, "My Wishlist", () {}),
+                    _buildDrawerItem(AppAssets.favIcon, "My Wishlist", () {
+                      context.pop(); // Close drawer
+                      context.push('/my-wishlist');
+                    }),
                     _buildDrawerItem(AppAssets.myOrdersIcon, "My Orders", () {}),
                     _buildDrawerItem(AppAssets.orderNowIcon, "Order Now", () {}),
                     _buildDrawerItem(AppAssets.promoIcon, "Promotions", () {}),

@@ -15,4 +15,7 @@ class AppTheme {
   static const Color lightGrayBg = Color(0xFFE5E7EB); // @color/light_graycolor
   static const Color redColor = Color(0xFFE4134A); // @color/redcolor
   static const Color orangeColor = Color(0xFFFCBD5F); 
+  static const Color redColorOpacity50 = Color(0x80E4134A); 
+  static const Color redColorOpacity10 = Color(0x1AE4134A);
+  static const Color shadowBlack = Color(0x2E000000);
 }

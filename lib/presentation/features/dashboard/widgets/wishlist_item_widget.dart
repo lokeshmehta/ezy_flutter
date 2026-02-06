@@ -6,51 +6,39 @@ import '../../../../core/constants/url_api_key.dart';
 import '../../../../core/network/image_cache_manager.dart';
 import '../../../../data/models/home_models.dart';
 
-class ProductItemWidget extends StatelessWidget {
+class WishlistItemWidget extends StatelessWidget {
   final ProductItem item;
   final double width;
   final VoidCallback? onTap;
   final VoidCallback? onAddToCart;
-  final VoidCallback? onFavorite;
+  final VoidCallback? onDelete;
 
-  const ProductItemWidget({
+  const WishlistItemWidget({
     super.key,
     required this.item,
     required this.width,
     this.onTap,
     this.onAddToCart,
-    this.onFavorite,
-    this.badgeLabel,
+    this.onDelete,
   });
-
-  final String? badgeLabel;
 
   @override
   Widget build(BuildContext context) {
-    // Logic from FutureProductsAdapter.kt
-
-    // Sold As Logic
-    // TODO: Need access to DashboardProvider or passing 'show_sold_as' flag. 
-    // For now assuming show_sold_as is false or handled elsewhere, or I can check item fields if they exist.
-    // Android checks DashboardViewModel.getUpResponse?.value?.results?.get(0)?.show_sold_as == "Yes"
+    // Logic Parity with Android Fav_ProductslistAdapter.kt
     
     final bool isOutOfStock = item.qtyStatus == "Out Of Stock";
     final bool canAddToCart = item.supplierAvailable == "1" && item.productAvailable == "1" && !isOutOfStock;
     final bool hasPromotion = item.promotionPrice != null && double.tryParse(item.promotionPrice ?? "0")! > 0;
     
-    // Vendor Visibility: 
-    // Android: if category is Promotions/Pop Cat -> GONE. 
-    // But this widget is mostly for standard products. Passing visibility might be cleaner, but let's default to visible.
-    
     return Container(
       width: width,
-      margin: EdgeInsets.only(right: 10.w, bottom: 5.h),
+      margin: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.h), // Grid spacing
       child: Card(
         elevation: 1,
         color: Colors.white,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(0.r), // 👈 decrease radius here
+          borderRadius: BorderRadius.circular(0.r), 
         ),
         child: InkWell(
           onTap: onTap,
@@ -65,7 +53,7 @@ class ProductItemWidget extends StatelessWidget {
                      width: double.infinity,
                      height: 24.h,
                      decoration: BoxDecoration(
-                        color: AppTheme.orangeColor, // Orange bar from Image 2
+                        color: AppTheme.orangeColor,
                      ),
                      alignment: Alignment.center,
                      child: Text(
@@ -96,23 +84,8 @@ class ProductItemWidget extends StatelessWidget {
                         alignment: Alignment.center,
                         child: _buildImage(item.image),
                      ),
-                     // Status Badge (Top Left)
-                     if (badgeLabel != null && badgeLabel!.isNotEmpty)
-                       Positioned(
-                         top: 0,
-                         left: 0,
-                         child: Container(
-                           padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
-                           decoration: BoxDecoration(
-                             color: AppTheme.redColor,
-                             borderRadius: BorderRadius.only(bottomRight: Radius.circular(8.r)),
-                           ),
-                           child: Text(
-                             badgeLabel!,
-                             style: TextStyle(color: Colors.white, fontSize: 9.sp, fontWeight: FontWeight.bold),
-                           ),
-                         ),
-                       ),
+                     // No badges explicitly mentioned for Wishlist, but if they exist in item, we could show.
+                     // Android adapter doesn't seem to show badges in wishlist usually, but parity suggests we keep it simple.
                   ],
                 ),
 
@@ -156,10 +129,9 @@ class ProductItemWidget extends StatelessWidget {
                 if (!hasPromotion) ...[
                    Text(
                      _formatPrice(item.price),
-                     style: TextStyle(color: AppTheme.textColor, fontSize: 12.sp), // Use grey? Android uses 'darkgreycolor'
+                     style: TextStyle(color: AppTheme.textColor, fontSize: 12.sp),
                    ),
                 ] else ...[
-                   // Promotion UI
                    Text(
                      _formatPrice(item.price),
                      style: TextStyle(
@@ -189,7 +161,7 @@ class ProductItemWidget extends StatelessWidget {
                 
                 SizedBox(height: 5.h),
 
-                // Add To Cart & Fav
+                // Add To Cart & Delete
                 SizedBox(height: 8.h),
                 Row(
                   children: [
@@ -216,18 +188,15 @@ class ProductItemWidget extends StatelessWidget {
                     ),
                     SizedBox(width: 8.w),
                     InkWell(
-                      onTap: onFavorite,
+                      onTap: onDelete,
                       child: Icon(
-                        item.isFavourite == "Yes" ? Icons.favorite : Icons.favorite_border,
-                        color: item.isFavourite == "Yes" ? AppTheme.redColor : AppTheme.primaryColor,
+                        Icons.delete_outline, // Trash icon for Wishlist
+                        color: Colors.grey,
                         size: 22.sp,
                       ),
                     )
                   ],
                 ),
-                
-                // Shop Now (Hidden by default in FutureProducts except Pop Categories?)
-                // Assuming this generic widget is for products.
               ],
             ),
           ),
@@ -264,7 +233,7 @@ class ProductItemWidget extends StatelessWidget {
       return CachedNetworkImage(
         imageUrl: finalUrl,
         height: 120.h,
-        fit: BoxFit.contain, // scaleType="fitCenter"
+        fit: BoxFit.contain, 
         cacheManager: ImageCacheManager(),
         placeholder: (context, url) => Container(color: Colors.grey[200]),
         errorWidget: (context, url, error) => const Icon(Icons.broken_image, color: Colors.grey),

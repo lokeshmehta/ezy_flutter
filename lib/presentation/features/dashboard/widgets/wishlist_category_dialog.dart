@@ -174,7 +174,7 @@ class _WishlistCategoryDialogState extends State<WishlistCategoryDialog> {
                          child: Container(
                            padding: EdgeInsets.all(5.w),
                            decoration: BoxDecoration(
-                             color: AppTheme.redColor.withOpacity(0.1),
+                             color: AppTheme.redColorOpacity10,
                              shape: BoxShape.circle, 
                            ),
                            child: Icon(Icons.close, size: 16.sp, color: AppTheme.redColor),

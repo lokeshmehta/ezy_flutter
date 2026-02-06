@@ -150,6 +150,8 @@ class ProfileResult {
   String? customerMessageForAdditionalSuppliersCharge; 
   String? showShippingSegment; 
   String? showSoldAs;
+  List<ProductItem?>? wishlist; // Added
+  int? wishlistCount; // Added
 
   ProfileResult({
     this.customerId,
@@ -185,6 +187,8 @@ class ProfileResult {
     this.customerMessageForAdditionalSuppliersCharge,
     this.showShippingSegment,
     this.showSoldAs,
+    this.wishlist, // Added
+    this.wishlistCount, // Added
   });
 
   factory ProfileResult.fromJson(Map<String, dynamic> json) {
@@ -222,6 +226,10 @@ class ProfileResult {
       customerMessageForAdditionalSuppliersCharge: json['customer_message_for_additional_suppliers_charge']?.toString(),
       showShippingSegment: json['show_shipping_segment']?.toString(),
       showSoldAs: json['show_sold_as']?.toString(),
+      wishlist: json['wishlist'] != null
+          ? (json['wishlist'] as List).map((i) => i != null ? ProductItem.fromJson(i) : null).toList()
+          : null,
+      wishlistCount: json['wishlist_count'],
     );
   }
 }
@@ -298,6 +306,8 @@ class ProductItem {
     String? fromDate;
     String? toDate;
     String? hasPromotion; // Added field
+    String? wishlistId; // Added for Wishlist
+    String? wishlistCategoryId; // Added for Wishlist
 
     ProductItem({
         this.productId,
@@ -330,6 +340,8 @@ class ProductItem {
         this.fromDate,
         this.toDate,
         this.hasPromotion,
+        this.wishlistId,
+        this.wishlistCategoryId,
     });
 
     factory ProductItem.fromJson(Map<String, dynamic> json) {
@@ -364,6 +376,8 @@ class ProductItem {
             fromDate: json['from_date']?.toString(),
             toDate: json['to_date']?.toString(),
             hasPromotion: json['has_promotion']?.toString(),
+            wishlistId: json['wishlist_id']?.toString(),
+            wishlistCategoryId: json['wishlist_category_id']?.toString(),
         );
     }
 }
