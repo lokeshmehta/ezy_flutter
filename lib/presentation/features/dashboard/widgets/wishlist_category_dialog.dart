@@ -28,152 +28,168 @@ class _WishlistCategoryDialogState extends State<WishlistCategoryDialog> {
   Widget build(BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
-      child: Container(
-        padding: EdgeInsets.all(16.w),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+      insetPadding: EdgeInsets.symmetric(horizontal: 16.w),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Orange Header
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+            decoration: BoxDecoration(
+              color: AppTheme.orangeColor,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(10.r)),
+            ),
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: Text(
-                    widget.product.title ?? "Product Name",
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.primaryColor,
-                    ),
+                Text(
+                  "Add To Wishlist",
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: Icon(Icons.close, size: 24.sp, color: AppTheme.darkGrayColor),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  visualDensity: VisualDensity.compact,
-                ),
+                InkWell(
+                  onTap: () => Navigator.pop(context),
+                  child: Icon(Icons.close, size: 24.sp, color: Colors.white),
+                )
               ],
             ),
-            SizedBox(height: 16.h),
-            Text(
-              "Select Wishlist Categories",
-              style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8.h),
-            Consumer<DashboardProvider>(
-              builder: (context, provider, child) {
-                final categories = provider.wishlistCategories;
-                if (categories == null || categories.isEmpty) {
-                  return const SizedBox();
-                }
-                return ConstrainedBox(
-                  constraints: BoxConstraints(maxHeight: 200.h),
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: categories.length,
-                    itemBuilder: (context, index) {
-                      final category = categories[index];
-                      return CheckboxListTile(
-                        title: Text(
-                          category?.categoryName ?? "",
-                          style: TextStyle(fontSize: 12.sp),
-                        ),
-                        value: category?.isSelected ?? false,
-                        onChanged: (val) {
-                          provider.toggleWishlistCategory(category?.categoryId);
-                        },
-                        controlAffinity: ListTileControlAffinity.leading,
-                        contentPadding: EdgeInsets.zero,
-                        dense: true,
-                        activeColor: AppTheme.orangeColor,
-                      );
-                    },
-                  ),
-                );
-              },
-            ),
-            SizedBox(height: 16.h),
-            Row(
+          ),
+          
+          Padding(
+            padding: EdgeInsets.all(16.w),
+            child: Column(
               children: [
-                Expanded(
-                  child: TextField(
-                    controller: _newCategoryController,
-                    decoration: InputDecoration(
-                      hintText: "Add New Category",
-                      hintStyle: TextStyle(fontSize: 12.sp),
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 8.w),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.r),
-                      ),
-                    ),
-                    style: TextStyle(fontSize: 12.sp),
+                // Product Name (Blue)
+                Text(
+                  widget.product.title ?? "Product Name",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.primaryColor,
                   ),
                 ),
-                SizedBox(width: 8.w),
-                ElevatedButton(
-                  onPressed: () {
-                    if (_newCategoryController.text.trim().isNotEmpty) {
-                      _submitUpdate(context);
+                SizedBox(height: 8.h),
+
+                // Note (Red) for Remove
+                Text(
+                  "Note : To remove product from Wishlist then unselect and save",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 10.sp,
+                    color: AppTheme.redColor,
+                  ),
+                ),
+                SizedBox(height: 16.h),
+
+                // Categories List
+                Consumer<DashboardProvider>(
+                  builder: (context, provider, child) {
+                    final categories = provider.wishlistCategories;
+                    if (categories == null || categories.isEmpty) {
+                      return const SizedBox();
                     }
+                    return ConstrainedBox(
+                      constraints: BoxConstraints(maxHeight: 180.h),
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: categories.length,
+                        itemBuilder: (context, index) {
+                          final category = categories[index];
+                          return CheckboxListTile(
+                            title: Text(
+                              category?.categoryName ?? "",
+                              style: TextStyle(fontSize: 12.sp),
+                            ),
+                            value: category?.isSelected ?? false,
+                            onChanged: (val) {
+                              provider.toggleWishlistCategory(category?.categoryId);
+                            },
+                            controlAffinity: ListTileControlAffinity.leading,
+                            contentPadding: EdgeInsets.zero,
+                            dense: true,
+                            activeColor: AppTheme.orangeColor,
+                          );
+                        },
+                      ),
+                    );
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.orangeColor,
-                    padding: EdgeInsets.symmetric(horizontal: 12.w),
-                    minimumSize: Size(0, 35.h),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5.r),
+                ),
+
+                SizedBox(height: 12.h),
+
+                // Add New List (Simplified Field)
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _newCategoryController,
+                        decoration: InputDecoration(
+                          hintText: "+ Add New List",
+                          hintStyle: TextStyle(fontSize: 12.sp, color: AppTheme.orangeColor),
+                          border: InputBorder.none, 
+                          isDense: true,
+                          contentPadding: EdgeInsets.symmetric(vertical: 8.h),
+                        ),
+                        style: TextStyle(fontSize: 12.sp),
+                      ),
                     ),
-                  ),
-                  child: Text(
-                    "Add",
-                    style: TextStyle(fontSize: 11.sp, color: Colors.white),
-                  ),
+                  ],
+                ),
+                SizedBox(height: 16.h),
+
+                // Buttons: Save (Orange) & Close (Grey)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Save Button
+                    SizedBox(
+                      width: 100.w,
+                      child: ElevatedButton(
+                        onPressed: () => _submitUpdate(context),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.orangeColor,
+                          padding: EdgeInsets.symmetric(vertical: 10.h),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5.r),
+                          ),
+                        ),
+                        child: Text(
+                          "Save",
+                          style: TextStyle(fontSize: 13.sp, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 16.w),
+
+                    // Close Button
+                    SizedBox(
+                      width: 100.w,
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey[400], // Grey fill
+                          padding: EdgeInsets.symmetric(vertical: 10.h),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5.r),
+                          ),
+                        ),
+                        child: Text(
+                          "Close",
+                          style: TextStyle(fontSize: 13.sp, color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-            SizedBox(height: 24.h),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: OutlinedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(vertical: 10.h),
-                      side: const BorderSide(color: AppTheme.darkGrayColor),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5.r),
-                      ),
-                    ),
-                    child: Text(
-                      "Cancel",
-                      style: TextStyle(fontSize: 13.sp, color: AppTheme.darkGrayColor),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 16.w),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () => _submitUpdate(context),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.orangeColor,
-                      padding: EdgeInsets.symmetric(vertical: 10.h),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5.r),
-                      ),
-                    ),
-                    child: Text(
-                      "Add To List",
-                      style: TextStyle(fontSize: 13.sp, color: Colors.white),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
