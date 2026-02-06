@@ -26,7 +26,7 @@ class ProductGridItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isOutOfStock = item.qtyStatus == "Out Of Stock";
-    final bool canAddToCart = item.supplierAvailable == 1 && item.productAvailable == 1 && !isOutOfStock;
+    final bool canAddToCart = item.supplierAvailable == "1" && item.productAvailable == "1" && !isOutOfStock;
     final bool hasPromotion = item.promotionPrice != null && double.tryParse(item.promotionPrice ?? "0")! > 0;
 
     return Container(
@@ -191,19 +191,22 @@ class ProductGridItem extends StatelessWidget {
                       child: InkWell(
                         onTap: canAddToCart ? onAddToCart : null,
                         child: Container(
-                          height: 30.h,
+                          height: 40.h, // Standardized touch target
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: canAddToCart ? AppTheme.tealColor : AppTheme.redColor,
                             borderRadius: BorderRadius.circular(4.r),
                           ),
-                          child: Text(
-                             isOutOfStock 
-                                ? "Out Of Stock" 
-                                : (item.addedToCart == "Yes" 
-                                    ? "Update Cart [${item.addedQty ?? '1'}]" 
-                                    : "Add To Cart"),
-                             style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold),
+                          child: FittedBox( // Prevent text overflow in button
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                               isOutOfStock 
+                                  ? "Out Of Stock" 
+                                  : (item.addedToCart == "Yes" 
+                                      ? "Update Cart [${item.addedQty ?? '1'}]" 
+                                      : "Add To Cart"),
+                               style: TextStyle(color: Colors.white, fontSize: 11.sp, fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ),
                       ),
@@ -213,8 +216,8 @@ class ProductGridItem extends StatelessWidget {
                       onTap: onFavorite,
                       child: Image.asset(
                         item.isFavourite == "Yes" ? "assets/images/favadded.png" : "assets/images/fav_new.png",
-                        width: 30.w,
-                        height: 30.w,
+                        width: 40.h, // Match button height
+                        height: 40.h,
                       ),
                     ),
                   ],

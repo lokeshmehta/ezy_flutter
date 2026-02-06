@@ -59,45 +59,49 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
           // Header
           _buildHeader(context),
           
-          Padding(
-            padding: EdgeInsets.all(15.w),
-            child: Container(
-              padding: EdgeInsets.all(10.w),
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(5.r),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+          Flexible(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.all(15.w).copyWith(bottom: 15.w + MediaQuery.of(context).padding.bottom),
+                child: Container(
+                  padding: EdgeInsets.all(10.w),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(5.r),
+                  ),
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Product Image & Tag
-                      _buildProductImage(),
-                      SizedBox(width: 15.w),
-                      // Product Info
-                      Expanded(
-                        child: _buildProductDetails(showSoldAs),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Product Image & Tag
+                          _buildProductImage(),
+                          SizedBox(width: 15.w),
+                          // Product Info
+                          Expanded(
+                            child: _buildProductDetails(showSoldAs),
+                          ),
+                        ],
                       ),
+                      
+                      SizedBox(height: 15.h),
+                      
+                      // Min Order Qty & Stock Info
+                      _buildStockInfo(),
+                      
+                      SizedBox(height: 15.h),
+                      
+                      // Quantity Picker
+                      _buildQuantityPicker(),
+                      
+                      SizedBox(height: 15.h),
+                      
+                      // Action Buttons
+                      _buildActionButtons(context),
                     ],
                   ),
-                  
-                  SizedBox(height: 15.h),
-                  
-                  // Min Order Qty & Stock Info
-                  _buildStockInfo(),
-                  
-                  SizedBox(height: 15.h),
-                  
-                  // Quantity Picker
-                  _buildQuantityPicker(),
-                  
-                  SizedBox(height: 15.h),
-                  
-                  // Action Buttons
-                  _buildActionButtons(context),
-                ],
+                ),
               ),
             ),
           ),
@@ -211,7 +215,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
             margin: EdgeInsets.only(bottom: 5.h),
             width: double.infinity,
             decoration: BoxDecoration(
-              color: AppTheme.secondaryColor.withOpacity(0.8), // Teal color matching cardBackground
+              color: AppTheme.secondaryColor.withValues(alpha: 0.8), // Teal color matching cardBackground
               borderRadius: BorderRadius.circular(2.r),
             ),
             child: Text(
@@ -387,7 +391,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
               } else {
                 await provider.addToCart(widget.product, _selectedQty.toString(), _selectedSoldAs);
               }
-              Navigator.pop(context);
+              if (context.mounted) Navigator.pop(context);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF009688), // tealcolor
@@ -405,7 +409,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
           GestureDetector(
             onTap: () async {
               await provider.deleteFromCart(widget.product);
-              Navigator.pop(context);
+              if (context.mounted) Navigator.pop(context);
             },
             child: Container(
               width: 45.h,

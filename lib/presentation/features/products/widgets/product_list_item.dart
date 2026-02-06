@@ -26,7 +26,7 @@ class ProductListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isOutOfStock = item.qtyStatus == "Out Of Stock";
-    final bool canAddToCart = item.supplierAvailable == 1 && item.productAvailable == 1 && !isOutOfStock;
+    final bool canAddToCart = item.supplierAvailable == "1" && item.productAvailable == "1" && !isOutOfStock;
     final bool hasPromotion = item.promotionPrice != null && double.tryParse(item.promotionPrice ?? "0")! > 0;
 
     return Container(
@@ -193,19 +193,22 @@ class ProductListItem extends StatelessWidget {
                       child: InkWell(
                         onTap: canAddToCart ? onAddToCart : null,
                         child: Container(
-                          height: 35.h,
+                          height: 40.h, // Standardized
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: canAddToCart ? AppTheme.tealColor : AppTheme.redColor,
                             borderRadius: BorderRadius.circular(4.r),
                           ),
-                          child: Text(
-                             isOutOfStock 
-                                ? "Out Of Stock" 
-                                : (item.addedToCart == "Yes" 
-                                    ? "Update Cart [${item.addedQty ?? '1'}]" 
-                                    : "Add To Cart"),
-                             style: TextStyle(color: Colors.white, fontSize: 12.sp, fontWeight: FontWeight.normal),
+                          child: FittedBox( // Prevent overflow
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                               isOutOfStock 
+                                  ? "Out Of Stock" 
+                                  : (item.addedToCart == "Yes" 
+                                      ? "Update Cart [${item.addedQty ?? '1'}]" 
+                                      : "Add To Cart"),
+                               style: TextStyle(color: Colors.white, fontSize: 13.sp, fontWeight: FontWeight.normal),
+                            ),
                           ),
                         ),
                       ),

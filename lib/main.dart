@@ -39,28 +39,35 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: const Size(360, 690), // Standard Android design size
-      minTextAdapt: true,
-      splitScreenMode: true,
-      builder: (_, child) {
-        return MultiProvider(
-          providers: [
-            ChangeNotifierProvider(create: (_) => AuthProvider(getIt<AuthRepository>())), // From ServiceLocator
-            ChangeNotifierProvider(create: (_) => SplashProvider()),
-            ChangeNotifierProvider(create: (_) => CompaniesProvider()),
-            ChangeNotifierProvider(create: (_) => SignUpProvider()),
-            ChangeNotifierProvider(create: (_) => ForgotPasswordProvider()),
-            ChangeNotifierProvider(create: (_) => DashboardProvider(getIt<AuthRemoteDataSource>())), // Pass DataSource directly or via Repository if implemented
-            ChangeNotifierProvider(create: (_) => ProductListProvider(getIt<AuthRemoteDataSource>())),
-
-          ],
-          child: MaterialApp.router(
-            title: 'EzyOrders',
-            theme: AppTheme.lightTheme,
-            routerConfig: AppRouter.router,
-            debugShowCheckedModeBanner: false,
-          ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Simple breakpoint for tablet detection
+        final isTablet = constraints.maxWidth >= 600;
+        
+        return ScreenUtilInit(
+          // Use distinct design sizes for Phone vs Tablet to ensure 12.sp looks like 12px on both
+          designSize: isTablet ? const Size(768, 1024) : const Size(375, 812),
+          minTextAdapt: true,
+          splitScreenMode: true,
+          builder: (_, child) {
+            return MultiProvider(
+              providers: [
+                ChangeNotifierProvider(create: (_) => AuthProvider(getIt<AuthRepository>())),
+                ChangeNotifierProvider(create: (_) => SplashProvider()),
+                ChangeNotifierProvider(create: (_) => CompaniesProvider()),
+                ChangeNotifierProvider(create: (_) => SignUpProvider()),
+                ChangeNotifierProvider(create: (_) => ForgotPasswordProvider()),
+                ChangeNotifierProvider(create: (_) => DashboardProvider(getIt<AuthRemoteDataSource>())),
+                ChangeNotifierProvider(create: (_) => ProductListProvider(getIt<AuthRemoteDataSource>())),
+              ],
+              child: MaterialApp.router(
+                title: 'EzyOrders',
+                theme: AppTheme.lightTheme,
+                routerConfig: AppRouter.router,
+                debugShowCheckedModeBanner: false,
+              ),
+            );
+          },
         );
       },
     );
