@@ -19,6 +19,7 @@ class SortDialog extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
           child: Container(
             padding: EdgeInsets.zero,
+            width: 300.w, // Ensure dialog has width
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(8.r),

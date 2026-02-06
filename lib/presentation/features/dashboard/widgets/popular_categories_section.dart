@@ -61,7 +61,7 @@ class _PopularCategoriesSectionState extends State<PopularCategoriesSection> {
               onNextTap: () => _scroll(true),
             ),
             SizedBox(
-              height: 200.h, // Dynamic height
+              height: 240.h, // Dynamic height - check content size (HomePromotionItemWidget)
               child: ListView.builder(
                 controller: _scrollController,
                 padding: EdgeInsets.symmetric(horizontal: 10.w),
