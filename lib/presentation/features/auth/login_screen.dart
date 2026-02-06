@@ -86,13 +86,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                     fit: BoxFit.contain,
                                     placeholder: (context, url) => const SizedBox(),
                                     errorWidget: (context, url, error) => Image.asset(
-                                       AppAssets.splashLogo, // Fallback
+                                       AppAssets.logo, // Fallback
                                        height: 120,
                                     ),
                                   )
                                 else 
                                   Image.asset(
-                                     AppAssets.splashLogo,
+                                     AppAssets.logo,
                                      height: 120,
                                   ),
 
@@ -104,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   child: Padding(
                                     padding: EdgeInsets.only(left: 3),
                                     child: Text(
-                                      "User Id", // @string/userid_
+                                      "Username *", // @string/userid_
                                       style: TextStyle(
                                         color: AppTheme.primaryColor,
                                         fontSize: 14,
@@ -143,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   child: Padding(
                                     padding: EdgeInsets.only(left: 3),
                                     child: Text(
-                                      "Password", // @string/passwordv
+                                      "Password *", // @string/passwordv
                                       style: TextStyle(
                                         color: AppTheme.primaryColor,
                                         fontSize: 14,
@@ -191,12 +191,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                       context.push('/forgot_password');
                                     }
                                   },
-                                  child: Text(
-                                    "Forgot Password?", // @string/forgotpw 
-                                    style: TextStyle(
-                                      color: AppTheme.yellow, // @color/yellow
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
+                                  child: Align(
+                                     alignment: AlignmentGeometry.centerLeft,
+                                    child: Text(
+                                      "Forgot Password?", // @string/forgotpw
+                                      style: TextStyle(
+                                        color: AppTheme.yellow, // @color/yellow
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -251,12 +254,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                     child: RichText(
                                       text: TextSpan(
                                         text: "Don’t have an account? ",
-                                        style: TextStyle(color: Colors.black, fontSize: 14),
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14),
                                         children: [
                                           TextSpan(
                                             text: "Sign Up",
                                             style: TextStyle(
                                               color: const Color(0xFFF59300),
+                                              fontWeight: FontWeight.bold,
                                               decoration: TextDecoration.underline,
                                             ),
                                           ),
@@ -284,37 +291,44 @@ class _LoginScreenState extends State<LoginScreen> {
                     
                     // Bottom Section: Access Other Stores
                     Container(
-                       color: Colors.white, // Parent background of bottom layout
-                       child: InkWell(
+                      width: double.infinity,
+                      color: Colors.white, // Parent background
+                      padding: const EdgeInsets.only(bottom: 30 , left: 90 , right: 90),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(8),
                         onTap: () async {
                           await provider.clearSession();
                           if (context.mounted) {
-                             if (Navigator.canPop(context)) {
-                               context.go('/companies');
-                             } else {
-                               context.go('/companies');
-                             }
+                            context.go('/companies');
                           }
                         },
                         child: Container(
-                          width: double.infinity,
-                          height: 50,
-                          margin: EdgeInsets.only(bottom: 30),
-                          alignment: Alignment.center,
-                          decoration: const BoxDecoration(
-                            color: AppTheme.lightGrayBg, // @drawable/lightgray_bg matches color.xml or close enough
+                          height: 44,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                              color: Colors.grey.shade400,
+                              width: 1,
+                            ),
                           ),
                           child: Row(
+                            mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.list, size: 18, color: Colors.black), // @drawable/listview_icon placeholder
-                              SizedBox(width: 10),
+                            children: const [
+                              Icon(
+                                Icons.list,
+                                size: 20,
+                                color: Colors.black,
+                              ),
+                              SizedBox(width: 8),
                               Text(
                                 "Access Other Stores",
                                 style: TextStyle(
-                                  color: AppTheme.primaryColor, // @color/blue
+                                  color: AppTheme.primaryColor, // Blue text
                                   fontSize: 14,
-                                  fontWeight: FontWeight.bold,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ],
@@ -322,6 +336,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
+
                   ],
                 ),
                 

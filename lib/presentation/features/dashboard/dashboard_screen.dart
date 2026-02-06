@@ -27,15 +27,28 @@ class DashboardScreen extends StatefulWidget {
   State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen> {
+class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late PageController _bannerController;
   Timer? _bannerTimer;
   int _currentBannerIndex = 0;
+  late AnimationController _marqueeController;
+  late Animation<double> _marqueeAnimation;
 
   @override
   void initState() {
     super.initState();
+    _marqueeController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 22), // Speed (increase = slower)
+    )..repeat();
+    _marqueeAnimation = Tween<double>(
+      begin: 1.0,
+      end: -1.0,
+    ).animate(CurvedAnimation(
+      parent: _marqueeController,
+      curve: Curves.linear,
+    ));
     _bannerController = PageController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<DashboardProvider>().init();
@@ -65,6 +78,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void dispose() {
     _bannerTimer?.cancel();
     _bannerController.dispose();
+    _marqueeController.dispose();
+
     super.dispose();
   }
 
@@ -105,14 +120,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         leading: IconButton(
-          icon: Icon(Icons.menu_rounded, size: 24.sp, weight: 300), // Thinner menu icon
+          icon: Icon(Icons.menu_rounded, size: 24.sp, weight: 300 , color: AppTheme.primaryColor,), // Thinner menu icon
           onPressed: () => _scaffoldKey.currentState?.openDrawer(),
         ),
-        title: Image.asset(AppAssets.headerLogo, height: 36.h),
+        title: Image.asset(AppAssets.appLogo, height: 36.h),
         actions: [
           IconButton(
-            icon: Icon(Icons.notifications_none_rounded, size: 24.sp, weight: 300), // Thinner notification icon
+            icon: Icon(Icons.notifications_none_rounded, size: 24.sp, weight: 300 , color: AppTheme.primaryColor,), // Thinner notification icon
             onPressed: () {},
           ),
         ],
@@ -139,6 +155,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                    _buildMarquee(provider),
                    _buildBanners(provider),
                    _buildTopSuppliers(provider),
+                  SizedBox(height: 15.h),
                    const HomeBlocksSection(),
                    _buildProductSections(provider),
                    _buildFooterBanners(provider),
@@ -273,20 +290,39 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
 
   Widget _buildMarquee(DashboardProvider provider) {
-     return Container(
-       color: const Color(0xFFFFF1F1), // Very pale pink/white matching Image 2
-       width: double.infinity,
-       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
-       child: Text(
-         "Welcome to the EZY Orders",
-         style: TextStyle(
-           color: Colors.red, 
-           fontWeight: FontWeight.normal, 
-           fontSize: 12.sp
-         ),
-       ),
-     );
+    return Container(
+      height: 35.h,
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        color: Color(0xFFFFFFFF),
+      ),
+      clipBehavior: Clip.hardEdge, // ✅ now allowed
+      child: AnimatedBuilder(
+        animation: _marqueeAnimation,
+        builder: (context, child) {
+          return FractionalTranslation(
+            translation: Offset(_marqueeAnimation.value, 0),
+            child: child,
+          );
+        },
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10.w),
+          child: Text(
+            "Welcome to the EZY Orders",
+            style: TextStyle(
+              color: Colors.red,
+              fontWeight: FontWeight.w800,
+              fontSize: 14.sp,
+            ),
+            maxLines: 1,
+            softWrap: false,
+            overflow: TextOverflow.visible,
+          ),
+        ),
+      ),
+    );
   }
+
 
   Widget _buildBanners(DashboardProvider provider) {
      if (provider.bannersResponse?.results == null || provider.bannersResponse!.results!.isEmpty) {
@@ -309,21 +345,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 return Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10.w), // Matches Image 2 side margins
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8.r),
+                    borderRadius: BorderRadius.circular(0.r),
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
                          _buildNetworkImage(banner?.image, fit: BoxFit.fill),
                          // Overlay Card (Bottom Left)
                          Positioned(
-                           bottom: 15.h,
+                           bottom: 50.h,
                            left: 15.w,
                            child: Container(
                              width: 140.w, // Approximate width from screenshot
-                             padding: EdgeInsets.all(12.w),
+                             padding: EdgeInsets.all(6.w),
                              decoration: BoxDecoration(
                                color: Colors.white,
-                               borderRadius: BorderRadius.circular(10.r),
+                               borderRadius: BorderRadius.circular(6.r),
+                               border: Border.all(
+                                 color: Colors.orange,
+                                 width: 1.5,          // Adjust thickness if needed
+                               ),
                                boxShadow: [
                                  BoxShadow(
                                    color: Colors.black.withValues(alpha: 0.1),
@@ -333,7 +373,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                ],
                              ),
                              child: Column(
-                               crossAxisAlignment: CrossAxisAlignment.start, 
+                               crossAxisAlignment: CrossAxisAlignment.center,
                                mainAxisSize: MainAxisSize.min,
                                children: [
                                  if (banner?.topCaption != null && banner!.topCaption!.isNotEmpty)
@@ -344,8 +384,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                  Text(
                                    banner?.name ?? "",
                                    style: TextStyle(
-                                     color: Colors.black, 
-                                     fontSize: 13.sp, 
+                                     color: Colors.black,
+                                     fontSize:10.sp,
                                      fontWeight: FontWeight.bold
                                    ),
                                    maxLines: 1,
@@ -357,7 +397,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Shop Now: ${banner?.name}")));
                                    },
                                    child: Container(
-                                     padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                                     padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 6.h),
                                      decoration: BoxDecoration(
                                        color: const Color(0xFFFCBD5F), // Orange color
                                        borderRadius: BorderRadius.circular(20.r),
@@ -365,8 +405,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                      child: Text(
                                        "Shop Now",
                                        style: TextStyle(
-                                         color: Colors.white, 
-                                         fontSize: 10.sp, 
+                                         color: Colors.white,
+                                         fontSize: 10.sp,
                                          fontWeight: FontWeight.bold
                                        ),
                                      ),
@@ -437,7 +477,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
       return Container(
         height: 150.h, // @dimen/dimen_150
-        margin: EdgeInsets.symmetric(vertical: 10.h),
+        margin: EdgeInsets.symmetric(vertical: 10.h , ),
         child: PageView.builder(
            itemCount: provider.footerBannersResponse!.results!.length,
            itemBuilder: (context, index) {

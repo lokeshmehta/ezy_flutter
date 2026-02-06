@@ -49,6 +49,9 @@ class ProductItemWidget extends StatelessWidget {
         elevation: 1,
         color: Colors.white,
         margin: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(0.r), // 👈 decrease radius here
+        ),
         child: InkWell(
           onTap: onTap,
           child: Padding(

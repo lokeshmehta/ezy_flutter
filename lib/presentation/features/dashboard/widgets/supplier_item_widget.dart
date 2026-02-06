@@ -41,46 +41,56 @@ class SupplierItemWidget extends StatelessWidget {
       },
       child: Container(
         width: itemWidth,
-        margin: EdgeInsets.only(right: 10.w), // android:layout_marginRight="@dimen/top_10" (approx 10dp)
-        child: Card(
-          elevation: 1,
+        margin: EdgeInsets.only(right: 10.w ,
+          bottom: 6.h,
+        ),
+        decoration: BoxDecoration(
           color: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4.r), // Default card radius
-          ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      height: 90.h,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: AppTheme.darkGrayColor, width: 1.5),
-                         borderRadius: BorderRadius.circular(1.r), // supplier_bg.xml radius
-                      ),
-                      child: Padding(
-                         padding: EdgeInsets.all(1.5.w), // android:layout_margin="@dimen/dimen_1_5"
-                         child: _buildImage(image),
-                      ),
-                    ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
-                child: Text(
-                  brandName ?? "",
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontWeight: FontWeight.normal,
-                    fontSize: 11.sp, 
-                  ),
+          borderRadius: BorderRadius.circular(2.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.18),
+              offset: const Offset(0, 6), // 👈 shadow goes DOWN
+              blurRadius: 8,
+              spreadRadius: -2, // 👈 prevents side shadow
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              height: 90.h,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(
+                  color: AppTheme.darkGrayColor,
+                  width: 1.5,
+                ),
+                borderRadius: BorderRadius.circular(1.r),
+              ),
+              padding: EdgeInsets.all(1.5.w),
+              child: _buildImage(image),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
+              child: Text(
+                brandName ?? "",
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 11.sp,
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ),
+      )
+
+
     );
   }
 

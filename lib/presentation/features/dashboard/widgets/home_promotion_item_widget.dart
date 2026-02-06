@@ -31,6 +31,9 @@ class HomePromotionItemWidget extends StatelessWidget {
         elevation: 2,
         color: Colors.white,
         margin: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(0.r), // 👈 decrease radius here
+        ),
         child: InkWell(
           onTap: onTap,
           child: Padding(
@@ -80,11 +83,11 @@ class HomePromotionItemWidget extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 11.sp,
                         color: const Color(0xFF1B4E9B),
-                        fontWeight: FontWeight.normal,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     SizedBox(width: 2.w),
-                    Icon(Icons.arrow_forward_ios, color: const Color(0xFF1B4E9B), size: 8.sp),
+                    Icon(Icons.arrow_forward_ios, color: const Color(0xFF1B4E9B), size: 8.sp  ,),
                   ],
                 ),
                 SizedBox(height: 5.h),

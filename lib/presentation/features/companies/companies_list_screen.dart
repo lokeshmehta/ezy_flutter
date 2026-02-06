@@ -80,12 +80,12 @@ class _CompaniesListScreenState extends State<CompaniesListScreen> {
                                      return GridView.builder(
                                        padding: EdgeInsets.only(
                                          top: 15, 
-                                         bottom: 15, 
+                                         bottom: 15,
                                          right: 10 
                                        ), 
                                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                                          crossAxisCount: 2,
-                                         childAspectRatio: 0.60, // Further decreased for safety against overflow
+                                         childAspectRatio: 0.70, // Further decreased for safety against overflow
                                          mainAxisSpacing: 10,
                                          crossAxisSpacing: 10,
                                        ),
@@ -97,89 +97,97 @@ class _CompaniesListScreenState extends State<CompaniesListScreen> {
                                          if (imageUrl.isNotEmpty && !imageUrl.startsWith('http')) {
                                            imageUrl = UrlApiKey.companyMainUrl + imageUrl;
                                          }
-                                         
+
                                          return Card(
                                            elevation: 2,
                                            color: Colors.white,
-                                           margin: EdgeInsets.only(left: 10, bottom: 5), 
-                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                                           margin: const EdgeInsets.only(left: 10, bottom: 5),
+                                           shape: RoundedRectangleBorder(
+                                             borderRadius: BorderRadius.circular(4),
+                                           ),
                                            child: Padding(
-                                             padding: EdgeInsets.all(5),
+                                             padding: const EdgeInsets.all(8),
                                              child: Column(
-                                               mainAxisSize: MainAxisSize.min,
-                                               mainAxisAlignment: MainAxisAlignment.center, // Center content vertically
+                                               mainAxisSize: MainAxisSize.max, // 🔥 IMPORTANT
+                                               mainAxisAlignment: MainAxisAlignment.start, // 🔥 IMPORTANT
                                                children: [
                                                  // Company Image
                                                  CachedNetworkImage(
-                                                   imageUrl: imageUrl, 
-                                                   height: 110, // @dimen/dimen_110
-                                                   width: 170, // @dimen/dimen_170
+                                                   imageUrl: imageUrl,
+                                                   height: 110,
+                                                   width: double.infinity,
                                                    fit: BoxFit.contain,
                                                    placeholder: (context, url) => const SizedBox(),
                                                    errorWidget: (context, url, error) => const Icon(Icons.error),
                                                  ),
-                                                 
-                                                 SizedBox(height: 5),
-                                                 
+
+                                                 const SizedBox(height: 6),
+
                                                  // Company Name
                                                  Text(
                                                    company.name ?? "",
                                                    textAlign: TextAlign.center,
                                                    maxLines: 2,
                                                    overflow: TextOverflow.ellipsis,
-                                                   style: TextStyle(
-                                                     color: AppTheme.lightBlue, 
-                                                     fontSize: 15, 
+                                                   style: const TextStyle(
+                                                     color: AppTheme.lightBlue,
+                                                     fontSize: 15,
                                                      fontWeight: FontWeight.bold,
                                                    ),
                                                  ),
-                                                 
-                                                 SizedBox(height: 5),
-                                                 
+
+                                                 const SizedBox(height: 4),
+
                                                  // Description
                                                  Text(
-                                                   company.natureOfBusiness ?? "", 
+                                                   company.natureOfBusiness ?? "",
                                                    textAlign: TextAlign.center,
                                                    maxLines: 2,
                                                    overflow: TextOverflow.ellipsis,
-                                                   style: TextStyle(
+                                                   style: const TextStyle(
                                                      color: Colors.black,
-                                                     fontSize: 12, 
+                                                     fontSize: 12,
                                                    ),
                                                  ),
-                                                 
-                                                 SizedBox(height: 10),
 
-                                                 // Select Button
+                                                 const Spacer(), // 🔥 PUSHES BUTTON TO BOTTOM
+
                                                  SizedBox(
-                                                   width: 150, 
-                                                   height: 35, 
+                                                   width: 160, // ⬅️ slightly wider
+                                                   height: 35,
                                                    child: ElevatedButton(
                                                      onPressed: () {
                                                        provider.selectCompany(context, company);
                                                      },
                                                      style: ElevatedButton.styleFrom(
-                                                       backgroundColor: AppTheme.tealColor, 
+                                                       backgroundColor: AppTheme.tealColor,
+                                                       padding: EdgeInsets.zero, // 🔥 IMPORTANT
                                                        shape: RoundedRectangleBorder(
-                                                         borderRadius: BorderRadius.circular(20), // Round corners (Pill)
+                                                         borderRadius: BorderRadius.circular(20),
                                                        ),
-                                                       padding: EdgeInsets.zero,
                                                      ),
-                                                     child: Text(
-                                                       "Select Company",
-                                                       style: TextStyle(
-                                                         color: Colors.white,
-                                                         fontSize: 14,
+                                                     child: const FittedBox( // 🔥 GUARANTEES ONE LINE
+                                                       fit: BoxFit.scaleDown,
+                                                       child: Text(
+                                                         "Select Company",
+                                                         maxLines: 1,
+                                                         softWrap: false,
+                                                         overflow: TextOverflow.visible,
+                                                         style: TextStyle(
+                                                           color: Colors.white,
+                                                           fontSize: 14,
+                                                           fontWeight: FontWeight.w500,
+                                                         ),
                                                        ),
                                                      ),
                                                    ),
                                                  ),
-                                                 
-                                                 SizedBox(height: 5), // Bottom padding
+
                                                ],
                                              ),
                                            ),
                                          );
+
                                        },
                                      );
                                    },

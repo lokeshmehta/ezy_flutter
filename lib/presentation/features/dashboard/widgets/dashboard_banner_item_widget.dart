@@ -30,7 +30,7 @@ class DashboardBannerItemWidget extends StatelessWidget {
            }
         },
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(0),
           child: _buildImage(item.image),
         ),
       ),
