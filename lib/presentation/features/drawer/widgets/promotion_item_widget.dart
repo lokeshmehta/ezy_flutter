@@ -5,6 +5,10 @@ import '../../../../core/constants/url_api_key.dart';
 import '../../../../data/models/drawer_models.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
+import 'package:provider/provider.dart';
+import '../../../providers/product_list_provider.dart';
+import '../../products/products_list_screen.dart';
+
 class PromotionItemWidget extends StatelessWidget {
   final PromotionsItem item;
   final int index;
@@ -38,8 +42,27 @@ class PromotionItemWidget extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        // Navigate to PromotionProductsScreen
-        // Navigator.push(context, MaterialPageRoute(builder: (c) => PromotionProductsScreen(item: item, index: index)));
+        final productProvider = context.read<ProductListProvider>();
+        productProvider.clearFilters();
+        
+        // Extract product IDs
+        if (item.products != null && item.products!.isNotEmpty) {
+          final productIds = item.products!.map((p) => p.productId).whereType<String>().join(',');
+          productProvider.setSelectedProducts(productIds);
+        }
+        
+        if (item.divisionId != null && item.divisionId != "0") {
+          productProvider.setCategory(item.divisionId!);
+        }
+        
+        if (item.groupId != null && item.groupId != "0") {
+          productProvider.setGroup(item.groupId!);
+        }
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const ProductsListScreen()),
+        );
       },
       child: Card(
         margin: EdgeInsets.only(bottom: 15.h),

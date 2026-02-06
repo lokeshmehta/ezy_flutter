@@ -5,6 +5,7 @@ import '../../../../core/constants/app_theme.dart';
 import '../../../../core/constants/url_api_key.dart';
 import '../../../../core/network/image_cache_manager.dart';
 import '../../../../data/models/home_models.dart';
+import '../../products/product_details_screen.dart';
 
 class ProductItemWidget extends StatelessWidget {
   final ProductItem item;
@@ -53,7 +54,14 @@ class ProductItemWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(0.r), // 👈 decrease radius here
         ),
         child: InkWell(
-          onTap: onTap,
+          onTap: onTap ?? () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ProductDetailsScreen(productId: item.productId!),
+              ),
+            );
+          },
           child: Padding(
             padding: EdgeInsets.all(5.0.w),
             child: Column(

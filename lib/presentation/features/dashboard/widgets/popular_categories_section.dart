@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/dashboard_provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../../providers/product_list_provider.dart';
+import '../../products/products_list_screen.dart';
 import 'home_promotion_item_widget.dart';
 import 'section_header_widget.dart';
 
@@ -78,7 +80,15 @@ class _PopularCategoriesSectionState extends State<PopularCategoriesSection> {
                      subtitle: subtitle,
                      width: cardWidth,
                      onTap: () {
-                        // Navigate to Products list
+                       final productProvider = context.read<ProductListProvider>();
+                       // Reset other filters and set category
+                       productProvider.clearFilters();
+                       productProvider.setCategory(item.divisionId.toString());
+                       
+                       Navigator.push(
+                         context,
+                         MaterialPageRoute(builder: (context) => const ProductsListScreen()),
+                       );
                      },
                    );
                 },

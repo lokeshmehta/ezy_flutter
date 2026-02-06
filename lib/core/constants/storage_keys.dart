@@ -13,4 +13,8 @@ class StorageKeys {
   static const String userNamePlaceholder = 'userName';
   static const String accessToken = 'ACCESSTOKEN';
   static const String userPassword = 'USER_PASSWORD';
+  static const String customerAccountNum = 'CUSTOMER_ACCOUNT_NUM';
+  static const String cartCount = 'CART_COUNT';
+  static const String supplierCount = 'SUPPLIER_COUNT';
+  static const String suppliers = 'SUPPLIERS';
 }

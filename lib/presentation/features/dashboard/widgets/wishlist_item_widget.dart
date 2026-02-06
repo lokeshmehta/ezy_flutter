@@ -5,6 +5,7 @@ import '../../../../core/constants/app_theme.dart';
 import '../../../../core/constants/url_api_key.dart';
 import '../../../../core/network/image_cache_manager.dart';
 import '../../../../data/models/home_models.dart';
+import '../../products/product_details_screen.dart';
 
 class WishlistItemWidget extends StatelessWidget {
   final ProductItem item;
@@ -52,7 +53,14 @@ class WishlistItemWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(2.r), 
         ),
         child: InkWell(
-          onTap: onTap,
+          onTap: onTap ?? () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ProductDetailsScreen(productId: item.productId!),
+              ),
+            );
+          },
           child: Padding(
             padding: EdgeInsets.all(8.0.w),
             child: Column(

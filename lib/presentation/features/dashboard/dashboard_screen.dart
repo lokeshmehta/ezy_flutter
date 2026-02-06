@@ -8,6 +8,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/constants/url_api_key.dart';
 // import '../../../data/models/home_models.dart'; // Unused
 import '../../../core/network/image_cache_manager.dart';
+import '../../providers/product_list_provider.dart';
 import '../drawer/about_us_screen.dart';
 import '../drawer/faq_screen.dart';
 import '../drawer/help_support_screen.dart';
@@ -245,6 +246,8 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
                     _buildDrawerItem(AppAssets.myOrdersIcon, "My Orders", () {}),
                     _buildDrawerItem(AppAssets.orderNowIcon, "Order Now", () {
                       context.pop();
+                      final productProvider = context.read<ProductListProvider>();
+                      productProvider.clearFilters();
                       Navigator.push(context, MaterialPageRoute(builder: (c) => const ProductsListScreen()));
                     }),
                     _buildDrawerItem(AppAssets.promoIcon, "Promotions", () {
@@ -434,7 +437,23 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
                                  SizedBox(height: 8.h),
                                  InkWell(
                                    onTap: () {
-                                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Shop Now: ${banner?.name}")));
+                                     final productProvider = context.read<ProductListProvider>();
+                                     productProvider.clearFilters();
+                                     
+                                     if (banner?.groupId != null && banner?.groupId != 0) {
+                                       productProvider.setGroup(banner!.groupId.toString());
+                                     }
+                                     if (banner?.products != null && banner!.products!.isNotEmpty) {
+                                       productProvider.setSelectedProducts(banner.products!);
+                                     }
+                                     if (banner?.divisionId != null && banner?.divisionId != 0) {
+                                       productProvider.setCategory(banner!.divisionId.toString());
+                                     }
+                                     
+                                     Navigator.push(
+                                       context,
+                                       MaterialPageRoute(builder: (context) => const ProductsListScreen()),
+                                     );
                                    },
                                    child: Container(
                                      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 6.h),
@@ -451,7 +470,7 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
                                        ),
                                      ),
                                    ),
-                                 )
+                                 ),
                                ],
                              ),
                            ),
@@ -576,6 +595,8 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
             break;
           case 1:
             // Order Now -> Products List
+             final productProvider = context.read<ProductListProvider>();
+             productProvider.clearFilters();
              Navigator.push(
                context,
                MaterialPageRoute(builder: (context) => const ProductsListScreen()),

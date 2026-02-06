@@ -446,4 +446,103 @@ class AuthRemoteDataSource {
     );
     return response;
   }
+
+  // Product List APIs
+  Future<Map<String, dynamic>> getProducts({
+    required String accessToken,
+    required String customerId,
+    String brandId = "",
+    String divisionId = "",
+    String groupId = "",
+    String subGroupId = "",
+    String subSubGroupId = "",
+    required int page,
+    String orderby = "",
+    String tagId = "",
+    String productsType = "",
+    String searchText = "",
+    String products = "",
+  }) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}products",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'brand_id': brandId,
+        'division_id': divisionId,
+        'group_id': groupId,
+        'sub_group_id': subGroupId,
+        'sub_sub_group_id': subSubGroupId,
+        'page': page.toString(),
+        'orderby': orderby,
+        'tag_id': tagId,
+        'products_type': productsType,
+        'search_text': searchText,
+        'products': products,
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> getAllFilterProducts({
+    required String accessToken,
+    required String customerId,
+    String divisionId = "",
+    String brandId = "",
+    String selectedBrands = "",
+    String groupId = "",
+    String subGroupId = "",
+    String subSubGroupId = "",
+    String selectedProducts = "",
+    String selectedDivisions = "",
+    String selectedGroups = "",
+    String selectedSubGroups = "",
+    String selectedSubSubGroups = "",
+    String productsType = "All Products",
+  }) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}product-filters",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'division_id': divisionId,
+        'brand_id': brandId,
+        'selected_brands': selectedBrands,
+        'group_id': groupId,
+        'sub_group_id': subGroupId,
+        'sub_sub_group_id': subSubGroupId,
+        'selected_products': selectedProducts,
+        'selected_divisions': selectedDivisions,
+        'selected_groups': selectedGroups,
+        'selected_sub_groups': selectedSubGroups,
+        'selected_sub_sub_groups': selectedSubSubGroups,
+        'products_type': productsType,
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> getProductSortOptions(String accessToken, String customerId) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}product-sort-options",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> getProductDetails(
+      String accessToken, String customerId, String productId) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}product-details",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'product_id': productId,
+      },
+    );
+    return response;
+  }
 }

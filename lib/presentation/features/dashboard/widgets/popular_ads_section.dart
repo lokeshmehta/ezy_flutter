@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../providers/dashboard_provider.dart';
+import '../../../providers/product_list_provider.dart';
+import '../../products/products_list_screen.dart';
 import 'dashboard_banner_item_widget.dart';
 import 'section_header_widget.dart';
 
@@ -40,7 +42,16 @@ class PopularAdsSection extends StatelessWidget {
                    return DashboardBannerItemWidget(
                      item: item,
                      onTap: () {
-                        // Handled in widget or here
+                        if (item.brandid != null && item.brandid != "0") {
+                          final productProvider = context.read<ProductListProvider>();
+                          productProvider.clearFilters();
+                          productProvider.setSupplier(item.brandid!);
+                          
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const ProductsListScreen()),
+                          );
+                        }
                      },
                    );
                 },

@@ -1,6 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
+import '../../../core/constants/app_theme.dart';
+import '../../../core/constants/assets.dart';
+import '../../../core/utils/common_methods.dart';
+import '../../providers/product_list_provider.dart';
+import '../../providers/dashboard_provider.dart';
+import '../dashboard/widgets/wishlist_category_dialog.dart';
+import './widgets/product_list_item.dart';
+import './widgets/product_grid_item.dart';
+import './widgets/sort_dialog.dart';
+import './widgets/filter_dialog.dart';
+import './widgets/product_details_bottom_sheet.dart';
 
-class ProductsListScreen extends StatelessWidget {
+class ProductsListScreen extends StatefulWidget {
   final String? supplierId;
   final String? backNav;
 
@@ -11,12 +24,345 @@ class ProductsListScreen extends StatelessWidget {
   });
 
   @override
+  State<ProductsListScreen> createState() => _ProductsListScreenState();
+}
+
+class _ProductsListScreenState extends State<ProductsListScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ProductListProvider>().init();
+    });
+    
+    _scrollController.addListener(_onScroll);
+    _searchController.addListener(() {
+      setState(() {});
+    });
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+      final provider = context.read<ProductListProvider>();
+      if (!provider.isLoading && provider.productsResponse?.results?.isNotEmpty == true) {
+         provider.fetchProducts(page: provider.pageCount + 1, isLoadMore: true);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _showSortDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => const SortDialog(),
+    );
+  }
+
+  void _showFilterDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => const FilterDialog(),
+    );
+  }
+
+  void _onAddToCart(dynamic product) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => ProductDetailsBottomSheet(product: product),
+    );
+  }
+
+  void _onFavorite(dynamic product) async {
+    final dashboardProvider = context.read<DashboardProvider>();
+    await dashboardProvider.fetchWishlistCategories(product.productId!);
+    if (!mounted) return;
+    
+    showDialog(
+      context: context,
+      builder: (context) => WishlistCategoryDialog(product: product),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Products List")),
-      body: Center(
-        child: Text("Products List Screen\nSupplier ID: $supplierId"),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Image.asset(AppAssets.appLogo, height: 35.h),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: AppTheme.secondaryColor),
+          onPressed: () => Navigator.pop(context),
+        ),
+
       ),
+      body: Column(
+        children: [
+          // Search Bar
+          _buildSearchBar(),
+          
+          // Toggle Bar (Sort, Filter, Grid/List)
+          _buildToggleBar(),
+          
+          // Main List/Grid
+          Expanded(
+            child: Consumer<ProductListProvider>(
+              builder: (context, provider, child) {
+                if (provider.isLoading && provider.products.isEmpty) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                
+                if (provider.products.isEmpty && !provider.isLoading) {
+                  return const Center(child: Text("No products found"));
+                }
+
+                return provider.isGridView 
+                    ? _buildGridView(provider) 
+                    : _buildListView(provider);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
+      color: Colors.white,
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              height: 45.h,
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(5.r),
+              ),
+              child: Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10.w),
+                    child: Icon(Icons.search, color: Colors.grey, size: 20.sp),
+                  ),
+                  Expanded(
+                    child: TextField(
+                      controller: _searchController,
+                      decoration: const InputDecoration(
+                        hintText: "Search Product",
+                        border: InputBorder.none,
+                        isCollapsed: true,
+                      ),
+                      style: TextStyle(fontSize: 14.sp),
+                      onSubmitted: (value) {
+                        context.read<ProductListProvider>().setSearchText(value);
+                        context.read<ProductListProvider>().fetchProducts(page: 1);
+                      },
+                    ),
+                  ),
+                  if (_searchController.text.isNotEmpty)
+                    IconButton(
+                      icon: Icon(Icons.close, color: Colors.grey, size: 20.sp),
+                      onPressed: () {
+                        setState(() {
+                           _searchController.clear();
+                        });
+                        context.read<ProductListProvider>().setSearchText("");
+                        context.read<ProductListProvider>().fetchProducts(page: 1);
+                      },
+                    ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(width: 10.w),
+          Container(
+            height: 45.h,
+            width: 45.h,
+            decoration: BoxDecoration(
+              color: AppTheme.secondaryColor,
+              borderRadius: BorderRadius.circular(5.r),
+            ),
+            child: IconButton(
+              icon: Icon(Icons.search, color: Colors.white, size: 24.sp),
+              onPressed: () {
+                context.read<ProductListProvider>().setSearchText(_searchController.text);
+                context.read<ProductListProvider>().fetchProducts(page: 1);
+              },
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildToggleBar() {
+    return Consumer<ProductListProvider>(
+      builder: (context, provider, child) {
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 8.h),
+          color: Colors.white,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                provider.productsResponse?.totalRecords != null 
+                  ? "${provider.productsResponse!.totalRecords} ${provider.productsResponse!.totalRecords == '1' ? 'Product' : 'Products'} found" 
+                  : "Products",
+                style: TextStyle(
+                  color: AppTheme.primaryColor,
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 10.h),
+              Row(
+                children: [
+                  // Availability Spinner
+                  Expanded(
+                    flex: 48,
+                    child: Container(
+                      height: 40.h,
+                      padding: EdgeInsets.symmetric(horizontal: 8.w),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey[300]!),
+                        borderRadius: BorderRadius.circular(4.r),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: CommonMethods.filterSelected == "All Products" && !["Show Products", "Available Products", "Not Available Products"].contains(CommonMethods.filterSelected) 
+                              ? "Show Products" 
+                              : (["Show Products", "All Products", "Available Products", "Not Available Products"].contains(CommonMethods.filterSelected) ? CommonMethods.filterSelected : "All Products"),
+                          items: ["Show Products", "All Products", "Available Products", "Not Available Products"]
+                              .map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(
+                                value,
+                                style: TextStyle(fontSize: 12.sp, color: AppTheme.primaryColor),
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            if (value != null) {
+                              provider.onProductAvaSelected(value);
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 10.w),
+                  // Sort, Filter, Grid Toggles
+                  Expanded(
+                    flex: 52,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        _buildIconButton(
+                          iconPath: "assets/images/sort_icon.png", // Assuming icon exists
+                          fallbackIcon: Icons.sort,
+                          onTap: _showSortDialog,
+                        ),
+                        SizedBox(width: 8.w),
+                        _buildIconButton(
+                          iconPath: "assets/images/filter_icon.png",
+                          fallbackIcon: Icons.filter_list,
+                          onTap: _showFilterDialog,
+                        ),
+                        SizedBox(width: 8.w),
+                        _buildIconButton(
+                          iconPath: provider.isGridView ? "assets/images/listview_icon.png" : "assets/images/gridview_icon.png",
+                          fallbackIcon: provider.isGridView ? Icons.view_list : Icons.grid_view,
+                          onTap: () => provider.setGridView(!provider.isGridView),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildIconButton({String? iconPath, required IconData fallbackIcon, required VoidCallback onTap}) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        width: 38.w,
+        height: 38.w,
+        padding: EdgeInsets.all(8.w),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey[300]!),
+          borderRadius: BorderRadius.circular(4.r),
+        ),
+        child: Icon(fallbackIcon, color: AppTheme.primaryColor, size: 20.sp),
+        // Note: Using Icon for now as asset paths might be slightly different or need scaling
+      ),
+    );
+  }
+
+  Widget _buildListView(ProductListProvider provider) {
+    return ListView.builder(
+      controller: _scrollController,
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
+      itemCount: provider.products.length + (provider.isLoading ? 1 : 0),
+      itemBuilder: (context, index) {
+        if (index == provider.products.length) {
+          return const Center(child: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: CircularProgressIndicator(),
+          ));
+        }
+        final product = provider.products[index];
+        return ProductListItem(
+          item: product,
+          onAddToCart: () => _onAddToCart(product),
+          onFavorite: () => _onFavorite(product),
+        );
+      },
+    );
+  }
+
+  Widget _buildGridView(ProductListProvider provider) {
+    return GridView.builder(
+      controller: _scrollController,
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 0.62,
+        crossAxisSpacing: 10.w,
+        mainAxisSpacing: 10.h,
+      ),
+      itemCount: provider.products.length + (provider.isLoading ? 1 : 0),
+      itemBuilder: (context, index) {
+         if (index == provider.products.length) {
+           return const Center(child: CircularProgressIndicator());
+         }
+         final product = provider.products[index];
+         return ProductGridItem(
+            item: product, 
+            onAddToCart: () => _onAddToCart(product),
+            onFavorite: () => _onFavorite(product),
+         );
+      },
     );
   }
 }

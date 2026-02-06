@@ -4,6 +4,8 @@ import 'package:ezy_orders_flutter/core/constants/url_api_key.dart';
 import 'package:ezy_orders_flutter/presentation/features/products/products_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
+import '../../../providers/product_list_provider.dart';
 
 class SupplierItemWidget extends StatelessWidget {
   final String? image;
@@ -28,13 +30,14 @@ class SupplierItemWidget extends StatelessWidget {
       onTap: () {
         // Navigate to Products List with supplier filter
         if (brandId != null) {
+          final productProvider = context.read<ProductListProvider>();
+          productProvider.clearFilters();
+          productProvider.setSupplier(brandId!);
+          
           Navigator.push(
             context,
             MaterialPageRoute(
-               builder: (context) => ProductsListScreen(
-                   supplierId: brandId!,
-                   backNav: "suppliers",
-               ),
+               builder: (context) => const ProductsListScreen(),
             ),
           );
         }

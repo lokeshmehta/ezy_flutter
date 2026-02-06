@@ -295,8 +295,10 @@ class HomeBlockItem {
 
 class ProductItem {
     String? productId; 
+    String? name; // Added for ProductDetailItem compatibility
     String? title;
     String? description;
+    String? shortDescription; // Added for ProductDetailItem compatibility
     String? image;
     String? brandName; 
     String? brandId; 
@@ -320,17 +322,24 @@ class ProductItem {
     String? divisionId;
     String? groupId;
     String? sku;
+    String? gst; // Added for ProductDetailItem compatibility
     String? gstPercentage;
     String? fromDate;
     String? toDate;
     String? hasPromotion; // Added field
+    String? label; // Added for promotional badges (Best Seller, New Arrival, etc.)
+    String? discountPercentage; // Added for ProductDetailItem compatibility
+    String? discountId; // Added for ProductDetailItem compatibility
+    String? discountName; // Added for ProductDetailItem compatibility
     String? wishlistId; // Added for Wishlist
     String? wishlistCategoryId; // Added for Wishlist
 
     ProductItem({
         this.productId,
+        this.name,
         this.title,
         this.description,
+        this.shortDescription,
         this.image,
         this.brandName,
         this.brandId,
@@ -354,10 +363,15 @@ class ProductItem {
         this.divisionId,
         this.groupId,
         this.sku,
+        this.gst,
         this.gstPercentage,
         this.fromDate,
         this.toDate,
         this.hasPromotion,
+        this.label,
+        this.discountPercentage,
+        this.discountId,
+        this.discountName,
         this.wishlistId,
         this.wishlistCategoryId,
     });
@@ -365,8 +379,10 @@ class ProductItem {
     factory ProductItem.fromJson(Map<String, dynamic> json) {
         return ProductItem(
             productId: json['product_id']?.toString(),
+            name: json['name']?.toString(),
             title: json['title']?.toString(),
             description: json['description']?.toString(),
+            shortDescription: json['short_description']?.toString(),
             image: json['image']?.toString(),
             brandName: json['brand_name']?.toString(),
             brandId: json['brand_id']?.toString(),
@@ -390,10 +406,15 @@ class ProductItem {
             divisionId: json['division_id']?.toString(),
             groupId: json['group_id']?.toString(),
             sku: json['sku']?.toString(),
+            gst: json['gst']?.toString(),
             gstPercentage: json['gst_percentage']?.toString(),
             fromDate: json['from_date']?.toString(),
             toDate: json['to_date']?.toString(),
             hasPromotion: json['has_promotion']?.toString(),
+            label: json['label']?.toString(),
+            discountPercentage: json['discount_percentage']?.toString(),
+            discountId: json['discount_id']?.toString(),
+            discountName: json['discount_name']?.toString(),
             wishlistId: json['wishlist_id']?.toString(),
             wishlistCategoryId: json['wishlist_category_id']?.toString(),
         );

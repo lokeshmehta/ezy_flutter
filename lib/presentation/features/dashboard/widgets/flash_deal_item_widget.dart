@@ -6,6 +6,7 @@ import '../../../../core/constants/app_theme.dart';
 import '../../../../core/constants/url_api_key.dart';
 import '../../../../core/network/image_cache_manager.dart';
 import '../../../../data/models/home_models.dart';
+import '../../products/product_details_screen.dart';
 
 class FlashDealItemWidget extends StatefulWidget {
   final ProductItem item;
@@ -101,7 +102,14 @@ class _FlashDealItemWidgetState extends State<FlashDealItemWidget> {
         elevation: 2,
         color: Colors.white,
         child: InkWell(
-          onTap: widget.onTap,
+          onTap: widget.onTap ?? () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ProductDetailsScreen(productId: item.productId!),
+              ),
+            );
+          },
           child: Padding(
             padding: EdgeInsets.all(5.0.w),
             child: Row(

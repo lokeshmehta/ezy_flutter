@@ -206,6 +206,9 @@ class PromotionsItem {
   String? toDate;
   String? promotionPrice;
   String? price;
+  String? divisionId;
+  String? groupId;
+  List<PromotionProduct>? products;
 
   PromotionsItem(
       {this.promotionId,
@@ -216,7 +219,10 @@ class PromotionsItem {
       this.fromDate,
       this.toDate,
       this.promotionPrice,
-      this.price});
+      this.price,
+      this.divisionId,
+      this.groupId,
+      this.products});
 
   PromotionsItem.fromJson(Map<String, dynamic> json) {
     promotionId = json['promotion_id']?.toString();
@@ -228,5 +234,23 @@ class PromotionsItem {
     toDate = json['to_date'];
     promotionPrice = json['promotion_price'];
     price = json['price'];
+    divisionId = json['division_id']?.toString();
+    groupId = json['group_id']?.toString();
+    if (json['products'] != null) {
+      products = <PromotionProduct>[];
+      json['products'].forEach((v) {
+        products!.add(PromotionProduct.fromJson(v));
+      });
+    }
+  }
+}
+
+class PromotionProduct {
+  String? productId;
+
+  PromotionProduct({this.productId});
+
+  PromotionProduct.fromJson(Map<String, dynamic> json) {
+    productId = json['product_id']?.toString();
   }
 }
