@@ -17,6 +17,7 @@ class WishlistCategoryDialog extends StatefulWidget {
 
 class _WishlistCategoryDialogState extends State<WishlistCategoryDialog> {
   final TextEditingController _newCategoryController = TextEditingController();
+  bool _isAddingNewList = false;
 
   @override
   void dispose() {
@@ -122,24 +123,65 @@ class _WishlistCategoryDialogState extends State<WishlistCategoryDialog> {
 
                 SizedBox(height: 12.h),
 
-                // Add New List (Simplified Field)
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _newCategoryController,
-                        decoration: InputDecoration(
-                          hintText: "+ Add New List",
-                          hintStyle: TextStyle(fontSize: 12.sp, color: AppTheme.orangeColor),
-                          border: InputBorder.none, 
-                          isDense: true,
-                          contentPadding: EdgeInsets.symmetric(vertical: 8.h),
+                // Add New List Toggle Logic
+                if (!_isAddingNewList)
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _isAddingNewList = true;
+                      });
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8.h),
+                      child: Text(
+                        "+ Add New List",
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: AppTheme.orangeColor,
+                          fontWeight: FontWeight.bold,
                         ),
-                        style: TextStyle(fontSize: 12.sp),
                       ),
                     ),
-                  ],
-                ),
+                  )
+                else
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _newCategoryController,
+                          decoration: InputDecoration(
+                            hintText: "Enter Category Name",
+                            hintStyle: TextStyle(fontSize: 12.sp, color: Colors.grey),
+                            isDense: true,
+                            contentPadding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 8.w),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.r),
+                              borderSide: BorderSide(color: Colors.grey[300]!),
+                            ),
+                          ),
+                          style: TextStyle(fontSize: 12.sp),
+                        ),
+                      ),
+                      SizedBox(width: 8.w),
+                      // Cancel (X) Button aka 'removefav_lay' logic
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            _isAddingNewList = false;
+                            _newCategoryController.clear();
+                          });
+                        },
+                         child: Container(
+                           padding: EdgeInsets.all(5.w),
+                           decoration: BoxDecoration(
+                             color: AppTheme.redColor.withOpacity(0.1),
+                             shape: BoxShape.circle, 
+                           ),
+                           child: Icon(Icons.close, size: 16.sp, color: AppTheme.redColor),
+                         ),
+                      ),
+                    ],
+                  ),
                 SizedBox(height: 16.h),
 
                 // Buttons: Save (Orange) & Close (Grey)

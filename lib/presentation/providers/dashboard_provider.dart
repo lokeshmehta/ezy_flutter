@@ -359,7 +359,7 @@ class DashboardProvider extends ChangeNotifier {
             .whereType<String>();
         
         if (selectedIds.isNotEmpty) {
-          categoryIds = '${selectedIds.join(',')},';
+          categoryIds = selectedIds.join(',');
         }
       }
 
