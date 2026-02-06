@@ -238,6 +238,12 @@ class _WishlistCategoryDialogState extends State<WishlistCategoryDialog> {
 
   void _submitUpdate(BuildContext context) async {
     final provider = Provider.of<DashboardProvider>(context, listen: false);
+    
+    // Calculate expected favorite status based on selection
+    bool hasSelected = provider.wishlistCategories?.any((c) => c?.isSelected == true) ?? false;
+    bool hasNew = _newCategoryController.text.trim().isNotEmpty;
+    bool isFav = hasSelected || hasNew;
+
     final success = await provider.submitWishlistUpdate(
       widget.product.productId!,
       _newCategoryController.text.trim(),
@@ -246,7 +252,7 @@ class _WishlistCategoryDialogState extends State<WishlistCategoryDialog> {
     if (!context.mounted) return;
 
     if (success) {
-       Navigator.pop(context); // Close Category Selection Dialog
+       Navigator.pop(context, isFav); // Close Category Selection Dialog with result
        _showSuccessDialog(context, provider.errorMsg ?? "Wishlist Updated Successfully");
     } else {
        ScaffoldMessenger.of(context).showSnackBar(

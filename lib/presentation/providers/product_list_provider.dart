@@ -471,6 +471,15 @@ class ProductListProvider extends ChangeNotifier {
             orderedAs: orderedAs,
           );
         }
+
+        // Update Detail Item if visible
+        if (_productDetailItem != null && _productDetailItem?.productId == product.productId) {
+           _productDetailItem = _productDetailItem!.copyDetailWith(
+             addedToCart: "Yes",
+             addedQty: qty,
+             orderedAs: orderedAs,
+           );
+        }
       }
     } catch (e) {
       _errorMsg = e.toString();
@@ -503,6 +512,15 @@ class ProductListProvider extends ChangeNotifier {
             orderedAs: orderedAs,
           );
         }
+
+        // Update Detail Item if visible
+        if (_productDetailItem != null && _productDetailItem?.productId == product.productId) {
+           _productDetailItem = _productDetailItem!.copyDetailWith(
+             addedToCart: "Yes",
+             addedQty: qty,
+             orderedAs: orderedAs,
+           );
+        }
       }
     } catch (e) {
       _errorMsg = e.toString();
@@ -531,6 +549,15 @@ class ProductListProvider extends ChangeNotifier {
             addedSubTotal: "0.000",
           );
         }
+
+        // Update Detail Item if visible
+        if (_productDetailItem != null && _productDetailItem?.productId == product.productId) {
+           _productDetailItem = _productDetailItem!.copyDetailWith(
+             addedToCart: "No",
+             addedQty: "0",
+             addedSubTotal: "0.000",
+           );
+        }
       }
     } catch (e) {
       _errorMsg = e.toString();
@@ -547,6 +574,20 @@ class ProductListProvider extends ChangeNotifier {
     await prefs.setString(StorageKeys.cartCount, CommonMethods.cartCount);
     await prefs.setInt(StorageKeys.supplierCount, CommonMethods.supplierCount);
     await prefs.setString(StorageKeys.suppliers, CommonMethods.suppliers);
+    notifyListeners();
+  }
+
+  void updateProductFavoriteStatus(String productId, String isFavourite) {
+    // Update in list
+    final index = _products.indexWhere((p) => p.productId == productId);
+    if (index != -1) {
+      _products[index] = _products[index].copyWith(isFavourite: isFavourite);
+    }
+    
+    // Update in detail
+    if (_productDetailItem != null && _productDetailItem?.productId == productId) {
+      _productDetailItem = _productDetailItem!.copyDetailWith(isFavourite: isFavourite);
+    }
     notifyListeners();
   }
 
@@ -588,6 +629,7 @@ extension ProductItemCopyWith on ProductItem {
     String? addedQty,
     String? addedSubTotal,
     String? orderedAs,
+    String? isFavourite,
   }) {
     return ProductItem(
       productId: productId,
@@ -605,7 +647,7 @@ extension ProductItemCopyWith on ProductItem {
       availableStockQty: availableStockQty,
       minimumOrderQty: minimumOrderQty,
       soldAs: soldAs,
-      isFavourite: isFavourite,
+      isFavourite: isFavourite ?? this.isFavourite,
       productAvailable: productAvailable,
       supplierAvailable: supplierAvailable,
       notAvailableDaysMessage: notAvailableDaysMessage,
@@ -629,6 +671,63 @@ extension ProductItemCopyWith on ProductItem {
       discountName: discountName,
       wishlistId: wishlistId,
       wishlistCategoryId: wishlistCategoryId,
+    );
+  }
+}
+
+extension ProductDetailItemCopyWith on ProductDetailItem {
+  ProductDetailItem copyDetailWith({
+    String? addedToCart,
+    String? addedQty,
+    String? addedSubTotal,
+    String? orderedAs,
+    String? isFavourite,
+  }) {
+    return ProductDetailItem(
+      addedToCart: addedToCart ?? this.addedToCart,
+      addedQty: addedQty ?? this.addedQty,
+      addedSubTotal: addedSubTotal ?? this.addedSubTotal,
+      orderedAs: orderedAs ?? this.orderedAs,
+      isFavourite: isFavourite ?? this.isFavourite,
+      // Pass through all other fields
+      productId: productId,
+      name: name,
+      description: description,
+      shortDescription: shortDescription,
+      image: image,
+      brandName: brandName,
+      brandId: brandId,
+      price: price,
+      promotionPrice: promotionPrice,
+      stockUnlimited: stockUnlimited,
+      qtyStatus: qtyStatus,
+      availableStockQty: availableStockQty,
+      minimumOrderQty: minimumOrderQty,
+      soldAs: soldAs,
+      gst: gst,
+      gstPercentage: gstPercentage,
+      hasPromotion: hasPromotion,
+      label: label,
+      productAvailable: productAvailable,
+      supplierAvailable: supplierAvailable,
+      notAvailableDaysMessage: notAvailableDaysMessage,
+      discountPercentage: discountPercentage,
+      discountId: discountId,
+      discountName: discountName,
+      qtyPerOuter: qtyPerOuter,
+      apiData: apiData,
+      
+      productFields: productFields,
+      productSpecifications: productSpecifications,
+      similarProducts: similarProducts,
+      sameCategoryProducts: sameCategoryProducts,
+      item: item,
+      sku: sku,
+      unitsShipper: unitsShipper,
+      innerBarcode: innerBarcode,
+      shipperBarcode: shipperBarcode,
+      outerBarcode: outerBarcode,
+      primaryBarcode: primaryBarcode,
     );
   }
 }

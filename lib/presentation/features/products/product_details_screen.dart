@@ -23,7 +23,7 @@ class ProductDetailsScreen extends StatefulWidget {
 
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  int _quantity = 1;
+
 
   @override
   void initState() {
@@ -54,10 +54,17 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> with Single
     await dashboardProvider.fetchWishlistCategories(product.productId!);
     if (!mounted) return;
     
-    showDialog(
+    final result = await showDialog<bool>(
       context: context,
       builder: (context) => WishlistCategoryDialog(product: product),
     );
+
+    if (result != null && mounted) {
+       context.read<ProductListProvider>().updateProductFavoriteStatus(
+         product.productId!, 
+         result ? "Yes" : "No"
+       );
+    }
   }
 
   @override
