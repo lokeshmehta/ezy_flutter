@@ -357,4 +357,93 @@ class AuthRemoteDataSource {
     );
     return response;
   }
+
+  // Drawer APIs
+  Future<Map<String, dynamic>> getAboutUs(String accessToken) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}about-us",
+      body: {
+        'access_token': accessToken,
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> sendFeedback({
+    required String name,
+    required String email,
+    required String subject,
+    required String message,
+    required String phone,
+  }) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}contact-us",
+      body: {
+        'name': name,
+        'email': email,
+        'subject': subject,
+        'message': message,
+        'phone': phone,
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> getFAQCategories(String accessToken) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}faq-categories",
+      body: {
+        'access_token': accessToken,
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> getFAQDetails(String accessToken, String categoryId, int page) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}faq",
+      body: {
+        'access_token': accessToken,
+        'category_id': categoryId,
+        'page': page.toString(),
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> getNotifications(String accessToken, String customerId, int page) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}notifications",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'page': page.toString(),
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> changeNotificationStatus(String accessToken, String customerId, String notificationId) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}change-notification-status",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'notification_id': notificationId,
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> deleteNotification(String accessToken, String customerId, String notificationId) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}delete-notification",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'notification_id': notificationId,
+      },
+    );
+    return response;
+  }
 }

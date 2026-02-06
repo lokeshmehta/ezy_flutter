@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../data/datasources/auth_remote_data_source.dart';
-import '../../../data/models/home_models.dart';
+import '../../../data/models/home_models.dart' hide PromotionsResponse;
 import '../../../data/models/wishlist_models.dart';
+import '../../../data/models/drawer_models.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
 import '../../../core/constants/storage_keys.dart';
@@ -37,6 +38,13 @@ class DashboardProvider extends ChangeNotifier {
   // Company Config
   String? _companyImage;
 
+  // Drawer Screens State
+  NotificationResponse? _notificationsResponse;
+  FAQResponse? _faqCategoriesResponse;
+  FAQDetailsResponse? _faqDetailsResponse;
+  AboutUsResponse? _aboutUsResponse;
+  bool _isFetchingDrawerData = false;
+
 
   // Pagination Pages (Defaults to 1 as per Android)
   int promotionPage = 1;
@@ -71,6 +79,13 @@ class DashboardProvider extends ChangeNotifier {
   String? get companyImage => _companyImage;
   String? get supplierLogosPosition => _profileResponse?.results?[0]?.supplierLogosPosition;
 
+  // Drawer Getters
+  NotificationResponse? get notificationsResponse => _notificationsResponse;
+  FAQResponse? get faqCategoriesResponse => _faqCategoriesResponse;
+  FAQDetailsResponse? get faqDetailsResponse => _faqDetailsResponse;
+  AboutUsResponse? get aboutUsResponse => _aboutUsResponse;
+  bool get isFetchingDrawerData => _isFetchingDrawerData;
+
   // Wishlist Getters
   List<WishlistCategory?>? get wishlistCategories => _wishlistCategoriesResponse?.results;
   bool get isFetchingWishlistCategories => _isFetchingWishlistCategories;
@@ -96,7 +111,7 @@ class DashboardProvider extends ChangeNotifier {
       futures.add(_fetchBanners());
       futures.add(_fetchFooterBanners());
       futures.add(_fetchHomeBlocks());
-      futures.add(_fetchPromotions());
+      futures.add(fetchPromotions(page: 1));
       
       // Conditional Calls based on Profile settings
       if (profile.bestSellers == "Show") futures.add(_fetchBestSellers());
@@ -200,13 +215,27 @@ class DashboardProvider extends ChangeNotifier {
     }
   }
 
-   Future<void> _fetchPromotions() async {
+   Future<void> fetchPromotions({int page = 1}) async {
     try {
+      promotionPage = page;
+      if (page == 1) _promotionsResponse = null; // Clear if refreshing
+      // But wait! If refreshing, we want to clear. 
+      // Actually, if page 1, we replace.
+      
       final prefs = await SharedPreferences.getInstance();
       final accessToken = prefs.getString(StorageKeys.accessToken) ?? '';
       final customerId = prefs.getString(StorageKeys.userId) ?? '';
-      final response = await _dataSource.getPromotions(accessToken, customerId, promotionPage);
-      _promotionsResponse = PromotionsResponse.fromJson(response);
+      final response = await _dataSource.getPromotions(accessToken, customerId, page);
+      
+      final newResponse = PromotionsResponse.fromJson(response);
+      if (page == 1) {
+        _promotionsResponse = newResponse;
+      } else {
+        if (_promotionsResponse?.results != null && newResponse.results != null) {
+            _promotionsResponse!.results!.addAll(newResponse.results!);
+        }
+      }
+      notifyListeners();
     } catch (e) {
        debugPrint("Error fetching promotions: $e");
     }
@@ -399,7 +428,6 @@ class DashboardProvider extends ChangeNotifier {
     _hotSellingResponse?.results?.forEach((p) { if (p?.productId == productId) p?.isFavourite = state; });
     _newArrivalsResponse?.results?.forEach((p) { if (p?.productId == productId) p?.isFavourite = state; });
     _flashDealsResponse?.results?.forEach((p) { if (p?.productId == productId) p?.isFavourite = state; });
-    _promotionsResponse?.results?.forEach((p) { if (p?.productId == productId) p?.isFavourite = state; });
     _recentlyAddedResponse?.results?.forEach((p) { if (p?.productId == productId) p?.isFavourite = state; });
   }
 
@@ -534,7 +562,7 @@ class DashboardProvider extends ChangeNotifier {
     _hotSellingResponse?.results?.forEach(update);
     _newArrivalsResponse?.results?.forEach(update);
     _flashDealsResponse?.results?.forEach(update);
-    _promotionsResponse?.results?.forEach(update);
+    // Promotions do not have products directly in this list
     _recentlyAddedResponse?.results?.forEach(update);
   }
 
@@ -662,5 +690,173 @@ class DashboardProvider extends ChangeNotifier {
        notifyListeners();
     }
     return false;
+  }
+
+  // Drawer Methods
+
+  Future<void> fetchNotifications(int page) async {
+    try {
+      if (page == 1) _isFetchingDrawerData = true;
+      notifyListeners();
+
+      final prefs = await SharedPreferences.getInstance();
+      String token = prefs.getString(StorageKeys.accessToken) ?? "";
+      String customerId = prefs.getString(StorageKeys.userId) ?? "";
+
+      final response = await _dataSource.getNotifications(token, customerId, page);
+      if (page == 1) {
+        _notificationsResponse = NotificationResponse.fromJson(response);
+      } else {
+        if (_notificationsResponse?.results != null && response['results'] != null) {
+             final newPage = NotificationResponse.fromJson(response);
+             _notificationsResponse!.results!.addAll(newPage.results!);
+        }
+      }
+    } catch (e) {
+      debugPrint("Error fetching notifications: $e");
+    } finally {
+      _isFetchingDrawerData = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> changeNotificationStatus(String notificationId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      String token = prefs.getString(StorageKeys.accessToken) ?? "";
+      String customerId = prefs.getString(StorageKeys.userId) ?? "";
+
+      await _dataSource.changeNotificationStatus(token, customerId, notificationId);
+      
+      // Update local state
+      if (_notificationsResponse?.results != null) {
+        final index = _notificationsResponse!.results!.indexWhere((n) => n.notificationId == notificationId);
+        if (index != -1) {
+          _notificationsResponse!.results![index].status = "Read";
+          notifyListeners();
+        }
+      }
+      return true;
+    } catch (e) {
+      debugPrint("Error changing notification status: $e");
+      return false;
+    }
+  }
+
+  Future<bool> deleteNotification(String notificationId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      String token = prefs.getString(StorageKeys.accessToken) ?? "";
+      String customerId = prefs.getString(StorageKeys.userId) ?? "";
+
+      await _dataSource.deleteNotification(token, customerId, notificationId);
+      
+      // Update local list
+      _notificationsResponse?.results?.removeWhere((element) => element.notificationId == notificationId);
+      notifyListeners();
+      
+      return true;
+    } catch (e) {
+      debugPrint("Error deleting notification: $e");
+      return false;
+    }
+  }
+
+  Future<void> fetchFAQCategories() async {
+    try {
+      _isFetchingDrawerData = true;
+      notifyListeners();
+
+      final prefs = await SharedPreferences.getInstance();
+      String token = prefs.getString(StorageKeys.accessToken) ?? "";
+
+      final response = await _dataSource.getFAQCategories(token);
+      _faqCategoriesResponse = FAQResponse.fromJson(response);
+    } catch (e) {
+      debugPrint("Error fetching FAQ categories: $e");
+    } finally {
+      _isFetchingDrawerData = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> fetchFAQDetails(String categoryId, int page) async {
+    try {
+      if (page == 1) _isFetchingDrawerData = true;
+      notifyListeners();
+
+      final prefs = await SharedPreferences.getInstance();
+      String token = prefs.getString(StorageKeys.accessToken) ?? "";
+
+      final response = await _dataSource.getFAQDetails(token, categoryId, page);
+       if (page == 1) {
+        _faqDetailsResponse = FAQDetailsResponse.fromJson(response);
+      } else {
+        if (_faqDetailsResponse?.results != null && response['results'] != null) {
+             final newPage = FAQDetailsResponse.fromJson(response);
+             _faqDetailsResponse!.results!.addAll(newPage.results!);
+        }
+      }
+    } catch (e) {
+      debugPrint("Error fetching FAQ details: $e");
+    } finally {
+      _isFetchingDrawerData = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> fetchAboutUs() async {
+    try {
+      _isFetchingDrawerData = true;
+      notifyListeners();
+
+      final prefs = await SharedPreferences.getInstance();
+      String token = prefs.getString(StorageKeys.accessToken) ?? "";
+
+      final response = await _dataSource.getAboutUs(token);
+      _aboutUsResponse = AboutUsResponse.fromJson(response);
+    } catch (e) {
+      debugPrint("Error fetching About Us: $e");
+    } finally {
+      _isFetchingDrawerData = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> sendFeedback({
+    required String name,
+    required String email,
+    required String phone,
+    required String subject,
+    required String message,
+  }) async {
+     try {
+      _isLoading = true; 
+      notifyListeners();
+
+      final response = await _dataSource.sendFeedback(
+        name: name,
+        email: email,
+        phone: phone,
+        subject: subject,
+        message: message,
+      );
+      
+      _isLoading = false;
+      notifyListeners();
+      
+      if (response['status'] == 200 || response['status'] == 1) {
+         return true;
+      } else {
+         _errorMsg = response['message']?.toString() ?? "Failed to send feedback";
+         return false;
+      }
+    } catch (e) {
+      debugPrint("Error sending feedback: $e");
+      _errorMsg = e.toString();
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
   }
 }

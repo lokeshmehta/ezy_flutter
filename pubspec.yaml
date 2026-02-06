@@ -28,8 +28,9 @@ dependencies:
   shimmer: ^3.0.0
   fluttertoast: ^8.2.6
   dots_indicator: ^3.0.0
-  readmore: ^3.0.0
   cupertino_icons: ^1.0.8
+  flutter_html: ^3.0.0
+  html: ^0.15.4
 
   # Feature Integrations
   mobile_scanner: ^5.1.0

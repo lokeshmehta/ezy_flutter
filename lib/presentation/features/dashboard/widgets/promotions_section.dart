@@ -73,7 +73,6 @@ class _PromotionsSectionState extends State<PromotionsSection> {
                 itemCount: promotions.length,
                 itemBuilder: (context, index) {
                    final item = promotions[index];
-                   if (item == null) return const SizedBox.shrink();
 
                    return HomePromotionItemWidget(
                      imageUrl: item.image,

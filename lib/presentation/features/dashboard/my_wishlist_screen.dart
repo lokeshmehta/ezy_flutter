@@ -1,8 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ezy_orders_flutter/presentation/features/dashboard/widgets/wishlist_item_widget.dart';
 import 'package:ezy_orders_flutter/presentation/features/dashboard/widgets/product_details_bottom_sheet.dart';
 import 'package:ezy_orders_flutter/presentation/providers/dashboard_provider.dart';
-import 'package:ezy_orders_flutter/data/models/wishlist_models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';

@@ -8,6 +8,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/constants/url_api_key.dart';
 // import '../../../data/models/home_models.dart'; // Unused
 import '../../../core/network/image_cache_manager.dart';
+import '../drawer/about_us_screen.dart';
+import '../drawer/faq_screen.dart';
+import '../drawer/help_support_screen.dart';
+import '../drawer/notifications_screen.dart';
+import '../drawer/promotions_screen.dart';
+import '../drawer/send_feedback_screen.dart';
 import 'widgets/suppliers_section.dart';
 import 'widgets/promotions_section.dart';
 import 'widgets/popular_categories_section.dart';
@@ -236,13 +242,34 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
                       context.push('/my-wishlist');
                     }),
                     _buildDrawerItem(AppAssets.myOrdersIcon, "My Orders", () {}),
-                    _buildDrawerItem(AppAssets.orderNowIcon, "Order Now", () {}),
-                    _buildDrawerItem(AppAssets.promoIcon, "Promotions", () {}),
-                    _buildDrawerItem(AppAssets.notifyIcon, "Notifications", () {}),
-                    _buildDrawerItem(AppAssets.faqIcon, "FAQ", () {}),
-                    _buildDrawerItem(AppAssets.helpIcon, "Help & Support", () {}),
-                    _buildDrawerItem(AppAssets.feedbackIcon, "Send Feedback", () {}),
-                    _buildDrawerItem(AppAssets.aboutIcon, "About Us", () {}),
+                    _buildDrawerItem(AppAssets.orderNowIcon, "Order Now", () {
+                      context.pop();
+                      Navigator.push(context, MaterialPageRoute(builder: (c) => const ProductsListScreen()));
+                    }),
+                    _buildDrawerItem(AppAssets.promoIcon, "Promotions", () {
+                      context.pop();
+                      Navigator.push(context, MaterialPageRoute(builder: (c) => const PromotionsScreen()));
+                    }),
+                    _buildDrawerItem(AppAssets.notifyIcon, "Notifications", () {
+                      context.pop();
+                      Navigator.push(context, MaterialPageRoute(builder: (c) => const NotificationsScreen()));
+                    }),
+                    _buildDrawerItem(AppAssets.faqIcon, "FAQ", () {
+                      context.pop();
+                      Navigator.push(context, MaterialPageRoute(builder: (c) => const FAQScreen()));
+                    }),
+                    _buildDrawerItem(AppAssets.helpIcon, "Help & Support", () {
+                      context.pop();
+                      Navigator.push(context, MaterialPageRoute(builder: (c) => const HelpSupportScreen()));
+                    }),
+                    _buildDrawerItem(AppAssets.feedbackIcon, "Send Feedback", () {
+                      context.pop();
+                      Navigator.push(context, MaterialPageRoute(builder: (c) => const SendFeedbackScreen()));
+                    }),
+                    _buildDrawerItem(AppAssets.aboutIcon, "About Us", () {
+                      context.pop();
+                      Navigator.push(context, MaterialPageRoute(builder: (c) => const AboutUsScreen()));
+                    }),
                  ],
                ),
              ),

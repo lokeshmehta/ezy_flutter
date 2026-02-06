@@ -150,6 +150,12 @@ class ProfileResult {
   String? customerMessageForAdditionalSuppliersCharge; 
   String? showShippingSegment; 
   String? showSoldAs;
+  String? companyMobile;
+  String? companyEmail;
+  String? companyStreet;
+  String? companySuburb;
+  String? companyState;
+  String? companyPostcode;
   List<ProductItem?>? wishlist; // Added
   int? wishlistCount; // Added
 
@@ -187,6 +193,12 @@ class ProfileResult {
     this.customerMessageForAdditionalSuppliersCharge,
     this.showShippingSegment,
     this.showSoldAs,
+    this.companyMobile,
+    this.companyEmail,
+    this.companyStreet,
+    this.companySuburb,
+    this.companyState,
+    this.companyPostcode,
     this.wishlist, // Added
     this.wishlistCount, // Added
   });
@@ -226,6 +238,12 @@ class ProfileResult {
       customerMessageForAdditionalSuppliersCharge: json['customer_message_for_additional_suppliers_charge']?.toString(),
       showShippingSegment: json['show_shipping_segment']?.toString(),
       showSoldAs: json['show_sold_as']?.toString(),
+      companyMobile: json['company_mobile']?.toString(),
+      companyEmail: json['company_email']?.toString(),
+      companyStreet: json['company_street']?.toString(),
+      companySuburb: json['company_suburb']?.toString(),
+      companyState: json['company_state']?.toString(),
+      companyPostcode: json['company_postcode']?.toString(),
       wishlist: json['wishlist'] != null
           ? (json['wishlist'] as List).map((i) => i != null ? ProductItem.fromJson(i) : null).toList()
           : null,
