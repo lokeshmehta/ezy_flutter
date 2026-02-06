@@ -184,20 +184,67 @@ class _WishlistCategoryDialogState extends State<WishlistCategoryDialog> {
       widget.product.productId!,
       _newCategoryController.text.trim(),
     );
+    
+    if (!context.mounted) return;
+
     if (success) {
-      if (context.mounted) Navigator.pop(context);
-      // Show success message like Android
-      if (context.mounted) {
-         ScaffoldMessenger.of(context).showSnackBar(
-           SnackBar(content: Text(provider.errorMsg ?? "Wishlist Updated Successfully")),
+       Navigator.pop(context); // Close Category Selection Dialog
+       _showSuccessDialog(context, provider.errorMsg ?? "Wishlist Updated Successfully");
+    } else {
+       ScaffoldMessenger.of(context).showSnackBar(
+         SnackBar(content: Text(provider.errorMsg ?? "Failed to update wishlist")),
+       );
+    }
+  }
+
+  void _showSuccessDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (ctx) {
+         // Auto-dismiss logic
+         Future.delayed(const Duration(seconds: 2), () {
+            if (ctx.mounted) Navigator.of(ctx).pop();
+         });
+
+         return Dialog(
+           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
+           child: Container(
+             padding: EdgeInsets.all(20.w),
+             child: Column(
+               mainAxisSize: MainAxisSize.min,
+               children: [
+                 Align(
+                   alignment: Alignment.topRight,
+                   child: InkWell(
+                     onTap: () => Navigator.pop(ctx),
+                     child: Icon(Icons.close, size: 24.sp, color: Colors.grey),
+                   ),
+                 ),
+                 SizedBox(height: 10.h),
+                 Text(
+                   message,
+                   textAlign: TextAlign.center,
+                   style: TextStyle(
+                     fontSize: 16.sp,
+                     fontWeight: FontWeight.bold,
+                     color: AppTheme.primaryColor,
+                   ),
+                 ),
+                 SizedBox(height: 20.h),
+                 ElevatedButton(
+                   onPressed: () => Navigator.pop(ctx),
+                   style: ElevatedButton.styleFrom(
+                     backgroundColor: AppTheme.primaryColor,
+                     padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 10.h),
+                   ),
+                   child: Text("Close", style: TextStyle(color: Colors.white, fontSize: 14.sp)),
+                 )
+               ],
+             ),
+           ),
          );
       }
-    } else {
-       if (context.mounted) {
-         ScaffoldMessenger.of(context).showSnackBar(
-           SnackBar(content: Text(provider.errorMsg ?? "Failed to update wishlist")),
-         );
-       }
-    }
+    );
   }
 }
