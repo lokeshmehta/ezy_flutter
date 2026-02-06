@@ -247,6 +247,7 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
                           value: CommonMethods.filterSelected == "All Products" && !["Show Products", "Available Products", "Not Available Products"].contains(CommonMethods.filterSelected) 
                               ? "Show Products" 
                               : (["Show Products", "All Products", "Available Products", "Not Available Products"].contains(CommonMethods.filterSelected) ? CommonMethods.filterSelected : "All Products"),
+                          isExpanded: true,
                           items: ["Show Products", "All Products", "Available Products", "Not Available Products"]
                               .map((String value) {
                             return DropdownMenuItem<String>(
@@ -347,7 +348,7 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        mainAxisExtent: 330.h, // Fixed height per tile, safe for all widths
+        mainAxisExtent: 320.h, // Fixed height per tile, safe for all widths
         crossAxisSpacing: 10.w,
         mainAxisSpacing: 10.h,
       ),

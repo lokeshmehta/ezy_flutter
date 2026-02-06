@@ -56,44 +56,48 @@ class SortDialog extends StatelessWidget {
                 ),
 
                 // Content
-                Flexible(
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    padding: EdgeInsets.symmetric(vertical: 10.h),
-                    itemCount: options.length,
-                    separatorBuilder: (context, index) => Divider(height: 1.h, color: Colors.grey[200]),
-                    itemBuilder: (context, index) {
-                      final option = options[index];
-                      final isSelected = option.value == selectedValue;
+                ConstrainedBox(
+                   constraints: BoxConstraints(maxHeight: 300.h),
+                   child: ListView.separated(
+                      shrinkWrap: true,
+                      padding: EdgeInsets.symmetric(vertical: 10.h),
+                      itemCount: options.length,
+                      separatorBuilder: (context, index) => Divider(height: 1.h, color: Colors.grey[200]),
+                      itemBuilder: (context, index) {
+                        final option = options[index];
+                        final isSelected = option.value == selectedValue;
 
-                      return InkWell(
-                        onTap: () {
-                          provider.onSortSelected(option);
-                          Navigator.pop(context);
-                        },
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                option.label ?? "",
-                                style: TextStyle(
-                                  color: isSelected ? AppTheme.primaryColor : AppTheme.textColor,
-                                  fontSize: 14.sp,
-                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        return InkWell(
+                          onTap: () {
+                            provider.onSortSelected(option);
+                            Navigator.pop(context);
+                          },
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    option.label ?? "",
+                                    style: TextStyle(
+                                      color: isSelected ? AppTheme.primaryColor : AppTheme.textColor,
+                                      fontSize: 14.sp,
+                                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
-                              ),
-                              if (isSelected)
-                                Icon(Icons.check_circle, color: AppTheme.primaryColor, size: 20.w)
-                              else
-                                Icon(Icons.radio_button_off, color: Colors.grey, size: 20.w),
-                            ],
+                                if (isSelected)
+                                  Icon(Icons.check_circle, color: AppTheme.primaryColor, size: 20.w)
+                                else
+                                  Icon(Icons.radio_button_off, color: Colors.grey, size: 20.w),
+                              ],
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
+                        );
+                      },
+                    ),
                 ),
               ],
             ),
