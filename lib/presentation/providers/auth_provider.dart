@@ -5,6 +5,8 @@ import '../../domain/entities/user_entity.dart';
 import '../../core/constants/storage_keys.dart';
 
 
+import '../../core/constants/app_messages.dart';
+
 class AuthProvider extends ChangeNotifier {
   final AuthRepository _repository;
 
@@ -51,8 +53,13 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<bool> login(String email, String password) async {
-    if (email.isEmpty || password.isEmpty) {
-        _errorMessage = "Please enter Valid Credentials";
+    if (email.isEmpty) {
+        _errorMessage = AppMessages.enterYourUserId;
+        notifyListeners();
+        return false;
+    }
+    if (password.isEmpty) {
+        _errorMessage = AppMessages.enterYourPassword;
         notifyListeners();
         return false;
     }

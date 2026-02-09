@@ -1,9 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../core/constants/storage_keys.dart';
 import '../../data/datasources/auth_remote_data_source.dart';
+import '../../core/constants/app_messages.dart';
 import '../../data/models/profile_models.dart';
+import '../../core/constants/storage_keys.dart';
 
 class AddressProvider extends ChangeNotifier {
   final AuthRemoteDataSource authRemoteDataSource;
@@ -37,7 +37,7 @@ class AddressProvider extends ChangeNotifier {
         _addressList = [];
       }
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = AppMessages.failureMsg;
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -57,6 +57,7 @@ class AddressProvider extends ChangeNotifier {
     required String defaultAddress,
   }) async {
     _isLoading = true;
+    _errorMessage = '';
     notifyListeners();
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -84,10 +85,10 @@ class AddressProvider extends ChangeNotifier {
         notifyListeners();
         return true;
       } else {
-        _errorMessage = response['message'] ?? "Failed to add address";
+        _errorMessage = response['message'] ?? AppMessages.failureMsg;
       }
     } catch (e) {
-       _errorMessage = e.toString();
+       _errorMessage = AppMessages.failureMsg;
     }
     _isLoading = false;
     notifyListeners();
@@ -108,6 +109,7 @@ class AddressProvider extends ChangeNotifier {
     required String defaultAddress,
   }) async {
     _isLoading = true;
+    _errorMessage = '';
     notifyListeners();
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -136,10 +138,10 @@ class AddressProvider extends ChangeNotifier {
         notifyListeners();
         return true;
       } else {
-        _errorMessage = response['message'] ?? "Failed to update address";
+        _errorMessage = response['message'] ?? AppMessages.failureMsg;
       }
     } catch (e) {
-       _errorMessage = e.toString();
+       _errorMessage = AppMessages.failureMsg;
     }
     _isLoading = false;
     notifyListeners();
@@ -148,6 +150,7 @@ class AddressProvider extends ChangeNotifier {
 
   Future<bool> deleteAddress(String addressId) async {
     _isLoading = true;
+    _errorMessage = '';
     notifyListeners();
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -166,10 +169,10 @@ class AddressProvider extends ChangeNotifier {
         notifyListeners();
         return true;
       } else {
-        _errorMessage = response['message'] ?? "Failed to delete address";
+        _errorMessage = response['message'] ?? AppMessages.failureMsg;
       }
     } catch (e) {
-       _errorMessage = e.toString();
+       _errorMessage = AppMessages.failureMsg;
     }
     _isLoading = false;
     notifyListeners();

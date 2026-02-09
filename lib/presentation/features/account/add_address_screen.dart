@@ -1,11 +1,11 @@
-
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import '../../providers/address_provider.dart';
 import '../../../core/constants/app_theme.dart';
 import '../../../data/models/profile_models.dart';
+import '../../../core/constants/app_messages.dart';
 
 class AddAddressScreen extends StatefulWidget {
   final AddressItem? addressToEdit;
@@ -133,18 +133,18 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                               key: _formKey,
                               child: Column(
                                   children: [
-                                      _buildTextField("First Name", _firstNameController, validator: (v) => v!.isEmpty ? "Required" : null),
-                                      _buildTextField("Last Name", _lastNameController, validator: (v) => v!.isEmpty ? "Required" : null),
-                                      _buildTextField("Email", _emailController, keyboardType: TextInputType.emailAddress, validator: (v) => v!.isEmpty ? "Required" : null),
-                                      _buildTextField("Mobile Number", _mobileController, keyboardType: TextInputType.phone, validator: (v) => v!.isEmpty ? "Required" : null),
-                                      _buildTextField("Street Address", _streetController, validator: (v) => v!.isEmpty ? "Required" : null),
+                                      _buildTextField("First Name", _firstNameController, validator: (v) => v!.isEmpty ? AppMessages.enterValidFirstName : null),
+                                      _buildTextField("Last Name", _lastNameController, validator: (v) => v!.isEmpty ? AppMessages.enterValidLastName : null),
+                                      _buildTextField("Email", _emailController, keyboardType: TextInputType.emailAddress, validator: (v) => v!.isEmpty ? AppMessages.enterValidEmail : null),
+                                      _buildTextField("Mobile Number", _mobileController, keyboardType: TextInputType.phone, validator: (v) => v!.isEmpty ? AppMessages.enterValidMobileNumber : null),
+                                      _buildTextField("Street Address", _streetController, validator: (v) => v!.isEmpty ? AppMessages.enterValidStreetAddress : null),
                                       _buildTextField("Street 2 (Optional)", _street2Controller),
-                                      _buildTextField("Suburb / City", _suburbController, validator: (v) => v!.isEmpty ? "Required" : null),
+                                      _buildTextField("Suburb / City", _suburbController, validator: (v) => v!.isEmpty ? AppMessages.enterValidTownCity : null),
                                       Row(
                                           children: [
-                                              Expanded(child: _buildTextField("State", _stateController, validator: (v) => v!.isEmpty ? "Required" : null)),
+                                              Expanded(child: _buildTextField("State", _stateController, validator: (v) => v!.isEmpty ? AppMessages.enterValidStateCountry : null)),
                                               SizedBox(width: 10.w),
-                                              Expanded(child: _buildTextField("Postcode", _postcodeController, keyboardType: TextInputType.number, validator: (v) => v!.isEmpty ? "Required" : null)),
+                                              Expanded(child: _buildTextField("Postcode", _postcodeController, keyboardType: TextInputType.number, validator: (v) => v!.isEmpty ? AppMessages.enterValidPostcode : null)),
                                           ],
                                       ),
                                       SizedBox(height: 10.h),

@@ -6,6 +6,8 @@ import '../../domain/repositories/auth_repository.dart';
 import '../../core/constants/storage_keys.dart';
 import '../../config/routes/app_routes.dart';
 
+import '../../core/constants/app_messages.dart';
+
 class SignUpProvider extends ChangeNotifier {
   final AuthRepository _repository = getIt<AuthRepository>();
 
@@ -56,19 +58,19 @@ class SignUpProvider extends ChangeNotifier {
 
     // Validation matching Android saveEventClick
     if (_titleVal == null || _titleVal!.isEmpty) {
-      _setError("Please select title"); // R.string.please_enter_title
+      _setError(AppMessages.pleaseSelectTitle);
       return;
     }
     if (firstNameController.text.trim().isEmpty) {
-      _setError("Please enter first name"); // R.string.please_enter_fname
+      _setError(AppMessages.pleaseEnterFirstName);
       return;
     }
     if (lastNameController.text.trim().isEmpty) {
-      _setError("Please enter last name"); // R.string.please_enter_lname
+      _setError(AppMessages.pleaseEnterLastName);
       return;
     }
     if (mobileController.text.trim().isEmpty) {
-      _setError("Please enter mobile number"); // R.string.please_enter_mobno
+      _setError(AppMessages.pleaseEnterMobileNumber);
       return;
     }
 
@@ -76,16 +78,16 @@ class SignUpProvider extends ChangeNotifier {
     final email = emailController.text.trim();
     if (_emailRequired == "No") {
       if (email.isNotEmpty && !_isValidEmail(email)) {
-        _setError("Please enter valid email");
+        _setError(AppMessages.pleaseEnterValidEmail);
         return;
       }
     } else {
       if (email.isEmpty) {
-        _setError("Please enter email");
+        _setError(AppMessages.pleaseEnterEmail);
         return;
       }
       if (!_isValidEmail(email)) {
-        _setError("Please enter valid email");
+        _setError(AppMessages.pleaseEnterValidEmail);
         return;
       }
     }
@@ -96,7 +98,7 @@ class SignUpProvider extends ChangeNotifier {
        final emails = orderEmails.split(',').map((e) => e.trim()).toList();
        for (var e in emails) {
          if (e.isNotEmpty && !_isValidEmail(e)) {
-           _setError("Please update valid order email"); // R.string.enter_valid_orderemail
+           _setError(AppMessages.enterValidOrderEmail);
            return;
          }
        }
@@ -107,15 +109,15 @@ class SignUpProvider extends ChangeNotifier {
     final confPass = confirmPasswordController.text;
 
     if (pass.isEmpty) {
-      _setError("Please enter password");
+      _setError(AppMessages.enterYourPassword);
       return;
     }
     if (confPass.isEmpty) {
-      _setError("Please enter confirm password");
+      _setError(AppMessages.pleaseConfirmNewPassword);
       return;
     }
     if (pass != confPass) {
-      _setError("Confirmed password not matching"); // R.string.pswd_notmatching
+      _setError(AppMessages.pswdNotMatching);
       return;
     }
 

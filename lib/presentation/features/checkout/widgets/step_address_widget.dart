@@ -1,9 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../providers/checkout_provider.dart';
 import '../../../../core/constants/app_theme.dart';
+import '../../../../core/constants/app_messages.dart';
 
 
 class StepAddressWidget extends StatefulWidget {
@@ -114,7 +114,7 @@ class _StepAddressWidgetState extends State<StepAddressWidget> {
                   if(provider.validateAddressStep()) {
                       provider.nextStep();
                   } else {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please fill all required fields")));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppMessages.pleaseFillAllRequiredFields)));
                   }
               },
               style: ElevatedButton.styleFrom(

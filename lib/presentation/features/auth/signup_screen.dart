@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../providers/signup_provider.dart';
 import '../../../core/constants/app_theme.dart';
 import '../../../config/routes/app_routes.dart';
+import '../../../core/constants/app_messages.dart';
 
 
 class SignUpScreen extends StatelessWidget {
@@ -51,7 +52,7 @@ class SignUpScreen extends StatelessWidget {
                                      ),
                                      Expanded(
                                        child: Text(
-                                         "Sign Up", // @string/sign_up
+                                         AppMessages.signUp, // @string/sign_up
                                          textAlign: TextAlign.center,
                                          style: TextStyle(
                                            color: AppTheme.textColor, // @color/text_color
@@ -77,15 +78,15 @@ class SignUpScreen extends StatelessWidget {
                                        return Column(
                                          crossAxisAlignment: CrossAxisAlignment.start,
                                          children: [
-                                            // Title
-                                            _buildLabel("Title *"), // @string/title_
+                                             // Title
+                                            _buildLabel(AppMessages.titleMsg), // @string/title_
                                             SizedBox(height: 5),
                                             Container(
                                               height: 45,
                                               padding: EdgeInsets.symmetric(horizontal: 10),
                                               decoration: BoxDecoration(
-                                                border: Border.all(color: Colors.grey.shade400), // Spinner style approximation
-                                                borderRadius: BorderRadius.circular(4), // Standard spinner look
+                                                border: Border.all(color: Colors.grey.shade400),
+                                                borderRadius: BorderRadius.circular(4),
                                               ),
                                               child: DropdownButtonHideUnderline(
                                                 child: DropdownButton<String>(
@@ -107,48 +108,48 @@ class SignUpScreen extends StatelessWidget {
 
                                             SizedBox(height: 10),
 
-                                            // First Name
-                                            _buildLabel("First Name *"), // @string/first_name
-                                            _buildTextField(provider.firstNameController, "Enter Your First Name", TextInputType.name),
+                                             // First Name
+                                            _buildLabel(AppMessages.firstName), // @string/first_name
+                                            _buildTextField(provider.firstNameController, AppMessages.firstNameHint, TextInputType.name),
                                             
                                             SizedBox(height: 10),
                                             
                                             // Last Name
-                                            _buildLabel("Last Name *"), // @string/last_name_
-                                            _buildTextField(provider.lastNameController, "Enter Your Last Name", TextInputType.name),
+                                            _buildLabel(AppMessages.lastName), // @string/last_name_
+                                            _buildTextField(provider.lastNameController, AppMessages.lastNameHint, TextInputType.name),
 
                                             SizedBox(height: 10),
 
                                             // Mobile
-                                            _buildLabel("Mobile Number *"), // @string/mobile_number
-                                            _buildTextField(provider.mobileController, "Enter Your Mobile Number", TextInputType.phone),
+                                            _buildLabel(AppMessages.mobileNumber), // @string/mobile_number
+                                            _buildTextField(provider.mobileController, AppMessages.mobileHint, TextInputType.phone),
 
                                             SizedBox(height: 10),
 
                                             // Email
-                                            _buildLabel(provider.emailRequired == "Yes" ? "Email *" : "Email"), // Dynamic Label from Provider
-                                            _buildTextField(provider.emailController, "Enter Your Email", TextInputType.emailAddress),
+                                            _buildLabel("${AppMessages.email}${provider.emailRequired == "Yes" ? " *" : ""}"), 
+                                            _buildTextField(provider.emailController, AppMessages.emailHint, TextInputType.emailAddress),
 
                                             SizedBox(height: 10),
 
                                             // Order Emails
-                                            _buildLabel("Order Receipt Email(s)"), // @string/orderemail_n (Assuming not mandatory unless noted, but Logic checks valid format)
-                                            _buildTextField(provider.orderEmailsController, "Enter Your Order Receipt Email(s)", TextInputType.emailAddress),
+                                            _buildLabel(AppMessages.orderReceiptEmails), 
+                                            _buildTextField(provider.orderEmailsController, AppMessages.orderEmailsHint, TextInputType.emailAddress),
                                             
                                             SizedBox(height: 5),
                                             Text(
                                               "Note : Please add Email(s) in comma separated", // @string/note
                                               style: TextStyle(
-                                                color: Colors.red, // @color/redcolor
-                                                fontSize: 12, // @dimen/padding_12
+                                                color: Colors.red,
+                                                fontSize: 12,
                                               ),
                                             ),
 
                                             SizedBox(height: 10),
 
                                             // Password
-                                            _buildLabel("Password *"), // @string/password_m
-                                            _buildTextField(provider.passwordController, "Enter Your Password", TextInputType.visiblePassword, isPassword: true),
+                                            _buildLabel(AppMessages.password), // @string/password_m
+                                            _buildTextField(provider.passwordController, AppMessages.passwordHint, TextInputType.visiblePassword, isPassword: true),
 
                                             SizedBox(height: 10),
 

@@ -8,6 +8,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../config/theme/app_theme.dart';
+import '../../../core/constants/app_messages.dart';
 import '../../../core/constants/url_api_key.dart';
 import '../../providers/dashboard_provider.dart';
 
@@ -143,14 +144,14 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
           street2: _street2Controller.text,
           suburb: _cityController.text,
           state: _stateController.text,
-          postcode: postcode // Keeping existing postcode
+          postcode: postcode 
       );
 
       if (!mounted) return;
       if (success) {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Profile updated successfully")));
       } else {
-          final msg = provider.errorMsg ?? "Failed to update profile";
+          final msg = provider.errorMsg ?? AppMessages.failureMsg;
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
       }
   }
@@ -158,7 +159,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.primaryColor, // Blue background behind header
+      backgroundColor: AppTheme.primaryColor, 
       body: SafeArea(
         child: Column(
           children: [
@@ -176,13 +177,12 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                      children: [
                        InkWell(
                          onTap: () => context.pop(),
-                         child: Icon(Icons.arrow_back_ios, color: Colors.grey, size: 20.sp), // Icon not exactly matched but standard
-                         // XML uses ic_leftarrow. Using standard back for now.
+                         child: Icon(Icons.arrow_back_ios, color: Colors.grey, size: 20.sp), 
                        ),
                        Expanded(
                          child: Center(
                            child: Padding(
-                             padding: EdgeInsets.only(right: 20.w), // Balance back icon
+                             padding: EdgeInsets.only(right: 20.w), 
                              child: Text(
                                "Edit Profile",
                                style: TextStyle(
@@ -203,7 +203,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
             // Content Card
             Expanded(
               child: Container(
-                color: Colors.white, // Main background
+                color: Colors.white, 
                 child: Card(
                   elevation: 5,
                   margin: EdgeInsets.all(15.w),
@@ -241,7 +241,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                                   width: 100.w,
                                                   height: 100.w,
                                                   fit: BoxFit.cover,
-                                                  placeholder: (context, url) => Image.asset("assets/images/pf_profileicon.png", width: 100.w, height: 100.w), // Placeholder
+                                                  placeholder: (context, url) => Image.asset("assets/images/pf_profileicon.png", width: 100.w, height: 100.w), 
                                                   errorWidget: (context, url, error) => Image.asset("assets/images/pf_profileicon.png", width: 100.w, height: 100.w),
                                                 ),
                                               ),
@@ -255,7 +255,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                                   color: Colors.white,
                                                   shape: BoxShape.circle,
                                                 ),
-                                                child: Icon(Icons.camera_alt, color: Colors.grey, size: 20.sp), // Camera icon
+                                                child: Icon(Icons.camera_alt, color: Colors.grey, size: 20.sp), 
                                               ),
                                             )
                                           ],
@@ -265,24 +265,24 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                       
                                       // First Name
                                       _buildLabel("First Name"),
-                                      _buildTextField(_firstNameController, "Enter First Name", validator: (v) => v!.isEmpty ? "Enter valid first name" : null),
+                                      _buildTextField(_firstNameController, "Enter First Name", validator: (v) => v!.isEmpty ? AppMessages.enterValidFirstName : null),
                                       
                                       // Last Name
                                       _buildLabel("Last Name"),
-                                      _buildTextField(_lastNameController, "Enter Last Name", validator: (v) => v!.isEmpty ? "Enter valid last name" : null),
+                                      _buildTextField(_lastNameController, "Enter Last Name", validator: (v) => v!.isEmpty ? AppMessages.enterValidLastName : null),
                                       
                                       // Street Address
                                       _buildLabel("Street Address *"),
-                                      _buildTextField(_streetController, "Enter Your House number and street name", validator: (v) => v!.isEmpty ? "Enter valid street address" : null),
-                                      _buildTextField(_street2Controller, "Enter Your Apartment, suite, unit etc.."), // Optional
+                                      _buildTextField(_streetController, "Enter Your House number and street name", validator: (v) => v!.isEmpty ? AppMessages.enterValidStreetAddress : null),
+                                      _buildTextField(_street2Controller, "Enter Your Apartment, suite, unit etc.."), 
                                       
                                       // Town / City
                                       _buildLabel("Town / City *"),
-                                      _buildTextField(_cityController, "Enter Your Town / City", validator: (v) => v!.isEmpty ? "Enter valid town / city" : null),
+                                      _buildTextField(_cityController, "Enter Your Town / City", validator: (v) => v!.isEmpty ? AppMessages.enterValidTownCity : null),
                                       
                                       // State / Country
                                       _buildLabel("State / Country *"),
-                                      _buildTextField(_stateController, "Enter Your State / Country", validator: (v) => v!.isEmpty ? "Enter valid state / country" : null),
+                                      _buildTextField(_stateController, "Enter Your State / Country", validator: (v) => v!.isEmpty ? AppMessages.enterValidStateCountry : null),
                                       
                                       // Email
                                       _buildLabel("Email"),

@@ -101,15 +101,15 @@ class _PromotionsSectionState extends State<PromotionsSection> {
                    return HomePromotionItemWidget(
                      imageUrl: item.image,
                      title: item.title ?? "",
-                     subtitle: "Valid until ${_formatDate(item.toDate)}", 
+                     subtitle: "Valid until ${_formatDate(item.toDate)}",
                      width: cardWidth,
                      onTap: () {
                         final productProvider = context.read<ProductListProvider>();
                         productProvider.clearFilters();
                         
-                        // Extract product IDs
+                         // Extract product IDs
                         if (item.products != null && item.products!.isNotEmpty) {
-                          final productIds = item.products!.map((p) => p.productId).whereType<String>().join(',');
+                          final productIds = item.products!.map((p) => p.productId).whereType<String>().where((id) => id.isNotEmpty).join(',');
                           productProvider.setSelectedProducts(productIds);
                         }
                         

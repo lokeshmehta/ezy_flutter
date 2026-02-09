@@ -1,8 +1,8 @@
-
 import 'package:flutter/material.dart';
 import '../../data/datasources/auth_remote_data_source.dart';
-import '../../data/models/profile_models.dart';
 import '../../data/models/cart_models.dart';
+import '../../data/models/profile_models.dart';
+import '../../core/constants/app_messages.dart';
 
 class CheckoutProvider extends ChangeNotifier {
   final AuthRemoteDataSource authRemoteDataSource;
@@ -215,7 +215,7 @@ class CheckoutProvider extends ChangeNotifier {
           );
           await refreshCartSummary(_customerId, _accessToken);
       } catch (e) {
-          _errorMessage = e.toString();
+          _errorMessage = AppMessages.failureMsg;
       } finally {
           _isLoading = false;
           notifyListeners();
@@ -234,7 +234,7 @@ class CheckoutProvider extends ChangeNotifier {
           );
           await refreshCartSummary(_customerId, _accessToken);
       } catch (e) {
-          _errorMessage = e.toString();
+          _errorMessage = AppMessages.failureMsg;
       } finally {
           _isLoading = false;
           notifyListeners();
@@ -253,7 +253,7 @@ class CheckoutProvider extends ChangeNotifier {
           // Redirection handled by UI observing empty cart or specific flag
           setStep(0); // Ensure on first step
       } catch (e) {
-          _errorMessage = e.toString();
+          _errorMessage = AppMessages.failureMsg;
       } finally {
           _isLoading = false;
           notifyListeners();
@@ -286,7 +286,7 @@ class CheckoutProvider extends ChangeNotifier {
           if(validateAddressStep()) {
               _currentStep = 2; // Payment
           } else {
-              _errorMessage = "Please fill all required address fields";
+              _errorMessage = AppMessages.pleaseFillAllRequiredFields;
           }
       } else if (_currentStep == 2) {
            if(validatePaymentStep()) {
@@ -296,7 +296,7 @@ class CheckoutProvider extends ChangeNotifier {
                   // Already at last step, UI should handle "Submit"
               }
            } else {
-              _errorMessage = "Please select a payment method";
+              _errorMessage = AppMessages.pleaseSelectPaymentMethod;
            }
       }
       notifyListeners();
@@ -371,7 +371,7 @@ class CheckoutProvider extends ChangeNotifier {
               return false;
           }
       } catch (e) {
-          _errorMessage = e.toString();
+          _errorMessage = AppMessages.failureMsg;
           _isLoading = false;
           notifyListeners();
           return false;
@@ -428,13 +428,13 @@ class CheckoutProvider extends ChangeNotifier {
                notifyListeners();
                return response;
            } else {
-               _errorMessage = response['message'] ?? "Order creation failed";
+               _errorMessage = response['message'] ?? AppMessages.failureMsg;
                _isLoading = false;
                notifyListeners();
                return null;
            }
        } catch (e) {
-           _errorMessage = e.toString();
+           _errorMessage = AppMessages.failureMsg;
            _isLoading = false;
            notifyListeners();
            return null;

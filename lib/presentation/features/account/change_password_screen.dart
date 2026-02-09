@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
-import '../../providers/dashboard_provider.dart'; // Using DashboardProvider for now as per logic
+import '../../providers/dashboard_provider.dart';
 import '../../../core/constants/app_theme.dart';
+import '../../../core/constants/app_messages.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -39,35 +40,27 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       // Validation Logic matching Android (ChangePasswordActivity.kt)
       // 1. Check Empty
       if (oldPw.isEmpty) {
-          _showError("Please enter your current password");
+          _showError(AppMessages.pleaseEnterCurrentPassword);
           return;
       }
       
-      // 2. Check Match with Preference (Handled by API in Flutter, or we can check local prefs)
-      // Android checks: `(!viewmodel?.old_pw?.get()!!.toString().trim().equals(prefs.User_Password))`
-      // Since we don't expose raw password in Prefs (security risk), we rely on API or if we stored it (bad practice).
-      // Assuming API handles validation of old password. 
-      // ANDROID CODE REVEAL: It checks `prefs.User_Password`. This implies app stores password locally.
-      // I will skip local check for security best practice unless strictly required. 
-      // Flow: API will return error if old password wrong.
-      
       if (newPw.isEmpty) {
-           _showError("Please enter a new password");
+           _showError(AppMessages.pleaseEnterNewPassword);
            return;
       }
       
       if (confirmPw.isEmpty) {
-           _showError("Please confirm your new password");
+           _showError(AppMessages.pleaseConfirmNewPassword);
            return;
       }
       
       if (newPw != confirmPw) {
-           _showError("Password does not match");
+           _showError(AppMessages.pswdNotMatching);
            return;
       }
       
       if (oldPw == newPw) {
-           _showError("New password cannot be the same as old password");
+           _showError(AppMessages.newPswdCannotBeSame);
            return;
       }
       
@@ -78,7 +71,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       
       if (success) {
           ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Password has been updated successfully")),
+              SnackBar(content: Text(AppMessages.pswdUpdatedSuccessfully)),
           );
           context.pop(); // Go back
       } else {

@@ -1,13 +1,13 @@
-import 'package:flutter/material.dart';
 import 'dart:io';
-import '../../../data/datasources/auth_remote_data_source.dart';
-import '../../../data/models/home_models.dart' hide PromotionsResponse;
-import '../../../data/models/wishlist_models.dart';
-import '../../../data/models/drawer_models.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter/foundation.dart';
-import '../../../core/constants/storage_keys.dart';
+import '../../data/datasources/auth_remote_data_source.dart';
+import '../../data/models/home_models.dart' hide PromotionsResponse;
+import '../../data/models/drawer_models.dart';
+import '../../data/models/wishlist_models.dart';
+import '../../core/constants/storage_keys.dart';
 import '../../../core/constants/url_api_key.dart';
+import '../../core/constants/app_messages.dart';
 
 class DashboardProvider extends ChangeNotifier {
   final AuthRemoteDataSource _dataSource;
@@ -971,11 +971,11 @@ class DashboardProvider extends ChangeNotifier {
             notifyListeners();
             return true;
         } else {
-            _errorMsg = response['message'] ?? "Failed to update profile";
+            _errorMsg = response['message'] ?? AppMessages.failureMsg;
         }
     } catch (e) {
         debugPrint("Error updating profile: $e");
-        _errorMsg = "Failed to update profile";
+        _errorMsg = AppMessages.failureMsg;
     }
     _isLoading = false;
     notifyListeners();
@@ -1025,11 +1025,11 @@ class DashboardProvider extends ChangeNotifier {
 
             }
         } else {
-             _errorMsg = uploadResponse['message'] ?? "Failed to upload image";
+             _errorMsg = uploadResponse['message'] ?? AppMessages.failureMsg;
         }
        } catch (e) {
            debugPrint("Error updating profile image: $e");
-           _errorMsg = "Failed to update profile image";
+           _errorMsg = AppMessages.failureMsg;
        }
        _isLoading = false;
        notifyListeners();
@@ -1038,6 +1038,7 @@ class DashboardProvider extends ChangeNotifier {
 
   Future<bool> changePassword(String oldPassword, String newPassword) async {
     _isLoading = true;
+    _errorMsg = null;
     notifyListeners();
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -1056,11 +1057,11 @@ class DashboardProvider extends ChangeNotifier {
         notifyListeners();
         return true;
       } else {
-        _errorMsg = response['message'] ?? "Failed to change password";
+        _errorMsg = response['message'] ?? AppMessages.failureMsg;
       }
     } catch (e) {
       debugPrint("Error changing password: $e");
-      _errorMsg = "Failed to change password";
+      _errorMsg = AppMessages.failureMsg;
     }
     _isLoading = false;
     notifyListeners();

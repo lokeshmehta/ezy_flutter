@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../providers/checkout_provider.dart';
 import '../../../../core/constants/app_theme.dart';
 import '../../../../config/routes/app_routes.dart';
+import '../../../../core/constants/app_messages.dart';
 
 
 class StepPaymentWidget extends StatefulWidget {
@@ -94,7 +94,7 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
                        bool success = await provider.applyCoupon();
                        if(!context.mounted) return;
                        if(success) {
-                         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Coupon Applied!")));
+                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppMessages.couponAppliedSuccessfully)));
                        }
                  },
                 style: ElevatedButton.styleFrom(
@@ -180,7 +180,7 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
                               provider.nextStep();
                           }
                       } else {
-                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please select a payment method")));
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppMessages.pleaseSelectPaymentMethod)));
                       }
                   },
                   style: ElevatedButton.styleFrom(
