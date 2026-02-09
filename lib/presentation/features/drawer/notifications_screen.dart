@@ -7,8 +7,9 @@ import '../../../../core/constants/url_api_key.dart';
 import '../../../../data/models/drawer_models.dart';
 
 import '../../../config/theme/app_theme.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../config/routes/app_routes.dart';
 import '../../providers/dashboard_provider.dart';
-import '../dashboard/dashboard_screen.dart';
 import 'widgets/notification_item_widget.dart';
 
 
@@ -155,7 +156,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-             Navigator.pushReplacement(context, MaterialPageRoute(builder: (c) => const DashboardScreen()));
+             if (context.canPop()) {
+               context.pop();
+             } else {
+               context.go(AppRoutes.dashboard);
+             }
           },
         ),
       ),

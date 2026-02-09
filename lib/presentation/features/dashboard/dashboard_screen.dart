@@ -530,6 +530,7 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
           HotSellingSection(),
           NewArrivalsSection(),
           PopularAdsSection(),
+          RecentlyAddedSection(),
        ],
      );
   }
@@ -553,7 +554,22 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
                padding: const EdgeInsets.symmetric(horizontal: 5.0),
                child: InkWell(
                  onTap: () {
-                    // Handle footer banner click
+                    final b = banner;
+                    
+                    final productProvider = context.read<ProductListProvider>();
+                    productProvider.clearFilters();
+                    
+                    if (b.groupId != null && b.groupId != "0") {
+                      productProvider.setGroup(b.groupId.toString());
+                    }
+                    if (b.products != null && b.products!.isNotEmpty) {
+                      productProvider.setSelectedProducts(b.products!);
+                    }
+                    if (b.divisionId != null && b.divisionId != "0") {
+                      productProvider.setCategory(b.divisionId.toString());
+                    }
+                    
+                    context.read<DashboardProvider>().setIndex(1);
                  },
                  child: _buildNetworkImage(banner!.image, fit: BoxFit.contain),
                ),

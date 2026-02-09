@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../providers/dashboard_provider.dart';
 import '../../../providers/product_list_provider.dart';
-import '../../products/products_list_screen.dart';
 import 'dashboard_banner_item_widget.dart';
 import 'section_header_widget.dart';
 
@@ -95,10 +94,7 @@ class _PopularAdsSectionState extends State<PopularAdsSection> {
                           productProvider.clearFilters();
                           productProvider.setSupplier(item.brandid!);
                           
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const ProductsListScreen()),
-                          );
+                          context.read<DashboardProvider>().setIndex(1);
                         }
                      },
                    );
