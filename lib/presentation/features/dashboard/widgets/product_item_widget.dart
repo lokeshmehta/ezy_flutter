@@ -45,13 +45,13 @@ class ProductItemWidget extends StatelessWidget {
     
     return Container(
       width: width,
-      margin: EdgeInsets.only(right: 4.w, bottom: 4.h), // Matched android:layout_marginRight/Bottom="@dimen/dimen_4"
+      margin: EdgeInsets.only(right: 10.w, bottom: 5.h),
       child: Card(
         elevation: 1,
         color: Colors.white,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(0.r),
+          borderRadius: BorderRadius.circular(0.r), // 👈 decrease radius here
         ),
         child: InkWell(
           onTap: onTap ?? () {
@@ -63,26 +63,35 @@ class ProductItemWidget extends StatelessWidget {
             );
           },
           child: Padding(
-            padding: EdgeInsets.all(5.0.w), // cardView padding="@dimen/dimens_5"
+            padding: EdgeInsets.all(5.0.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Unit Header (Orange Bar)
-                if (item.soldAs != null && item.soldAs!.isNotEmpty)
-                   Padding(
-                     padding: EdgeInsets.only(bottom: 5.h), // layout_marginBottom="@dimen/dimens_5"
-                     child: Container(
-                       width: double.infinity,
-                       height: 24.h,
-                       decoration: BoxDecoration(
-                          color: AppTheme.tealColor,
-                          borderRadius: BorderRadius.circular(3.r), // Standardized with edittext_bg radius
-                       ),
-                       alignment: Alignment.center,
-                       child: Text(
-                         (item.soldAs == "Each") ? "Each" : "${item.soldAs} (${item.qtyPerOuter ?? "0"} Units)",
-                         style: TextStyle(color: Colors.white, fontSize: 12.sp, fontWeight: FontWeight.bold),
-                       ),
+                if (item.soldAs != null && item.soldAs!.isNotEmpty && item.soldAs != "Each" && item.qtyPerOuter != null)
+                   Container(
+                     width: double.infinity,
+                     height: 24.h,
+                     decoration: BoxDecoration(
+                        color: AppTheme.tealColor, // Synchronized with tealcolor (Orange)
+                     ),
+                     alignment: Alignment.center,
+                     child: Text(
+                       "${item.soldAs} (${item.qtyPerOuter} Units)",
+                       style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold),
+                     ),
+                   )
+                else if (item.soldAs == "Each")
+                   Container(
+                     width: double.infinity,
+                     height: 24.h,
+                     decoration: BoxDecoration(
+                        color: AppTheme.tealColor, 
+                     ),
+                     alignment: Alignment.center,
+                     child: Text(
+                       "Each",
+                       style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold),
                      ),
                    ),
 
@@ -90,7 +99,7 @@ class ProductItemWidget extends StatelessWidget {
                 Stack(
                   children: [
                      Container(
-                        height: 110.h, // Matched @dimen/dimen_110
+                        height: 100.h,
                         width: double.infinity,
                         alignment: Alignment.center,
                         child: _buildImage(item.image),
@@ -98,44 +107,46 @@ class ProductItemWidget extends StatelessWidget {
                      // Status Badge (Top Left)
                      if (badgeLabel != null && badgeLabel!.isNotEmpty)
                        Positioned(
-                         top: 5.h, // Match Kotlin layout_marginTop/marginLeft 5dp
-                         left: 5.w,
+                         top: 0,
+                         left: 0,
                          child: Container(
-                           padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 3.h),
+                           padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
                            decoration: BoxDecoration(
                              color: AppTheme.redColor,
-                             borderRadius: BorderRadius.circular(3.r), // Matched edittext_bg radius
+                             borderRadius: BorderRadius.only(bottomRight: Radius.circular(8.r)),
                            ),
                            child: Text(
                              badgeLabel!,
-                             style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold),
+                             style: TextStyle(color: Colors.white, fontSize: 9.sp, fontWeight: FontWeight.bold),
                            ),
                          ),
                        ),
                   ],
                 ),
 
-                // Content Area (Fixed Height or alignment)
-                SizedBox(height: 4.h), // layout_marginTop="@dimen/dimen_4"
+                SizedBox(height: 5.h),
 
                 // Vendor Name
                 if (item.brandName != null && item.brandName!.isNotEmpty)
-                  Text(
-                    item.brandName!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: AppTheme.darkGreyColor, fontSize: 12.sp), // hint_size12=12sp
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 2.h),
+                    child: Text(
+                      item.brandName!,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: Colors.grey, fontSize: 11.sp),
+                    ),
                   ),
 
                 // Product Name
-                SizedBox(height: 2.h), // layout_marginTop="@dimen/dimen_2"
+                SizedBox(height: 2.h),
                 Text(
-                  item.title ?? "",
+                  item.title ?? item.brandName ?? "",
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                       color: AppTheme.textColor, 
-                      fontSize: 13.sp, // _13sdp
+                      fontSize: 12.sp, 
                       fontWeight: FontWeight.bold
                   ),
                 ),
@@ -143,101 +154,111 @@ class ProductItemWidget extends StatelessWidget {
                 // MOQ
                 if (item.minimumOrderQty != null && item.minimumOrderQty != "0" && item.minimumOrderQty != "1")
                    Padding(
-                     padding: EdgeInsets.only(top: 10.h), // layout_marginTop="@dimen/top_10"
+                     padding: EdgeInsets.only(top: 5.h),
                      child: Text(
                        "MOQ : ${item.minimumOrderQty}",
                        style: TextStyle(color: AppTheme.redColor, fontSize: 12.sp, fontWeight: FontWeight.bold),
                      ),
                    ),
 
+                SizedBox(height: 5.h),
+
                 // Price Section
-                SizedBox(height: 2.h), // layout_marginTop="@dimen/dimen_2"
                 if (!hasPromotion) ...[
-                   Text(
-                     _formatPrice(item.price),
-                     style: TextStyle(color: AppTheme.darkGreyColor, fontSize: 14.sp), // _14sdp
+                   FittedBox(
+                     fit: BoxFit.scaleDown,
+                     alignment: Alignment.centerLeft,
+                     child: Text(
+                       _formatPrice(item.price),
+                       style: TextStyle(color: AppTheme.textColor, fontSize: 12.sp), 
+                     ),
                    ),
                 ] else ...[
-                   Column(
-                     crossAxisAlignment: CrossAxisAlignment.start,
-                     children: [
-                       Text(
-                         _formatPrice(item.price),
-                         style: TextStyle(
-                           color: AppTheme.darkGreyColor, 
-                           fontSize: 14.sp, // _14sdp
-                           decoration: TextDecoration.lineThrough
-                         ),
-                       ),
-                       SizedBox(height: 2.h),
-                       Row(
-                         children: [
-                           Text(
-                             _formatPrice(item.promotionPrice),
-                             style: TextStyle(color: AppTheme.lightBlue, fontSize: 14.sp, fontWeight: FontWeight.bold), // @color/blue
+                   // Promotion UI
+                   FittedBox(
+                     fit: BoxFit.scaleDown,
+                     alignment: Alignment.centerLeft,
+                     child: Row(
+                       children: [
+                         Text(
+                           _formatPrice(item.price),
+                           style: TextStyle(
+                             color: Colors.grey, 
+                             fontSize: 12.sp,
+                             decoration: TextDecoration.lineThrough
                            ),
-                           SizedBox(width: 5.w),
-                           Container(
-                             padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 3.h),
-                             decoration: BoxDecoration(
+                         ),
+                         SizedBox(width: 5.w),
+                         Row(
+                           children: [
+                             Text(
+                               _formatPrice(item.promotionPrice),
+                               style: TextStyle(color: AppTheme.redColor, fontSize: 12.sp),
+                             ),
+                             SizedBox(width: 5.w),
+                             Container(
+                               padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
                                color: AppTheme.redColor,
-                               borderRadius: BorderRadius.circular(3.r),
-                             ),
-                             child: Text(
-                               "-${_calculateDiscount(item.price, item.promotionPrice)}%",
-                               style: TextStyle(color: Colors.white, fontSize: 9.sp, fontWeight: FontWeight.bold),
-                             ),
-                           )
-                         ],
-                       )
-                     ],
+                               child: Text(
+                                 "-${_calculateDiscount(item.price, item.promotionPrice)}%",
+                                 style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold),
+                               ),
+                             )
+                           ],
+                         )
+                       ],
+                     ),
                    ),
                 ],
                 
-                const Spacer(),
+                SizedBox(height: 5.h),
 
                 // Add To Cart & Fav
-                Padding(
-                  padding: EdgeInsets.only(bottom: 5.h), // layout_marginBottom="@dimen/dimens_5"
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      InkWell(
+                SizedBox(height: 8.h),
+                Row(
+                  children: [
+                    Expanded(
+                      child: InkWell(
                         onTap: canAddToCart ? onAddToCart : null,
                         child: Container(
-                          width: 110.w, // layout_width="@dimen/dimen_110"
-                          height: 35.h, // layout_height="@dimen/dimen_35"
+                          height: 35.h, // Adjusted from 40.h to match Android @dimen/dimen_35
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: canAddToCart ? AppTheme.tealColor : AppTheme.redColor,
-                            borderRadius: BorderRadius.circular(20.r), // graybg.xml radius 20dp
+                            borderRadius: BorderRadius.circular(AppTheme.productButtonRadius.r), // Standardized radius
                           ),
-                          child: Text(
-                             isOutOfStock 
-                                 ? "Out Of Stock" 
-                                 : (item.addedToCart == "Yes" 
-                                     ? "Update Cart [${item.addedQty ?? '1'}]" 
-                                     : "Add To Cart"),
-                             style: TextStyle(
-                               fontSize: 12.sp, // padding_12
-                               color: Colors.white, 
-                               fontWeight: FontWeight.bold
+                          child: FittedBox(
+                             fit: BoxFit.scaleDown,
+                             child: Text(
+                                isOutOfStock 
+                                    ? "Out Of Stock" 
+                                    : (item.addedToCart == "Yes" 
+                                        ? "Update Cart [${item.addedQty ?? '1'}]" 
+                                        : "Add To Cart"),
+                                style: TextStyle(
+                                  fontSize: 11.sp, 
+                                  color: Colors.white, 
+                                  fontWeight: FontWeight.bold
+                                ),
                              ),
                           ),
                         ),
                       ),
-                      SizedBox(width: 10.w), // layout_marginLeft="@dimen/top_10"
-                      InkWell(
-                        onTap: onFavorite,
-                        child: Image.asset(
-                          item.isFavourite == "Yes" ? "assets/images/favadded.png" : "assets/images/fav_new.png",
-                          width: 35.h, // Matched height @dimen/dimen_35
-                          height: 35.h,
-                        ),
-                      )
-                    ],
-                  ),
+                    ),
+                    SizedBox(width: 8.w),
+                    InkWell(
+                      onTap: onFavorite,
+                      child: Image.asset(
+                        item.isFavourite == "Yes" ? "assets/images/favadded.png" : "assets/images/fav_new.png",
+                        width: 35.h, // Matched height
+                        height: 35.h,
+                      ),
+                    )
+                  ],
                 ),
+                
+                // Shop Now (Hidden by default in FutureProducts except Pop Categories?)
+                // Assuming this generic widget is for products.
               ],
             ),
           ),
