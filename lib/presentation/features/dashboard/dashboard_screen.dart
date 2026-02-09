@@ -1,33 +1,34 @@
-import 'widgets/section_header_widget.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../providers/dashboard_provider.dart';
-import '../../../core/constants/app_theme.dart';
-import '../../../config/routes/app_routes.dart';
-import '../../../core/constants/assets.dart';
-import 'package:go_router/go_router.dart';
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dots_indicator/dots_indicator.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+
+import '../../../config/routes/app_routes.dart';
+import '../../../core/constants/app_theme.dart';
+import '../../../core/constants/assets.dart';
 import '../../../core/constants/url_api_key.dart';
 // import '../../../data/models/home_models.dart'; // Unused
 import '../../../core/network/image_cache_manager.dart';
+import '../../providers/dashboard_provider.dart';
 import '../../providers/product_list_provider.dart';
 import '../drawer/about_us_screen.dart';
 import '../drawer/faq_screen.dart';
 import '../drawer/help_support_screen.dart';
 import '../drawer/promotions_screen.dart';
 import '../drawer/send_feedback_screen.dart';
-import 'widgets/suppliers_section.dart';
-import 'widgets/promotions_section.dart';
-import 'widgets/popular_categories_section.dart';
-import 'widgets/home_blocks_section.dart';
 import 'widgets/flash_deals_section.dart';
-import 'widgets/popular_ads_section.dart';
-import 'widgets/standard_product_sections.dart';
+import 'widgets/home_blocks_section.dart';
 import 'widgets/logout_dialog.dart';
-
-import 'package:dots_indicator/dots_indicator.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'dart:async';
+import 'widgets/popular_ads_section.dart';
+import 'widgets/popular_categories_section.dart';
+import 'widgets/promotions_section.dart';
+import 'widgets/section_header_widget.dart';
+import 'widgets/standard_product_sections.dart';
+import 'widgets/suppliers_section.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -36,7 +37,8 @@ class DashboardScreen extends StatefulWidget {
   State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerProviderStateMixin {
+class _DashboardScreenState extends State<DashboardScreen>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late PageController _bannerController;
   late PageController _footerPageController;
@@ -74,7 +76,8 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
     _bannerTimer?.cancel();
     _bannerTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
       final provider = context.read<DashboardProvider>();
-      if (provider.bannersResponse?.results != null && provider.bannersResponse!.results!.isNotEmpty) {
+      if (provider.bannersResponse?.results != null &&
+          provider.bannersResponse!.results!.isNotEmpty) {
         int nextIndex = _currentBannerIndex + 1;
         if (nextIndex >= provider.bannersResponse!.results!.length) {
           nextIndex = 0;
@@ -92,7 +95,8 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
     _footerBannerTimer?.cancel();
     _footerBannerTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
       final provider = context.read<DashboardProvider>();
-      if (provider.footerBannersResponse?.results != null && provider.footerBannersResponse!.results!.isNotEmpty) {
+      if (provider.footerBannersResponse?.results != null &&
+          provider.footerBannersResponse!.results!.isNotEmpty) {
         int nextIndex = _currentFooterIndex + 1;
         if (nextIndex >= provider.footerBannersResponse!.results!.length) {
           nextIndex = 0;
@@ -135,17 +139,20 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
       return Image.asset(
         AppAssets.placeholder,
         fit: fit,
-        errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, color: Colors.grey),
-      ); 
+        errorBuilder: (context, error, stackTrace) =>
+            const Icon(Icons.broken_image, color: Colors.grey),
+      );
     }
     return CachedNetworkImage(
       imageUrl: url,
-      cacheManager: ImageCacheManager(), // Use custom cache manager with SSL bypass
+      cacheManager: ImageCacheManager(),
+      // Use custom cache manager with SSL bypass
       fit: fit,
       errorWidget: (context, url, error) => Image.asset(
         AppAssets.placeholder,
         fit: fit,
-        errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, color: Colors.grey),
+        errorBuilder: (context, error, stackTrace) =>
+            const Icon(Icons.broken_image, color: Colors.grey),
       ),
       placeholder: (context, url) => Container(color: Colors.grey[200]),
     );
@@ -158,13 +165,23 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
       appBar: AppBar(
         backgroundColor: Colors.white,
         leading: IconButton(
-          icon: Icon(Icons.menu_rounded, size: 24.sp, weight: 300 , color: AppTheme.primaryColor,), // Thinner menu icon
+          icon: Icon(
+            Icons.menu_rounded,
+            size: 24.sp,
+            weight: 300,
+            color: AppTheme.primaryColor,
+          ), // Thinner menu icon
           onPressed: () => _scaffoldKey.currentState?.openDrawer(),
         ),
         title: Image.asset(AppAssets.appLogo, height: 36.h),
         actions: [
           IconButton(
-            icon: Icon(Icons.notifications_none_rounded, size: 24.sp, weight: 300 , color: AppTheme.primaryColor,), // Thinner notification icon
+            icon: Icon(
+              Icons.notifications_none_rounded,
+              size: 24.sp,
+              weight: 300,
+              color: AppTheme.primaryColor,
+            ), // Thinner notification icon
             onPressed: () {
               context.push(AppRoutes.notifications);
             },
@@ -179,25 +196,25 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
           }
           if (provider.errorMsg != null) {
             // Android parity: Show toast/dialog but allow retry? For now simplified error screen
-             return Center(child: Text(provider.errorMsg!));
+            return Center(child: Text(provider.errorMsg!));
           }
 
           return RefreshIndicator(
             onRefresh: () async {
-               provider.init();
+              provider.init();
             },
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                   _buildMarquee(provider),
-                   _buildBanners(provider),
-                   _buildTopSuppliers(provider),
+                  _buildMarquee(provider),
+                  _buildBanners(provider),
+                  _buildTopSuppliers(provider),
                   SizedBox(height: 15.h),
-                   const HomeBlocksSection(),
-                   _buildProductSections(provider),
-                   _buildBottomSuppliers(provider),
-                   SizedBox(height: 100.h), // Bottom padding
+                  const HomeBlocksSection(),
+                  _buildProductSections(provider),
+                  _buildBottomSuppliers(provider),
+                  SizedBox(height: 100.h), // Bottom padding
                 ],
               ),
             ),
@@ -207,149 +224,178 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
     );
   }
 
-
   Widget _buildDrawer() {
     return Drawer(
       child: Column(
         children: [
-           Consumer<DashboardProvider>(
-             builder: (context, provider, _) {
-                final user = provider.profileResponse?.results?.isNotEmpty == true 
-                    ? provider.profileResponse!.results![0] 
-                    : null;
-                
-                return InkWell(
-                  onTap: () {
-                    Navigator.pop(context); // Close drawer
-                    context.push(AppRoutes.myProfile);
-                  },
-                  child: Container(
-                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                     decoration: const BoxDecoration(color: AppTheme.secondaryColor), // Teal
-                     child: SafeArea(
-                       bottom: false,
-                       child: Row(
-                         crossAxisAlignment: CrossAxisAlignment.center,
-                         children: [
-                            CircleAvatar(
-                              radius: 30.r,
-                              backgroundColor: Colors.white,
-                              backgroundImage: user?.image != null && user!.image!.isNotEmpty
-                                  ? CachedNetworkImageProvider(_getImageUrl(user.image)) as ImageProvider
-                                  : const AssetImage(AppAssets.userIcon),
-                            ),
-                            SizedBox(width: 10.w),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    "${user?.firstName ?? ''} ${user?.lastName ?? ''}", 
-                                    style: TextStyle(color: Colors.white, fontSize: 16.sp, fontWeight: FontWeight.bold),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  Text(
-                                    user?.email ?? "user@example.com",
-                                    style: TextStyle(color: Colors.white70, fontSize: 13.sp),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            IconButton(
-                              icon: Image.asset(AppAssets.menuCloseIcon, width: 20.w, height: 20.w, color: Colors.white),
-                              onPressed: () => Navigator.pop(context),
-                            )
-                         ],
-                       ),
-                     ),
-                  ),
-                );
-             },
-           ),
-           Expanded(
-             child: SingleChildScrollView(
-               child: Column(
-                 children: [
-                    _buildDrawerItem(AppAssets.scanIcon, "Scan to Order", () {}),
-                    _buildDrawerItem(AppAssets.favIcon, "My Wishlist", () {
-                      context.pop(); // Close drawer
-                      context.push(AppRoutes.myWishlist);
-                    }),
-                    _buildDrawerItem(AppAssets.myOrdersIcon, "My Orders", () {
-                      context.pop();
-                      context.push(AppRoutes.myOrders);
-                    }),
-                    _buildDrawerItem(AppAssets.orderNowIcon, "Order Now", () {
-                      context.pop();
-                      final productProvider = context.read<ProductListProvider>();
-                      productProvider.clearFilters();
-                      context.read<DashboardProvider>().setIndex(1);
-                    }),
-                    _buildDrawerItem(AppAssets.promoIcon, "Promotions", () {
-                      context.pop();
-                      Navigator.push(context, MaterialPageRoute(builder: (c) => const PromotionsScreen()));
-                    }),
-                    _buildDrawerItem(AppAssets.notifyIcon, "Notifications", () {
-                      context.pop();
-                      context.push(AppRoutes.notifications);
-                    }),
-                    _buildDrawerItem(AppAssets.faqIcon, "FAQ", () {
-                      context.pop();
-                      Navigator.push(context, MaterialPageRoute(builder: (c) => const FAQScreen()));
-                    }),
-                    _buildDrawerItem(AppAssets.helpIcon, "Help & Support", () {
-                      context.pop();
-                      Navigator.push(context, MaterialPageRoute(builder: (c) => const HelpSupportScreen()));
-                    }),
-                    _buildDrawerItem(AppAssets.feedbackIcon, "Send Feedback", () {
-                      context.pop();
-                      Navigator.push(context, MaterialPageRoute(builder: (c) => const SendFeedbackScreen()));
-                    }),
-                    _buildDrawerItem(AppAssets.aboutIcon, "About Us", () {
-                      context.pop();
-                      Navigator.push(context, MaterialPageRoute(builder: (c) => const AboutUsScreen()));
-                    }),
-                 ],
-               ),
-             ),
-           ),
-           // Footer Logout
-            Container(
-              padding: const EdgeInsets.all(16),
-              child: InkWell(
+          Consumer<DashboardProvider>(
+            builder: (context, provider, _) {
+              final user = provider.profileResponse?.results?.isNotEmpty == true
+                  ? provider.profileResponse!.results![0]
+                  : null;
+
+              return InkWell(
                 onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => LogoutDialog(
-                        onYes: () async {
-                           await context.read<DashboardProvider>().logout();
-                           if (context.mounted) {
-                             context.go(AppRoutes.login);
-                           }
-                        },
-                      ),
-                    );
+                  Navigator.pop(context); // Close drawer
+                  context.push(AppRoutes.myProfile);
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(5),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  decoration: const BoxDecoration(
+                      color: AppTheme.secondaryColor), // Teal
+                  child: SafeArea(
+                    bottom: false,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 30.r,
+                          backgroundColor: Colors.white,
+                          backgroundImage:
+                              user?.image != null && user!.image!.isNotEmpty
+                                  ? CachedNetworkImageProvider(
+                                      _getImageUrl(user.image)) as ImageProvider
+                                  : const AssetImage(AppAssets.userIcon),
+                        ),
+                        SizedBox(width: 10.w),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                "${user?.firstName ?? ''} ${user?.lastName ?? ''}",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.bold),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Text(
+                                user?.email ?? "user@example.com",
+                                style: TextStyle(
+                                    color: Colors.white70, fontSize: 13.sp),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                        IconButton(
+                          icon: Image.asset(AppAssets.menuCloseIcon,
+                              width: 20.w, height: 20.w, color: Colors.white),
+                          onPressed: () => Navigator.pop(context),
+                        )
+                      ],
+                    ),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset(AppAssets.logoutMenuIcon, width: 20.w, height: 20.w, color: AppTheme.primaryColor),
-                      SizedBox(width: 10.w),
-                      Text("Logout", style: TextStyle(color: AppTheme.primaryColor, fontWeight: FontWeight.bold, fontSize: 14.sp)),
-                    ],
+                ),
+              );
+            },
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildDrawerItem(AppAssets.scanIcon, "Scan to Order", () {}),
+                  _buildDrawerItem(AppAssets.favIcon, "My Wishlist", () {
+                    context.pop(); // Close drawer
+                    context.push(AppRoutes.myWishlist);
+                  }),
+                  _buildDrawerItem(AppAssets.myOrdersIcon, "My Orders", () {
+                    context.pop();
+                    context.push(AppRoutes.myOrders);
+                  }),
+                  _buildDrawerItem(AppAssets.orderNowIcon, "Order Now", () {
+                    context.pop();
+                    final productProvider = context.read<ProductListProvider>();
+                    productProvider.clearFilters();
+                    context.read<DashboardProvider>().setIndex(1);
+                  }),
+                  _buildDrawerItem(AppAssets.promoIcon, "Promotions", () {
+                    context.pop();
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (c) => const PromotionsScreen()));
+                  }),
+                  _buildDrawerItem(AppAssets.notifyIcon, "Notifications", () {
+                    context.pop();
+                    context.push(AppRoutes.notifications);
+                  }),
+                  _buildDrawerItem(AppAssets.faqIcon, "FAQ", () {
+                    context.pop();
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (c) => const FAQScreen()));
+                  }),
+                  _buildDrawerItem(AppAssets.helpIcon, "Help & Support", () {
+                    context.pop();
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (c) => const HelpSupportScreen()));
+                  }),
+                  _buildDrawerItem(AppAssets.feedbackIcon, "Send Feedback", () {
+                    context.pop();
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (c) => const SendFeedbackScreen()));
+                  }),
+                  _buildDrawerItem(AppAssets.aboutIcon, "About Us", () {
+                    context.pop();
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (c) => const AboutUsScreen()));
+                  }),
+                ],
+              ),
+            ),
+          ),
+          // Footer Logout
+          Container(
+            padding: const EdgeInsets.all(16),
+            child: InkWell(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => LogoutDialog(
+                    onYes: () async {
+                      await context.read<DashboardProvider>().logout();
+                      if (context.mounted) {
+                        context.go(AppRoutes.login);
+                      }
+                    },
                   ),
+                );
+              },
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(AppAssets.logoutMenuIcon,
+                        width: 20.w,
+                        height: 20.w,
+                        color: AppTheme.primaryColor),
+                    SizedBox(width: 10.w),
+                    Text("Logout",
+                        style: TextStyle(
+                            color: AppTheme.primaryColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14.sp)),
+                  ],
                 ),
               ),
             ),
-           const SizedBox(height: 10),
+          ),
+          const SizedBox(height: 10),
         ],
       ),
     );
@@ -357,17 +403,21 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
 
   Widget _buildDrawerItem(String iconPath, String title, VoidCallback onTap) {
     return ListTile(
-      leading: Image.asset(iconPath, width: 20, height: 20, color: AppTheme.primaryColor), // Blue tint
+      leading: Image.asset(iconPath,
+          width: 20, height: 20, color: AppTheme.primaryColor),
+      // Blue tint
       title: Text(
-        title, 
-        style: const TextStyle(color: AppTheme.primaryColor, fontSize: 15, fontWeight: FontWeight.w500),
+        title,
+        style: const TextStyle(
+            color: AppTheme.primaryColor,
+            fontSize: 15,
+            fontWeight: FontWeight.w500),
       ),
       onTap: onTap,
       dense: true,
       horizontalTitleGap: 0,
     );
   }
-
 
   Widget _buildMarquee(DashboardProvider provider) {
     return Container(
@@ -376,7 +426,8 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
       decoration: const BoxDecoration(
         color: Color(0xFFFFFFFF),
       ),
-      clipBehavior: Clip.hardEdge, // ✅ now allowed
+      clipBehavior: Clip.hardEdge,
+      // ✅ now allowed
       child: AnimatedBuilder(
         animation: _marqueeAnimation,
         builder: (context, child) {
@@ -403,134 +454,147 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
     );
   }
 
-
   Widget _buildBanners(DashboardProvider provider) {
-     if (provider.bannersResponse?.results == null || provider.bannersResponse!.results!.isEmpty) {
-       return const SizedBox.shrink();
-     }
-     return Column(
-       children: [
-         SizedBox(
-           height: 180.h, // Adjusted height to match compact look
-           child: PageView.builder(
-             controller: _bannerController,
-             onPageChanged: (index) {
-               setState(() {
-                 _currentBannerIndex = index;
-               });
-             },
-             itemCount: provider.bannersResponse!.results!.length,
-             itemBuilder: (context, index) {
-                final banner = provider.bannersResponse!.results![index];
-                return Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10.w), // Matches Image 2 side margins
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(0.r),
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                         _buildNetworkImage(banner?.image, fit: BoxFit.fill),
-                         // Overlay Card (Bottom Left)
-                         Positioned(
-                           bottom: 50.h,
-                           left: 15.w,
-                           child: Container(
-                             width: 140.w, // Approximate width from screenshot
-                             padding: EdgeInsets.all(6.w),
-                             decoration: BoxDecoration(
-                               color: Colors.white,
-                               borderRadius: BorderRadius.circular(6.r),
-                               border: Border.all(
-                                 color: Colors.orange,
-                                 width: 1.5,          // Adjust thickness if needed
-                               ),
-                               boxShadow: [
-                                 BoxShadow(
-                                   color: Colors.black.withValues(alpha: 0.1),
-                                   blurRadius: 10,
-                                   offset: const Offset(0, 5),
-                                 )
-                               ],
-                             ),
-                             child: Column(
-                               crossAxisAlignment: CrossAxisAlignment.center,
-                               mainAxisSize: MainAxisSize.min,
-                               children: [
-                                 if (banner?.topCaption != null && banner!.topCaption!.isNotEmpty)
-                                   Text(
-                                     banner.topCaption!,
-                                     style: TextStyle(color: Colors.grey, fontSize: 10.sp),
-                                   ),
-                                 Text(
-                                   banner?.name ?? "",
-                                   style: TextStyle(
-                                     color: Colors.black,
-                                     fontSize:10.sp,
-                                     fontWeight: FontWeight.bold
-                                   ),
-                                   maxLines: 1,
-                                   overflow: TextOverflow.ellipsis,
-                                 ),
-                                 SizedBox(height: 8.h),
-                                   InkWell(
-                                   onTap: () {
-                                     final productProvider = context.read<ProductListProvider>();
-                                     productProvider.clearFilters();
-                                     
-                                     if (banner?.groupId != null && banner?.groupId != "0") {
-                                       productProvider.setGroup(banner!.groupId.toString());
-                                     }
-                                     if (banner?.products != null && banner!.products!.isNotEmpty) {
-                                       productProvider.setSelectedProducts(banner.products!);
-                                     }
-                                     if (banner?.divisionId != null && banner?.divisionId != "0") {
-                                       productProvider.setCategory(banner!.divisionId.toString());
-                                     }
-                                     
-                                     context.read<DashboardProvider>().setIndex(1);
-                                   },
-                                   child: Container(
-                                     padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 6.h),
-                                     decoration: BoxDecoration(
-                                       color: AppTheme.orangeColor, // Orange color
-                                       borderRadius: BorderRadius.circular(20.r),
-                                     ),
-                                     child: Text(
-                                       "Shop Now",
-                                       style: TextStyle(
-                                         color: AppTheme.white,
-                                         fontSize: 10.sp,
-                                         fontWeight: FontWeight.bold
-                                       ),
-                                     ),
-                                   ),
-                                 ),
-                               ],
-                             ),
-                           ),
-                         )
-                      ],
-                    ),
+    if (provider.bannersResponse?.results == null ||
+        provider.bannersResponse!.results!.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    return Column(
+      children: [
+        SizedBox(
+          height: 180.h, // Adjusted height to match compact look
+          child: PageView.builder(
+            controller: _bannerController,
+            onPageChanged: (index) {
+              setState(() {
+                _currentBannerIndex = index;
+              });
+            },
+            itemCount: provider.bannersResponse!.results!.length,
+            itemBuilder: (context, index) {
+              final banner = provider.bannersResponse!.results![index];
+              return Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10.w),
+                // Matches Image 2 side margins
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(0.r),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      _buildNetworkImage(banner?.image, fit: BoxFit.fill),
+                      // Overlay Card (Bottom Left)
+                      Positioned(
+                        bottom: 50.h,
+                        left: 15.w,
+                        child: Container(
+                          width: 140.w, // Approximate width from screenshot
+                          padding: EdgeInsets.all(6.w),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(6.r),
+                            border: Border.all(
+                              color: Colors.orange,
+                              width: 1.5, // Adjust thickness if needed
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.1),
+                                blurRadius: 10,
+                                offset: const Offset(0, 5),
+                              )
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (banner?.topCaption != null &&
+                                  banner!.topCaption!.isNotEmpty)
+                                Text(
+                                  banner.topCaption!,
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 10.sp),
+                                ),
+                              Text(
+                                banner?.name ?? "",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 10.sp,
+                                    fontWeight: FontWeight.bold),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              SizedBox(height: 8.h),
+                              InkWell(
+                                onTap: () {
+                                  final productProvider =
+                                      context.read<ProductListProvider>();
+                                  productProvider.clearFilters();
+
+                                  if (banner?.groupId != null &&
+                                      banner?.groupId != "0") {
+                                    productProvider
+                                        .setGroup(banner!.groupId.toString());
+                                  }
+                                  if (banner?.products != null &&
+                                      banner!.products!.isNotEmpty) {
+                                    productProvider
+                                        .setSelectedProducts(banner.products!);
+                                  }
+                                  if (banner?.divisionId != null &&
+                                      banner?.divisionId != "0") {
+                                    productProvider.setCategory(
+                                        banner!.divisionId.toString());
+                                  }
+
+                                  context.read<DashboardProvider>().setIndex(1);
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 20.w, vertical: 6.h),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.orangeColor, // Orange color
+                                    borderRadius: BorderRadius.circular(20.r),
+                                  ),
+                                  child: Text(
+                                    "Shop Now",
+                                    style: TextStyle(
+                                        color: AppTheme.white,
+                                        fontSize: 10.sp,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
                   ),
-                );
-             },
-           ),
-         ),
-         SizedBox(height: 8.h),
-         DotsIndicator(
-           dotsCount: provider.bannersResponse!.results!.length,
-           position: _currentBannerIndex,
-           decorator: DotsDecorator(
-             size: Size.square(6.0.w), // Smaller dots
-             activeSize: Size(12.0.w, 6.0.w), // Ellipse for active
-             activeShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3.0.r)),
-             activeColor: AppTheme.darkBlue, // Dark blue from Image 2
-             color: AppTheme.hintColor.withValues(alpha: 0.3),
-           ),
-         ),
-         SizedBox(height: 10.h),
-       ],
-     );
+                ),
+              );
+            },
+          ),
+        ),
+        SizedBox(height: 8.h),
+        DotsIndicator(
+          dotsCount: provider.bannersResponse!.results!.length,
+          position: _currentBannerIndex,
+          decorator: DotsDecorator(
+            size: Size.square(6.0.w),
+            // Smaller dots
+            activeSize: Size(12.0.w, 6.0.w),
+            // Ellipse for active
+            activeShape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(3.0.r)),
+            activeColor: AppTheme.darkBlue,
+            // Dark blue from Image 2
+            color: AppTheme.hintColor.withValues(alpha: 0.3),
+          ),
+        ),
+        SizedBox(height: 10.h),
+      ],
+    );
   }
 
   Widget _buildTopSuppliers(DashboardProvider provider) {
@@ -546,97 +610,95 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
     }
     return const SizedBox.shrink();
   }
-   
 
   Widget _buildProductSections(DashboardProvider provider) {
-     return Column(
-       children: [
-          PromotionsSection(),
-          PopularCategoriesSection(),
-          HotSellingSection(),
-          NewArrivalsSection(),
-          PopularAdsSection(),
-          _buildFooterBanners(provider),
-          RecentlyAddedSection(),
-          BestSellersSection(), // Based on Kotlin layout order check
-          FlashDealsSection(),
-       ],
-     );
+    return Column(
+      children: [
+        PromotionsSection(),
+        PopularCategoriesSection(),
+        BestSellersSection(),
+        FlashDealsSection(),
+        HotSellingSection(),
+        NewArrivalsSection(),
+        PopularAdsSection(),
+        _buildFooterBanners(provider),
+        RecentlyAddedSection(),
+
+      ],
+    );
   }
 
   Widget _buildFooterBanners(DashboardProvider provider) {
-      final results = provider.footerBannersResponse?.results;
-      if (results == null || results.isEmpty) {
-        return const SizedBox.shrink();
-      }
+    final results = provider.footerBannersResponse?.results;
+    if (results == null || results.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
-      return Column(
-        children: [
-          SectionHeaderWidget(
-            title: "", // No title for footer banners usually, but has arrows
-            onPrevTap: () {
-              int prevIndex = _currentFooterIndex - 1;
-              if (prevIndex < 0) prevIndex = results.length - 1;
-              _footerPageController.animateToPage(
-                prevIndex,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-              );
+    return Column(
+      children: [
+        SectionHeaderWidget(
+          title: "", // No title for footer banners usually, but has arrows
+          onPrevTap: () {
+            int prevIndex = _currentFooterIndex - 1;
+            if (prevIndex < 0) prevIndex = results.length - 1;
+            _footerPageController.animateToPage(
+              prevIndex,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            );
+          },
+          onNextTap: () {
+            int nextIndex = _currentFooterIndex + 1;
+            if (nextIndex >= results.length) nextIndex = 0;
+            _footerPageController.animateToPage(
+              nextIndex,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            );
+          },
+        ),
+        Container(
+          height: 150.h,
+          margin: EdgeInsets.symmetric(vertical: 10.h),
+          child: PageView.builder(
+            controller: _footerPageController,
+            onPageChanged: (index) {
+              setState(() {
+                _currentFooterIndex = index;
+              });
             },
-            onNextTap: () {
-              int nextIndex = _currentFooterIndex + 1;
-              if (nextIndex >= results.length) nextIndex = 0;
-              _footerPageController.animateToPage(
-                nextIndex,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
+            itemCount: results.length,
+            itemBuilder: (context, index) {
+              final banner = results[index];
+              if (banner?.image == null) return const SizedBox.shrink();
+
+              return Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10.w),
+                child: InkWell(
+                  onTap: () {
+                    final b = banner;
+                    final productProvider = context.read<ProductListProvider>();
+                    productProvider.clearFilters();
+
+                    if (b.groupId != null && b.groupId != "0") {
+                      productProvider.setGroup(b.groupId.toString());
+                    }
+                    if (b.products != null && b.products!.isNotEmpty) {
+                      productProvider.setSelectedProducts(b.products!);
+                    }
+                    if (b.divisionId != null && b.divisionId != "0") {
+                      productProvider.setCategory(b.divisionId.toString());
+                    }
+
+                    context.read<DashboardProvider>().setIndex(1);
+                  },
+                  child: _buildNetworkImage(banner!.image, fit: BoxFit.contain),
+                ),
               );
             },
           ),
-          Container(
-            height: 150.h,
-            margin: EdgeInsets.symmetric(vertical: 10.h),
-            child: PageView.builder(
-              controller: _footerPageController,
-              onPageChanged: (index) {
-                setState(() {
-                  _currentFooterIndex = index;
-                });
-              },
-              itemCount: results.length,
-              itemBuilder: (context, index) {
-                final banner = results[index];
-                if (banner?.image == null) return const SizedBox.shrink();
-
-                return Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10.w),
-                  child: InkWell(
-                    onTap: () {
-                      final b = banner;
-                      final productProvider = context.read<ProductListProvider>();
-                      productProvider.clearFilters();
-                      
-                      if (b.groupId != null && b.groupId != "0") {
-                        productProvider.setGroup(b.groupId.toString());
-                      }
-                      if (b.products != null && b.products!.isNotEmpty) {
-                        productProvider.setSelectedProducts(b.products!);
-                      }
-                      if (b.divisionId != null && b.divisionId != "0") {
-                        productProvider.setCategory(b.divisionId.toString());
-                      }
-                      
-                      context.read<DashboardProvider>().setIndex(1);
-                    },
-                    child: _buildNetworkImage(banner!.image, fit: BoxFit.contain),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      );
+        ),
+      ],
+    );
   }
 }
-
-
