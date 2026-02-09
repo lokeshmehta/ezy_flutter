@@ -38,17 +38,17 @@ class SectionHeaderWidget extends StatelessWidget {
           if (showNavButtons)
             Row(
               children: [
-                if (onPrevTap != null)
-                  _buildNavButton(
-                    icon: Icons.arrow_back_ios_new,
-                    onTap: onPrevTap!,
-                  ),
+                _buildNavButton(
+                  icon: Icons.arrow_back_ios_new,
+                  onTap: onPrevTap,
+                  isActive: onPrevTap != null,
+                ),
                 SizedBox(width: 10.w),
-                if (onNextTap != null)
-                  _buildNavButton(
-                    icon: Icons.arrow_forward_ios,
-                    onTap: onNextTap!,
-                  ),
+                _buildNavButton(
+                  icon: Icons.arrow_forward_ios,
+                  onTap: onNextTap,
+                  isActive: onNextTap != null,
+                ),
               ],
             ),
         ],
@@ -56,15 +56,19 @@ class SectionHeaderWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildNavButton({required IconData icon, required VoidCallback onTap}) {
+  Widget _buildNavButton({
+    required IconData icon,
+    required VoidCallback? onTap,
+    required bool isActive,
+  }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(20.r),
+      borderRadius: BorderRadius.circular(AppTheme.productButtonRadius.r),
       child: Container(
-        width: 36.w,
-        height: 36.w,
-        decoration: const BoxDecoration(
-          color: Color(0xFFFCBD5F), // Orange/Amber from screenshot
+        width: AppTheme.arrowSize.w,
+        height: AppTheme.arrowSize.w,
+        decoration: BoxDecoration(
+          color: isActive ? AppTheme.secondaryColor : AppTheme.lightSecondaryColor,
           shape: BoxShape.circle,
         ),
         child: Center(
