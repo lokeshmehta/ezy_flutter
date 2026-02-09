@@ -23,7 +23,7 @@ import 'widgets/flash_deals_section.dart';
 import 'widgets/popular_ads_section.dart';
 import 'widgets/standard_product_sections.dart';
 import 'widgets/logout_dialog.dart';
-import '../products/products_list_screen.dart';
+
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:async';
@@ -176,9 +176,9 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
           );
         },
       ),
-      bottomNavigationBar: _buildBottomNav(),
     );
   }
+
 
   Widget _buildDrawer() {
     return Drawer(
@@ -257,7 +257,7 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
                       context.pop();
                       final productProvider = context.read<ProductListProvider>();
                       productProvider.clearFilters();
-                      Navigator.push(context, MaterialPageRoute(builder: (c) => const ProductsListScreen()));
+                      context.read<DashboardProvider>().setIndex(1);
                     }),
                     _buildDrawerItem(AppAssets.promoIcon, "Promotions", () {
                       context.pop();
@@ -459,10 +459,7 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
                                        productProvider.setCategory(banner!.divisionId.toString());
                                      }
                                      
-                                     Navigator.push(
-                                       context,
-                                       MaterialPageRoute(builder: (context) => const ProductsListScreen()),
-                                     );
+                                     context.read<DashboardProvider>().setIndex(1);
                                    },
                                    child: Container(
                                      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 6.h),
@@ -565,64 +562,6 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
         ),
       );
   }
-
-  Widget _buildBottomNav() {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: const Color(0xFF1B4E9B), // Dark blue
-      unselectedItemColor: Colors.grey,
-      currentIndex: 0,
-      selectedLabelStyle: TextStyle(fontSize: 10.sp),
-      unselectedLabelStyle: TextStyle(fontSize: 10.sp),
-      items: [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home_outlined, size: 24.sp),
-          activeIcon: Icon(Icons.home, size: 24.sp),
-          label: "Home"
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.list_alt_outlined, size: 24.sp),
-          label: "Order Now"
-        ),
-        BottomNavigationBarItem(
-          icon: Badge(
-            label: Text("1", style: TextStyle(fontSize: 8.sp)),
-            backgroundColor: Colors.red,
-            child: Icon(Icons.shopping_cart_outlined, size: 24.sp),
-          ),
-          label: "My Cart"
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person_outline, size: 24.sp),
-          label: "My Account"
-        ),
-      ],
-      onTap: (index) {
-        switch (index) {
-          case 0:
-             // Already on Home
-            break;
-          case 1:
-            // Order Now -> Products List
-             final productProvider = context.read<ProductListProvider>();
-             productProvider.clearFilters();
-             Navigator.push(
-               context,
-               MaterialPageRoute(builder: (context) => const ProductsListScreen()),
-             );
-            break;
-          case 2:
-            // My Cart -> Proceed to Buy / Cart
-            context.push('/cart'); 
-            // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Cart Feature Coming Soon")));
-            break;
-          case 3:
-            // My Account
-             context.push('/my-account');
-             // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Account Feature Coming Soon")));
-            break;
-        }
-      },
-    );
-  }
 }
+
+

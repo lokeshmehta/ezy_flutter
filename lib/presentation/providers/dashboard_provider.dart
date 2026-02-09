@@ -133,9 +133,28 @@ class DashboardProvider extends ChangeNotifier {
       
       if (profile.recentlyAdded == "Show") futures.add(_fetchRecentlyAdded());
 
+      if (profile.recentlyAdded == "Show") futures.add(_fetchRecentlyAdded());
+
       await Future.wait(futures);
       
       _isLoading = false;
+      notifyListeners();
+  }
+  
+  // Navigation State
+  int _currentIndex = 0;
+  int get currentIndex => _currentIndex;
+
+  String _cartQuantity = "0";
+  String get cartQuantity => _cartQuantity;
+  
+  void setIndex(int index) {
+      _currentIndex = index;
+      notifyListeners();
+  }
+
+  void setCartCount(String count) {
+      _cartQuantity = count;
       notifyListeners();
   }
 
@@ -173,6 +192,7 @@ class DashboardProvider extends ChangeNotifier {
       _profileResponse = ProfileResponse.fromJson(response);
       
       if (_profileResponse?.results != null && _profileResponse!.results!.isNotEmpty) {
+          _cartQuantity = _profileResponse?.cartQuantity ?? "0";
           await _fetchDashboardContent(_profileResponse!.results![0]!);
       } else {
           _isLoading = false;

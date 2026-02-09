@@ -393,7 +393,11 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
               } else {
                 await provider.addToCart(widget.product, _selectedQty.toString(), _selectedSoldAs);
               }
-              if (context.mounted) Navigator.pop(context);
+              
+              if (context.mounted) {
+                 context.read<DashboardProvider>().setCartCount(CommonMethods.cartCount);
+                 Navigator.pop(context);
+              }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF009688), // tealcolor

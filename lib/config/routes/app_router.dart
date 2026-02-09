@@ -1,11 +1,13 @@
 import 'package:go_router/go_router.dart';
+import '../../presentation/features/cart/cart_screen.dart';
 import '../../presentation/features/auth/login_screen.dart';
 import '../../presentation/features/companies/companies_list_screen.dart';
 import '../../presentation/features/auth/signup_screen.dart';
 import '../../presentation/features/auth/forgot_password_screen.dart';
 import '../../presentation/features/splash/splash_screen.dart';
 
-import '../../presentation/features/dashboard/dashboard_screen.dart';
+
+import '../../presentation/screens/main_screen.dart';
 import '../../presentation/features/checkout/checkout_screen.dart';
 import '../../presentation/features/orders/my_orders_screen.dart';
 import '../../presentation/features/dashboard/my_wishlist_screen.dart';
@@ -43,7 +45,7 @@ class AppRouter {
       ),
       GoRoute(
         path: '/dashboard',
-        builder: (context, state) => const DashboardScreen(),
+        builder: (context, state) => const MainScreen(),
       ),
       GoRoute(
         path: '/my-wishlist',
@@ -52,7 +54,7 @@ class AppRouter {
 
       GoRoute(
         path: '/cart',
-        builder: (context, state) => const CheckoutScreen(),
+        builder: (context, state) => const CartScreen(),
       ),
       GoRoute(
         path: '/checkout',

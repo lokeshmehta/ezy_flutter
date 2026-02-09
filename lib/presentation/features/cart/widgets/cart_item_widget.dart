@@ -7,6 +7,7 @@ import '../../../../core/constants/url_api_key.dart';
 import '../../../../core/utils/common_methods.dart';
 import '../../../../data/models/cart_models.dart';
 import '../../../providers/cart_provider.dart';
+import '../../../providers/dashboard_provider.dart';
 
 class CartItemWidget extends StatelessWidget {
   final CartProduct item;
@@ -98,10 +99,13 @@ class CartItemWidget extends StatelessWidget {
                         child: Row(
                           children: [
                             InkWell(
-                              onTap: () {
+                              onTap: () async {
                                 int currentQty = item.qty ?? 0;
                                 if (currentQty > 0) {
-                                  context.read<CartProvider>().updateCartItem(item, (currentQty - 1).toString());
+                                  await context.read<CartProvider>().updateCartItem(item, (currentQty - 1).toString());
+                                  if (context.mounted) {
+                                     context.read<DashboardProvider>().setCartCount(CommonMethods.cartCount);
+                                  }
                                 }
                               },
                               child: Padding(
@@ -120,9 +124,12 @@ class CartItemWidget extends StatelessWidget {
                               ),
                             ),
                             InkWell(
-                              onTap: () {
+                              onTap: () async {
                                 int currentQty = item.qty ?? 0;
-                                context.read<CartProvider>().updateCartItem(item, (currentQty + 1).toString());
+                                await context.read<CartProvider>().updateCartItem(item, (currentQty + 1).toString());
+                                if (context.mounted) {
+                                   context.read<DashboardProvider>().setCartCount(CommonMethods.cartCount);
+                                }
                               },
                               child: Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
@@ -135,8 +142,11 @@ class CartItemWidget extends StatelessWidget {
                       
                       // Delete
                       InkWell(
-                        onTap: () {
-                           context.read<CartProvider>().deleteCartItem(item);
+                        onTap: () async {
+                           await context.read<CartProvider>().deleteCartItem(item);
+                           if (context.mounted) {
+                              context.read<DashboardProvider>().setCartCount(CommonMethods.cartCount);
+                           }
                         },
                         child: Icon(Icons.delete_outline, color: Colors.red, size: 24.sp),
                       ),

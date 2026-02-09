@@ -31,10 +31,12 @@ class _CartScreenState extends State<CartScreen> {
         title: const Text("My Cart"),
         centerTitle: true,
         backgroundColor: AppTheme.primaryColor,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.pop(),
-        ),
+        leading: Navigator.canPop(context) 
+          ? IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => context.pop(),
+            )
+          : null,
       ),
       body: Consumer<CartProvider>(
         builder: (context, provider, child) {

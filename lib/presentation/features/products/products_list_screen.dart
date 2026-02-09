@@ -103,10 +103,12 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppTheme.secondaryColor),
-          onPressed: () => Navigator.pop(context),
-        ),
+        leading: Navigator.canPop(context)
+          ? IconButton(
+              icon: const Icon(Icons.arrow_back, color: AppTheme.secondaryColor),
+              onPressed: () => Navigator.pop(context),
+            )
+          : null,
 
       ),
       body: Column(
