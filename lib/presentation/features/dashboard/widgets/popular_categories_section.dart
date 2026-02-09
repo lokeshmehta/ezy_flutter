@@ -16,8 +16,29 @@ class PopularCategoriesSection extends StatefulWidget {
 
 class _PopularCategoriesSectionState extends State<PopularCategoriesSection> {
   final ScrollController _scrollController = ScrollController();
+  bool _canScrollLeft = false;
+  bool _canScrollRight = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_updateScrollState);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _updateScrollState());
+  }
+
+  void _updateScrollState() {
+    if (!_scrollController.hasClients) return;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.offset;
+    
+    setState(() {
+      _canScrollLeft = currentScroll > 0;
+      _canScrollRight = currentScroll < maxScroll;
+    });
+  }
 
   void _scroll(bool forward) {
+    if (!_scrollController.hasClients) return;
     const double scrollAmount = 250;
     final double target = forward 
         ? _scrollController.offset + scrollAmount 
@@ -32,6 +53,7 @@ class _PopularCategoriesSectionState extends State<PopularCategoriesSection> {
 
   @override
   void dispose() {
+    _scrollController.removeListener(_updateScrollState);
     _scrollController.dispose();
     super.dispose();
   }
@@ -57,8 +79,8 @@ class _PopularCategoriesSectionState extends State<PopularCategoriesSection> {
           children: [
             SectionHeaderWidget(
               title: "Popular Categories",
-              onPrevTap: () => _scroll(false),
-              onNextTap: () => _scroll(true),
+              onPrevTap: _canScrollLeft ? () => _scroll(false) : null,
+              onNextTap: _canScrollRight ? () => _scroll(true) : null,
             ),
             SizedBox(
               height: 240.h, // Dynamic height - check content size (HomePromotionItemWidget)
@@ -85,7 +107,6 @@ class _PopularCategoriesSectionState extends State<PopularCategoriesSection> {
                        productProvider.clearFilters();
                        productProvider.setCategory(item.divisionId.toString());
                        
-                       productProvider.setCategory(item.divisionId.toString());
                        context.read<DashboardProvider>().setIndex(1);
                      },
                    );

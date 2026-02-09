@@ -7,8 +7,56 @@ import '../../products/products_list_screen.dart';
 import 'dashboard_banner_item_widget.dart';
 import 'section_header_widget.dart';
 
-class PopularAdsSection extends StatelessWidget {
+class PopularAdsSection extends StatefulWidget {
   const PopularAdsSection({super.key});
+
+  @override
+  State<PopularAdsSection> createState() => _PopularAdsSectionState();
+}
+
+class _PopularAdsSectionState extends State<PopularAdsSection> {
+  final ScrollController _scrollController = ScrollController();
+  bool _canScrollLeft = false;
+  bool _canScrollRight = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_updateScrollState);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _updateScrollState());
+  }
+
+  void _updateScrollState() {
+    if (!_scrollController.hasClients) return;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.offset;
+    
+    setState(() {
+      _canScrollLeft = currentScroll > 0;
+      _canScrollRight = currentScroll < maxScroll;
+    });
+  }
+
+  void _scroll(bool forward) {
+    if (!_scrollController.hasClients) return;
+    const double scrollAmount = 300;
+    final double target = forward 
+        ? _scrollController.offset + scrollAmount 
+        : _scrollController.offset - scrollAmount;
+    
+    _scrollController.animateTo(
+      target.clamp(0.0, _scrollController.position.maxScrollExtent),
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_updateScrollState);
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,13 +73,13 @@ class PopularAdsSection extends StatelessWidget {
           children: [
             SectionHeaderWidget(
               title: "Popular Ads",
-              showNavButtons: true, // Show arrows if more than 1
-              onPrevTap: () {}, // Implement scroll logic if needed
-              onNextTap: () {},
+              onPrevTap: _canScrollLeft ? () => _scroll(false) : null,
+              onNextTap: _canScrollRight ? () => _scroll(true) : null,
             ),
             SizedBox(
-              height: 180.h, // Adjusted to match design
+              height: 180.h,
               child: ListView.builder(
+                controller: _scrollController,
                 padding: EdgeInsets.symmetric(horizontal: 10.w),
                 scrollDirection: Axis.horizontal,
                 itemCount: items.length,

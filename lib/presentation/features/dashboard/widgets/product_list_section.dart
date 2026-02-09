@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../config/routes/app_routes.dart';
 import '../../../../data/models/home_models.dart';
+import 'package:provider/provider.dart';
 import '../../../providers/dashboard_provider.dart';
 import 'product_item_widget.dart';
 import 'section_header_widget.dart';
@@ -29,6 +31,26 @@ class ProductListSection extends StatefulWidget {
 
 class _ProductListSectionState extends State<ProductListSection> {
   final ScrollController _scrollController = ScrollController();
+  bool _canScrollLeft = false;
+  bool _canScrollRight = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_updateScrollState);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _updateScrollState());
+  }
+
+  void _updateScrollState() {
+    if (!_scrollController.hasClients) return;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.offset;
+    
+    setState(() {
+      _canScrollLeft = currentScroll > 0;
+      _canScrollRight = currentScroll < maxScroll;
+    });
+  }
 
   void _scroll(bool forward) {
     if (!_scrollController.hasClients) return;
@@ -46,6 +68,7 @@ class _ProductListSectionState extends State<ProductListSection> {
 
   @override
   void dispose() {
+    _scrollController.removeListener(_updateScrollState);
     _scrollController.dispose();
     super.dispose();
   }
@@ -62,11 +85,11 @@ class _ProductListSectionState extends State<ProductListSection> {
       children: [
         SectionHeaderWidget(
           title: widget.title,
-          onPrevTap: () => _scroll(false),
-          onNextTap: () => _scroll(true),
+          onPrevTap: _canScrollLeft ? () => _scroll(false) : null,
+          onNextTap: _canScrollRight ? () => _scroll(true) : null,
         ),
         SizedBox(
-          height: 340.h, // Increased for safety
+          height: 340.h, 
           child: ListView.builder(
             controller: _scrollController,
             padding: EdgeInsets.symmetric(horizontal: 10.w),
@@ -80,15 +103,17 @@ class _ProductListSectionState extends State<ProductListSection> {
                 item: product,
                 width: itemWidth,
                 onTap: () {
-                   // Navigate to Product Details
+                   context.push(AppRoutes.productDetails, extra: product.productId);
                 },
                 onFavorite: () {
                   final provider = context.read<DashboardProvider>();
-                  provider.fetchWishlistCategories(product.productId!);
-                  showDialog(
-                    context: context,
-                    builder: (context) => WishlistCategoryDialog(product: product),
-                  );
+                  if (product.productId != null) {
+                       provider.fetchWishlistCategories(product.productId!);
+                       showDialog(
+                         context: context,
+                         builder: (context) => WishlistCategoryDialog(product: product),
+                       );
+                  }
                 },
                 onAddToCart: () {
                   showModalBottomSheet(

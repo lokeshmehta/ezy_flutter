@@ -16,4 +16,5 @@ class AppRoutes {
   static const String addAddress = '/add-address';
   static const String orderSuccess = '/order-success';
   static const String productDetails = '/product-details';
+  static const String notifications = '/notifications';
 }

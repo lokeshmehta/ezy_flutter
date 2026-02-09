@@ -13,7 +13,6 @@ import '../../providers/product_list_provider.dart';
 import '../drawer/about_us_screen.dart';
 import '../drawer/faq_screen.dart';
 import '../drawer/help_support_screen.dart';
-import '../drawer/notifications_screen.dart';
 import '../drawer/promotions_screen.dart';
 import '../drawer/send_feedback_screen.dart';
 import 'widgets/suppliers_section.dart';
@@ -266,7 +265,7 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
                     }),
                     _buildDrawerItem(AppAssets.notifyIcon, "Notifications", () {
                       context.pop();
-                      Navigator.push(context, MaterialPageRoute(builder: (c) => const NotificationsScreen()));
+                      context.push(AppRoutes.notifications);
                     }),
                     _buildDrawerItem(AppAssets.faqIcon, "FAQ", () {
                       context.pop();

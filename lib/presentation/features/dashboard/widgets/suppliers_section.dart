@@ -14,8 +14,29 @@ class SuppliersSection extends StatefulWidget {
 
 class _SuppliersSectionState extends State<SuppliersSection> {
   final ScrollController _scrollController = ScrollController();
+  bool _canScrollLeft = false;
+  bool _canScrollRight = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_updateScrollState);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _updateScrollState());
+  }
+
+  void _updateScrollState() {
+    if (!_scrollController.hasClients) return;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.offset;
+    
+    setState(() {
+      _canScrollLeft = currentScroll > 0;
+      _canScrollRight = currentScroll < maxScroll;
+    });
+  }
 
   void _scroll(bool forward) {
+    if (!_scrollController.hasClients) return;
     const double scrollAmount = 200;
     final double target = forward
         ? _scrollController.offset + scrollAmount
@@ -30,6 +51,7 @@ class _SuppliersSectionState extends State<SuppliersSection> {
 
   @override
   void dispose() {
+    _scrollController.removeListener(_updateScrollState);
     _scrollController.dispose();
     super.dispose();
   }
@@ -49,11 +71,11 @@ class _SuppliersSectionState extends State<SuppliersSection> {
           children: [
              SectionHeaderWidget(
               title: "Suppliers",
-              onPrevTap: () => _scroll(false),
-              onNextTap: () => _scroll(true),
+              onPrevTap: _canScrollLeft ? () => _scroll(false) : null,
+              onNextTap: _canScrollRight ? () => _scroll(true) : null,
             ),
             SizedBox(
-              height: 140.h, // Dynamic height reduced for Round 2
+              height: 140.h, 
               child: ListView.builder(
                 controller: _scrollController,
                 padding: EdgeInsets.symmetric(horizontal: 10.w),

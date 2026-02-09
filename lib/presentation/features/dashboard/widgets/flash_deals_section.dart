@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../config/routes/app_routes.dart';
 import '../../../providers/dashboard_provider.dart';
 import 'flash_deal_item_widget.dart';
 import 'section_header_widget.dart';
@@ -16,6 +18,26 @@ class FlashDealsSection extends StatefulWidget {
 
 class _FlashDealsSectionState extends State<FlashDealsSection> {
   final ScrollController _scrollController = ScrollController();
+  bool _canScrollLeft = false;
+  bool _canScrollRight = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_updateScrollState);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _updateScrollState());
+  }
+
+  void _updateScrollState() {
+    if (!_scrollController.hasClients) return;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.offset;
+    
+    setState(() {
+      _canScrollLeft = currentScroll > 0;
+      _canScrollRight = currentScroll < maxScroll;
+    });
+  }
 
   void _scroll(bool forward) {
     if (!_scrollController.hasClients) return;
@@ -33,6 +55,7 @@ class _FlashDealsSectionState extends State<FlashDealsSection> {
 
   @override
   void dispose() {
+     _scrollController.removeListener(_updateScrollState);
     _scrollController.dispose();
     super.dispose();
   }
@@ -53,8 +76,8 @@ class _FlashDealsSectionState extends State<FlashDealsSection> {
           children: [
             SectionHeaderWidget(
               title: "Flash Deals",
-              onPrevTap: () => _scroll(false),
-              onNextTap: () => _scroll(true),
+              onPrevTap: _canScrollLeft ? () => _scroll(false) : null,
+              onNextTap: _canScrollRight ? () => _scroll(true) : null,
             ),
             SizedBox(
               height: 280.h, // Dynamic height
@@ -71,17 +94,19 @@ class _FlashDealsSectionState extends State<FlashDealsSection> {
                      item: item,
                      width: width - 40,
                      onTap: () {
-                        // Navigate to Product Details
+                        context.push(AppRoutes.productDetails, extra: item.productId);
                      },
                      onFavorite: () {
                        final provider = context.read<DashboardProvider>();
-                       provider.fetchWishlistCategories(item.productId!);
-                       showDialog(
-                         context: context,
-                         builder: (context) => WishlistCategoryDialog(product: item),
-                       );
+                       if (item.productId != null) {
+                           provider.fetchWishlistCategories(item.productId!);
+                           showDialog(
+                             context: context,
+                             builder: (context) => WishlistCategoryDialog(product: item),
+                           );
+                       }
                      },
-                                          onAddToCart: () {
+                     onAddToCart: () {
                        showModalBottomSheet(
                          context: context,
                          isScrollControlled: true,

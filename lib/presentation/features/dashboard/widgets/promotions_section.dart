@@ -17,8 +17,29 @@ class PromotionsSection extends StatefulWidget {
 
 class _PromotionsSectionState extends State<PromotionsSection> {
   final ScrollController _scrollController = ScrollController();
+  bool _canScrollLeft = false;
+  bool _canScrollRight = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_updateScrollState);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _updateScrollState());
+  }
+
+  void _updateScrollState() {
+    if (!_scrollController.hasClients) return;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.offset;
+    
+    setState(() {
+      _canScrollLeft = currentScroll > 0;
+      _canScrollRight = currentScroll < maxScroll;
+    });
+  }
 
   void _scroll(bool forward) {
+    if (!_scrollController.hasClients) return;
     const double scrollAmount = 250;
     final double target = forward 
         ? _scrollController.offset + scrollAmount 
@@ -33,6 +54,7 @@ class _PromotionsSectionState extends State<PromotionsSection> {
 
   @override
   void dispose() {
+    _scrollController.removeListener(_updateScrollState);
     _scrollController.dispose();
     super.dispose();
   }
@@ -63,8 +85,8 @@ class _PromotionsSectionState extends State<PromotionsSection> {
           children: [
             SectionHeaderWidget(
               title: "Promotions",
-              onPrevTap: () => _scroll(false),
-              onNextTap: () => _scroll(true),
+              onPrevTap: _canScrollLeft ? () => _scroll(false) : null,
+              onNextTap: _canScrollRight ? () => _scroll(true) : null,
             ),
             SizedBox(
               height: 240.h, // Dynamic height
@@ -75,7 +97,7 @@ class _PromotionsSectionState extends State<PromotionsSection> {
                 itemCount: promotions.length,
                 itemBuilder: (context, index) {
                    final item = promotions[index];
-
+ 
                    return HomePromotionItemWidget(
                      imageUrl: item.image,
                      title: item.title ?? "",

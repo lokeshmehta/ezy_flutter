@@ -18,6 +18,8 @@ import '../../presentation/features/account/my_addresses_screen.dart';
 import '../../presentation/features/account/add_address_screen.dart';
 import '../../data/models/profile_models.dart';
 import '../../presentation/features/checkout/order_success_screen.dart';
+import '../../presentation/features/products/product_details_screen.dart';
+import '../../presentation/features/drawer/notifications_screen.dart';
 
 import 'app_routes.dart';
 
@@ -95,6 +97,21 @@ class AppRouter {
             final orderData = state.extra as Map<String, dynamic>;
             return OrderSuccessScreen(orderData: orderData);
         },
+      ),
+      GoRoute(
+        path: AppRoutes.productDetails,
+        builder: (context, state) {
+           final productId = state.extra as String; // Expecting ID string or object? 
+           // ProductItemWidget passes productId. Let's check ProductDetailsScreen constructor.
+           // It takes productId String.
+           // If we pass object, we need to extract ID. 
+           // Let's standardise to passing String ID for now or check usage.
+           return ProductDetailsScreen(productId: productId);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.notifications,
+        builder: (context, state) => const NotificationsScreen(),
       ),
     ],
   );
