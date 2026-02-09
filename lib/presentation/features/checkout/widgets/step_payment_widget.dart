@@ -45,7 +45,7 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
             padding: EdgeInsets.symmetric(horizontal: 10.w),
             decoration: BoxDecoration(
               border: Border.all(color: AppTheme.hintColor),
-              borderRadius: BorderRadius.circular(5.r),
+              borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
             ),
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
@@ -80,7 +80,7 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
                     hintText: "Enter Coupon Code",
                     contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.r),
+                      borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
                       borderSide: const BorderSide(color: AppTheme.hintColor),
                     ),
                   ),
@@ -100,8 +100,9 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
                 style: ElevatedButton.styleFrom(
                    backgroundColor: AppTheme.orderSuccessTeal,
                    foregroundColor: AppTheme.white,
-                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.r)),
-                   padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 20.w)
+                   minimumSize: Size(0, 45.h),
+                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r)),
+                   padding: EdgeInsets.symmetric(horizontal: 20.w)
                 ),
                 child: provider.isLoading 
                     ? SizedBox(width: 20.w, height: 20.w, child: const CircularProgressIndicator(color: AppTheme.white, strokeWidth: 2)) 
@@ -124,7 +125,7 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
             decoration: InputDecoration(
               hintText: "Reason for ordering...", // Android hint
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(5.r),
+                borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
                 borderSide: BorderSide(color: Colors.grey.shade300),
               ),
             ),
@@ -163,7 +164,7 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
                   style: OutlinedButton.styleFrom(
                      padding: EdgeInsets.symmetric(vertical: 16.h),
                      side: const BorderSide(color: AppTheme.orderSuccessTeal),
-                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r))
+                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r))
                   ),
                   child: Text("BACK", style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold, color: AppTheme.orderSuccessTeal)),
                 ),
@@ -186,7 +187,7 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
                      backgroundColor: AppTheme.orderSuccessTeal,
                      foregroundColor: AppTheme.white,
                      padding: EdgeInsets.symmetric(vertical: 16.h),
-                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r))
+                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r))
                   ),
                   child: provider.isLoading 
                       ? SizedBox(width: 20.w, height: 20.w, child: const CircularProgressIndicator(color: AppTheme.white, strokeWidth: 2))

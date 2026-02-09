@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/checkout_provider.dart';
+import '../../../../core/constants/app_theme.dart';
 import 'cart_item_refined_widget.dart';
 
 class StepCartWidget extends StatefulWidget {
@@ -101,7 +102,7 @@ class _StepCartWidgetState extends State<StepCartWidget> {
                       Row(
                         children: [
                           Text(
-                            "\$${provider.totalAmount}",
+                            "AUD ${provider.totalAmount}",
                             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp, color: Colors.black),
                           ),
                           Icon(_isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down),
@@ -118,23 +119,23 @@ class _StepCartWidgetState extends State<StepCartWidget> {
                   color: Colors.grey.shade50,
                   child: Column(
                     children: [
-                      _buildSummaryRow(cartResult.subTotalHeading ?? "Sub Total", "\$${provider.subTotal}"),
+                      _buildSummaryRow(cartResult.subTotalHeading ?? "Sub Total", "AUD ${provider.subTotal}"),
                       if(double.parse(provider.discount) > 0)
-                         _buildSummaryRow("Discount", "-\$${provider.discount}", isDiscount: true),
+                         _buildSummaryRow("Discount", "-AUD ${provider.discount}", isDiscount: true),
                       if(double.parse(provider.shippingCharge) > 0)
-                         _buildSummaryRow("Shipping Charges", "\$${provider.shippingCharge}"),
+                         _buildSummaryRow("Shipping Charges", "AUD ${provider.shippingCharge}"),
                       if(double.parse(provider.supplierCharge) > 0)
-                         _buildSummaryRow("Supplier Charges", "\$${provider.supplierCharge}"),
+                         _buildSummaryRow("Supplier Charges", "AUD ${provider.supplierCharge}"),
                       if(double.parse(provider.taxTotal) > 0)
-                         _buildSummaryRow("Tax (GST)", "\$${provider.taxTotal}"),
+                         _buildSummaryRow("Tax (GST)", "AUD ${provider.taxTotal}"),
                       if(double.parse(provider.couponDiscount) > 0)
-                          _buildSummaryRow("Coupon (${provider.couponName})", "-\$${provider.couponDiscount}", isDiscount: true),
+                          _buildSummaryRow("Coupon (${provider.couponName})", "-AUD ${provider.couponDiscount}", isDiscount: true),
                       
                       Padding(
                         padding: EdgeInsets.symmetric(vertical: 5.h),
                         child: Divider(),
                       ),
-                      _buildSummaryRow("Total Amount", "\$${provider.totalAmount}", isBold: true),
+                      _buildSummaryRow("Total Amount", "AUD ${provider.totalAmount}", isBold: true),
                     ],
                   ),
                 ),
@@ -154,10 +155,11 @@ class _StepCartWidgetState extends State<StepCartWidget> {
                         },
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.red,
-                          side: BorderSide(color: Colors.red),
-                          padding: EdgeInsets.symmetric(vertical: 12.h),
+                          side: const BorderSide(color: Colors.red),
+                          minimumSize: Size(0, 45.h),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r))
                         ),
-                        child: Text("Clear Cart"),
+                        child: const Text("Clear Cart"),
                       ),
                     ),
                     SizedBox(width: 15.w),
@@ -172,10 +174,11 @@ class _StepCartWidgetState extends State<StepCartWidget> {
                            }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFFFFA500), // Orange
-                          padding: EdgeInsets.symmetric(vertical: 12.h),
+                          backgroundColor: AppTheme.secondaryColor, // Orange
+                          minimumSize: Size(0, 45.h),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r))
                         ),
-                        child: Text("Next", style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold)),
+                        child: Text("Next", style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold, color: AppTheme.white)),
                       ),
                     ),
                   ],

@@ -223,8 +223,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> with Single
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.tealColor,
                     padding: EdgeInsets.zero,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.r)),
-                    minimumSize: Size(double.infinity, 45.h),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.productButtonRadius.r)),
+                    minimumSize: Size(double.infinity, 40.h),
                   ),
                   child: Text(
                     product.addedToCart == "Yes" ? "Update Cart [${product.addedQty}]" : "Add To Cart",
@@ -237,8 +237,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> with Single
                 onTap: () => _onFavorite(product),
                 child: Image.asset(
                   product.isFavourite == "Yes" ? "assets/images/favadded.png" : "assets/images/fav_new.png",
-                  width: 45.w,
-                  height: 45.w,
+                  width: 40.h,
+                  height: 40.h,
                 ),
               ),
             ],

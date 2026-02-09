@@ -41,7 +41,7 @@ class _StepPreviewWidgetState extends State<StepPreviewWidget> {
                         leading: Image.network(item.image ?? "", width: 50.w, height: 50.w, errorBuilder: (_,__,___) => const Icon(Icons.image)),
                         title: Text(item.title ?? "", maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.sp)),
                         subtitle: Text("Qty: ${item.qty} | ${item.orderedAs}", style: TextStyle(fontSize: 12.sp)),
-                        trailing: Text("\$${item.salePrice}", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp)),
+                        trailing: Text("AUD ${item.salePrice}", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp)),
                     ),
                 );
             },
@@ -82,7 +82,7 @@ class _StepPreviewWidgetState extends State<StepPreviewWidget> {
                   style: OutlinedButton.styleFrom(
                      padding: EdgeInsets.symmetric(vertical: 16.h),
                      side: const BorderSide(color: AppTheme.orderSuccessTeal),
-                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r))
+                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r))
                   ),
                   child: Text("BACK", style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold, color: AppTheme.orderSuccessTeal)),
                 ),
@@ -115,7 +115,7 @@ class _StepPreviewWidgetState extends State<StepPreviewWidget> {
                      backgroundColor: AppTheme.orderSuccessTeal,
                      foregroundColor: AppTheme.white,
                      padding: EdgeInsets.symmetric(vertical: 16.h),
-                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r))
+                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r))
                   ),
                   child: provider.isLoading 
                       ? const CircularProgressIndicator(color: AppTheme.white) 

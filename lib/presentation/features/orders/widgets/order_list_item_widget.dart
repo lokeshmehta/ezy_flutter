@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../data/models/order_models.dart';
-import '../../../../config/theme/app_theme.dart';
+import '../../../../core/constants/app_theme.dart';
 
 class OrderListItemWidget extends StatelessWidget {
   final OrderHistoryResult order;
@@ -73,7 +73,7 @@ class OrderListItemWidget extends StatelessWidget {
                 ),
                 SizedBox(width: 4.w),
                 Text(
-                  "INR ${order.orderAmount ?? '0.00'}",
+                  "AUD ${order.orderAmount ?? '0.00'}",
                   style: TextStyle(
                     color: AppTheme.primaryColor,
                     fontSize: 13.sp,
@@ -183,7 +183,7 @@ class OrderListItemWidget extends StatelessWidget {
                 // Action Buttons Group
                 _buildActionButton(
                   icon: Icons.shopping_cart_outlined,
-                  color: const Color(0xFFFFB347), // Yellow
+                  color: AppTheme.tealColor, // Synchronized Orange
                   onTap: onReorder,
                   visible: true, // Controlled by provider/config usually
                 ),
@@ -215,7 +215,7 @@ class OrderListItemWidget extends StatelessWidget {
                     backgroundColor: const Color(0xFFADD8E6), // Light blue
                     padding: EdgeInsets.symmetric(horizontal: 10.w),
                     minimumSize: Size(0, 32.h),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.r)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r)),
                     elevation: 0,
                   ),
                   child: Text(
@@ -251,7 +251,7 @@ class OrderListItemWidget extends StatelessWidget {
           height: 32.w,
           decoration: BoxDecoration(
             color: color,
-            borderRadius: BorderRadius.circular(4.r),
+            borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r),
           ),
           child: Icon(icon, color: Colors.white, size: 20.sp),
         ),

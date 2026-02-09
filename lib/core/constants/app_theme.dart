@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class AppTheme {
   static const Color primaryColor = Color(0xFF1E3A8A); // @color/blue
   static const Color secondaryColor = Color(0xFFFFB347); // @color/tealcolor
-  static const Color tealColor = Color(0xFF009688); // Correct Teal Color 
+  static const Color tealColor = Color(0xFFFFB347); // @color/tealcolor (Android name mismatch)
   static const Color yellow = Color(0xFFFFB347); // @color/yellow
   static const Color lightBlue = Color(0xFF0664F1); // @color/lightblue
   static const Color skyBlue = Color(0xFF0DCAF0); // @color/skyblue
@@ -19,6 +19,11 @@ class AppTheme {
   static const Color redColorOpacity50 = Color(0x80E4134A); 
   static const Color redColorOpacity10 = Color(0x1AE4134A);
   static const Color shadowBlack = Color(0x2E000000);
+  
+  // Standard Border Radii
+  static const double authButtonRadius = 5.0;
+  static const double productButtonRadius = 20.0;
+  static const double inputRadius = 3.0;
   
   // Additional Colors found in code
   static const Color greyBtnColor = Color(0xFFEEEEEE);

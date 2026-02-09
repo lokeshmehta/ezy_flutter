@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../config/theme/app_theme.dart';
+import '../../../core/constants/app_theme.dart';
 import '../../providers/dashboard_provider.dart';
 import '../../providers/orders_provider.dart';
 import '../../../data/models/order_models.dart';
@@ -141,7 +141,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               leading: Image.network(p.productImage ?? "", width: 40.w, errorBuilder: (_,__,___)=> const Icon(Icons.image)),
               title: Text(p.productName ?? "", style: TextStyle(fontSize: 13.sp)),
               subtitle: Text("Qty: ${p.quantity} | ${p.orderedAs}"),
-              trailing: Text("INR ${p.totalAmount}"),
+              trailing: Text("AUD ${p.totalAmount}"),
             )).toList(),
           ),
         );
@@ -165,13 +165,13 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   Widget _buildPaymentDetails() {
     return Column(
       children: [
-        _buildRow("Sub Total :", "INR ${widget.order.subTotal}"),
-        _buildRow("Discount :", "INR ${widget.order.discount}", valueColor: Colors.red),
-        _buildRow("Shipping Charges :", "INR ${widget.order.deliveryCharge}"),
-        _buildRow("Add. Supplier Shipping :", "INR ${widget.order.suppliersExceededShippingCharge}"),
-        _buildRow("Tax (GST) :", "INR ${widget.order.gst}"),
+        _buildRow("Sub Total :", "AUD ${widget.order.subTotal}"),
+        _buildRow("Discount :", "AUD ${widget.order.discount}", valueColor: Colors.red),
+        _buildRow("Shipping Charges :", "AUD ${widget.order.deliveryCharge}"),
+        _buildRow("Add. Supplier Shipping :", "AUD ${widget.order.suppliersExceededShippingCharge}"),
+        _buildRow("Tax (GST) :", "AUD ${widget.order.gst}"),
         const Divider(),
-        _buildRow("Total :", "INR ${widget.order.orderAmount}", valueColor: AppTheme.primaryColor),
+        _buildRow("Total :", "AUD ${widget.order.orderAmount}", valueColor: AppTheme.primaryColor),
       ],
     );
   }
@@ -200,7 +200,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         onPressed: onTap,
         style: ElevatedButton.styleFrom(
           backgroundColor: color,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.r)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r)),
         ),
         child: Text(label, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       ),

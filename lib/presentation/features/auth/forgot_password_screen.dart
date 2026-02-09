@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../providers/forgot_password_provider.dart';
 import '../../../core/constants/app_theme.dart';
 import '../../../core/constants/assets.dart';
@@ -108,15 +109,15 @@ class ForgotPasswordScreen extends StatelessWidget {
                                                  fillColor: AppTheme.white,
                                                  contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
                                                  border: OutlineInputBorder(
-                                                   borderRadius: BorderRadius.circular(4),
+                                                   borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
                                                    borderSide: const BorderSide(color: AppTheme.blackColor, width: 1),
                                                  ),
                                                  enabledBorder: OutlineInputBorder(
-                                                   borderRadius: BorderRadius.circular(4),
+                                                   borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
                                                    borderSide: const BorderSide(color: AppTheme.blackColor, width: 1),
                                                  ),
                                                  focusedBorder: OutlineInputBorder(
-                                                   borderRadius: BorderRadius.circular(4),
+                                                   borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
                                                    borderSide: const BorderSide(color: AppTheme.blackColor, width: 2),
                                                  ),
                                                ),
@@ -136,8 +137,9 @@ class ForgotPasswordScreen extends StatelessWidget {
                                                  onPressed: provider.isLoading ? null : () => provider.submit(context),
                                                  style: ElevatedButton.styleFrom(
                                                    backgroundColor: AppTheme.tealColor,
+                                                   minimumSize: Size(double.infinity, 45.h),
                                                    shape: RoundedRectangleBorder(
-                                                     borderRadius: BorderRadius.circular(5), 
+                                                     borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r), 
                                                    ),
                                                  ),
                                                  child: provider.isLoading 

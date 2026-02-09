@@ -42,9 +42,9 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen> {
                       SizedBox(height: 10.h),
                       TextField(
                           controller: emailController,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                               hintText: "example@email.com, test@email.com",
-                              border: OutlineInputBorder()
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppTheme.inputRadius.r))
                           ),
                       )
                   ],
@@ -136,7 +136,8 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen> {
                        },
                        style: ElevatedButton.styleFrom(
                            backgroundColor: AppTheme.orderSuccessTeal,
-                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r))
+                           minimumSize: Size(double.infinity, 45.h),
+                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r))
                        ),
                        child: const Text("Continue Shopping", style: TextStyle(color: AppTheme.white)),
                    ),
@@ -151,7 +152,8 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen> {
                        label: const Text("Send Receipt", style: TextStyle(color: AppTheme.orderSuccessTeal)),
                        style: OutlinedButton.styleFrom(
                            side: const BorderSide(color: AppTheme.orderSuccessTeal),
-                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r))
+                           minimumSize: Size(double.infinity, 45.h),
+                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r))
                        ),
                    ),
                ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../providers/checkout_provider.dart';
+import '../../../../core/constants/app_theme.dart';
 
 
 class StepAddressWidget extends StatefulWidget {
@@ -117,10 +118,10 @@ class _StepAddressWidgetState extends State<StepAddressWidget> {
                   }
               },
               style: ElevatedButton.styleFrom(
-                 backgroundColor: Colors.teal,
+                 backgroundColor: AppTheme.tealColor,
                  foregroundColor: Colors.white,
-                 padding: EdgeInsets.symmetric(vertical: 16.h),
-                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r))
+                 minimumSize: Size(double.infinity, 45.h),
+                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r))
               ),
               child: Text("NEXT", style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold)),
             ),
@@ -154,11 +155,11 @@ class _StepAddressWidgetState extends State<StepAddressWidget> {
           labelText: hint,
           floatingLabelBehavior: FloatingLabelBehavior.auto,
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5.r),
+            borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
             borderSide: BorderSide(color: Colors.grey.shade300),
           ),
           enabledBorder: OutlineInputBorder(
-             borderRadius: BorderRadius.circular(5.r),
+             borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
              borderSide: BorderSide(color: Colors.grey.shade300),
           ),
           contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),

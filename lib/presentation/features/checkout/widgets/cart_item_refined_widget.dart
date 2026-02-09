@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../data/models/cart_models.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/checkout_provider.dart';
+import '../../../../core/constants/app_theme.dart';
 
 class CartItemRefinedWidget extends StatelessWidget {
   final CartProduct item;
@@ -30,7 +31,7 @@ class CartItemRefinedWidget extends StatelessWidget {
           padding: EdgeInsets.all(10.w),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(5.r),
+            borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey.withValues(alpha: 0.2),
@@ -51,7 +52,7 @@ class CartItemRefinedWidget extends StatelessWidget {
                     height: 70.w,
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey.shade300),
-                      borderRadius: BorderRadius.circular(5.r),
+                      borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
                     ),
                     child: Padding(
                       padding: EdgeInsets.all(5.w),
@@ -102,7 +103,7 @@ class CartItemRefinedWidget extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                              "\$${item.salePrice}", // Assuming salePrice is the display price
+                              "AUD ${item.salePrice}", // Assuming salePrice is the display price
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 13.sp,
@@ -115,10 +116,10 @@ class CartItemRefinedWidget extends StatelessWidget {
                                   padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
                                   decoration: BoxDecoration(
                                     color: Colors.red,
-                                    borderRadius: BorderRadius.circular(20.r),
+                                    borderRadius: BorderRadius.circular(3.r),
                                   ),
                                   child: Text(
-                                    "Save \$${item.discountAmount}",
+                                    "Save AUD ${item.discountAmount}",
                                     style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold),
                                   ),
                                 ),
@@ -216,7 +217,7 @@ class CartItemRefinedWidget extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             border: Border.all(color: Colors.grey.shade400),
-            borderRadius: BorderRadius.circular(4.r),
+            borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
           ),
           padding: EdgeInsets.all(2.w),
           child: Icon(icon, size: 16.sp, color: Colors.grey.shade700),

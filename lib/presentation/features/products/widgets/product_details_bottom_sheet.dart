@@ -217,8 +217,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
             margin: EdgeInsets.only(bottom: 5.h),
             width: double.infinity,
             decoration: BoxDecoration(
-              color: AppTheme.secondaryColor.withValues(alpha: 0.8), // Teal color matching cardBackground
-              borderRadius: BorderRadius.circular(2.r),
+              color: AppTheme.tealColor.withValues(alpha: 0.8), // Synchronized with tealcolor (Orange)
+              borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
             ),
             child: Text(
               widget.product.soldAs == "Each" 
@@ -400,9 +400,9 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF009688), // tealcolor
-              minimumSize: Size(double.infinity, 45.h),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.r)),
+              backgroundColor: AppTheme.tealColor, // Synchronized orange
+              minimumSize: Size(double.infinity, 40.h),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r)),
             ),
             child: Text(
               isAdded ? "Update Cart [${widget.product.addedQty}]" : "Add To Cart",
@@ -418,11 +418,11 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
               if (context.mounted) Navigator.pop(context);
             },
             child: Container(
-              width: 45.h,
-              height: 45.h,
+              width: 40.h,
+              height: 40.h,
               decoration: BoxDecoration(
                 color: Colors.red,
-                borderRadius: BorderRadius.circular(5.r),
+                borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r),
               ),
               child: Icon(Icons.delete, color: Colors.white, size: 26.sp),
             ),

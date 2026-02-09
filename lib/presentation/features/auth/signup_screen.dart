@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/signup_provider.dart';
@@ -178,7 +179,8 @@ class SignUpScreen extends StatelessWidget {
                                                 },
                                                 style: ElevatedButton.styleFrom(
                                                   backgroundColor: AppTheme.tealColor, // @color/tealcolor
-                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)), // Match buttonbackground (assuming pill or small radius, checking graybg used pill, buttonbackground usually similar) -> Android xml says `buttonbackground` which usually is rounded. Let's use 20.r to match Select Button.
+                                                  minimumSize: Size(double.infinity, 45.h),
+                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.authButtonRadius)),
                                                 ),
                                                 child: provider.isLoading
                                                     ? const CircularProgressIndicator(color: Colors.white)
@@ -280,15 +282,15 @@ class SignUpScreen extends StatelessWidget {
 
           // Black rectangular border
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
             borderSide: const BorderSide(color: Colors.black, width: 1),
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
             borderSide: const BorderSide(color: Colors.black, width: 1),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
             borderSide: const BorderSide(color: Colors.black, width: 2),
           ),
         ),

@@ -166,7 +166,7 @@ class _ProductListItemState extends State<ProductListItem> {
                           SizedBox(height: 2.h),
                           Text(
                             widget.item.title ?? "",
-                            style: TextStyle(color: Colors.blue[900], fontSize: 13.sp, fontWeight: FontWeight.bold),
+                            style: TextStyle(color: AppTheme.blackColor, fontSize: 13.sp, fontWeight: FontWeight.bold),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -201,7 +201,7 @@ class _ProductListItemState extends State<ProductListItem> {
                                     Text(
                                       _formatPrice(widget.item.price),
                                       style: TextStyle(
-                                        color: Colors.blue[900], 
+                                        color: AppTheme.blackColor, 
                                         fontSize: 13.sp,
                                         decoration: TextDecoration.lineThrough
                                       ),
@@ -239,7 +239,7 @@ class _ProductListItemState extends State<ProductListItem> {
                       Container(
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey[300]!),
-                          borderRadius: BorderRadius.circular(4.r),
+                          borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
                         ),
                         margin: EdgeInsets.only(right: 10.w),
                         child: Row(
@@ -277,11 +277,11 @@ class _ProductListItemState extends State<ProductListItem> {
                              ? () => widget.onAddToCart!(_quantity) 
                              : null,
                         child: Container(
-                          height: 40.h,
+                          height: 35.h,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: canAddToCart ? AppTheme.tealColor : AppTheme.redColor,
-                            borderRadius: BorderRadius.circular(4.r),
+                            borderRadius: BorderRadius.circular(AppTheme.productButtonRadius.r),
                           ),
                           child: FittedBox(
                             fit: BoxFit.scaleDown,

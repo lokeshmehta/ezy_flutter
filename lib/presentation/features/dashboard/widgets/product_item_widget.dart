@@ -73,7 +73,7 @@ class ProductItemWidget extends StatelessWidget {
                      width: double.infinity,
                      height: 24.h,
                      decoration: BoxDecoration(
-                        color: AppTheme.orangeColor, // Orange bar from Image 2
+                        color: AppTheme.tealColor, // Synchronized with tealcolor (Orange)
                      ),
                      alignment: Alignment.center,
                      child: Text(
@@ -86,7 +86,7 @@ class ProductItemWidget extends StatelessWidget {
                      width: double.infinity,
                      height: 24.h,
                      decoration: BoxDecoration(
-                        color: AppTheme.orangeColor, 
+                        color: AppTheme.tealColor, 
                      ),
                      alignment: Alignment.center,
                      child: Text(
@@ -221,11 +221,11 @@ class ProductItemWidget extends StatelessWidget {
                       child: InkWell(
                         onTap: canAddToCart ? onAddToCart : null,
                         child: Container(
-                          height: 40.h, // Standardized height
+                          height: 35.h, // Adjusted from 40.h to match Android @dimen/dimen_35
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: canAddToCart ? AppTheme.tealColor : AppTheme.redColor,
-                            borderRadius: BorderRadius.circular(4.r), // Standardized radius
+                            borderRadius: BorderRadius.circular(AppTheme.productButtonRadius.r), // Standardized radius
                           ),
                           child: FittedBox(
                              fit: BoxFit.scaleDown,
@@ -250,8 +250,8 @@ class ProductItemWidget extends StatelessWidget {
                       onTap: onFavorite,
                       child: Image.asset(
                         item.isFavourite == "Yes" ? "assets/images/favadded.png" : "assets/images/fav_new.png",
-                        width: 40.h, // Matched height
-                        height: 40.h,
+                        width: 35.h, // Matched height
+                        height: 35.h,
                       ),
                     )
                   ],

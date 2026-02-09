@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
-import '../../../config/theme/app_theme.dart';
+import '../../../core/constants/app_theme.dart';
 import '../../providers/dashboard_provider.dart';
 import '../dashboard/dashboard_screen.dart';
 
@@ -137,13 +137,9 @@ class _SendFeedbackScreenState extends State<SendFeedbackScreen> {
                 height: 45.h,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.secondaryColor, // Teal/Orange? Check theme. usually secondary.
-                     // Android uses a specific blue button or secondary color.
-                     // Let's use primary matching typical submit buttons.
-                     // Wait, Android activity XML usually has button color.
-                     // Re-checking... layout not shown but usually Primary or Secondary. 
-                     // I'll use Primary for now.
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.r)),
+                    backgroundColor: AppTheme.tealColor,
+                    minimumSize: Size(double.infinity, 45.h),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r)),
                   ),
                   onPressed: _isLoading ? null : _submit,
                   child: _isLoading 
@@ -180,15 +176,15 @@ class _SendFeedbackScreenState extends State<SendFeedbackScreen> {
              labelText: label,
              alignLabelWithHint: true,
              border: OutlineInputBorder(
-               borderRadius: BorderRadius.circular(5.r),
+               borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
                borderSide: BorderSide(color: Colors.grey[400]!),
              ),
              enabledBorder: OutlineInputBorder(
-               borderRadius: BorderRadius.circular(5.r),
+               borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
                borderSide: BorderSide(color: Colors.grey[400]!),
              ),
              focusedBorder: OutlineInputBorder(
-               borderRadius: BorderRadius.circular(5.r),
+               borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
                borderSide: BorderSide(color: AppTheme.primaryColor),
              ),
              filled: true,

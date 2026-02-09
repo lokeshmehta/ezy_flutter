@@ -137,7 +137,9 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
         actions: [
           IconButton(
             icon: Icon(Icons.notifications_none_rounded, size: 24.sp, weight: 300 , color: AppTheme.primaryColor,), // Thinner notification icon
-            onPressed: () {},
+            onPressed: () {
+              context.push(AppRoutes.notifications);
+            },
           ),
         ],
       ),

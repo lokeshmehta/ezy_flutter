@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../providers/address_provider.dart';
+import '../../../core/constants/app_theme.dart';
 import '../../../data/models/profile_models.dart';
 
 class AddAddressScreen extends StatefulWidget {
@@ -119,7 +120,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.addressToEdit != null ? "Edit Address" : "Add Address", style: const TextStyle(color: Colors.white)),
-        backgroundColor: const Color(0xFF008080),
+        backgroundColor: AppTheme.primaryColor,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Consumer<AddressProvider>(
@@ -155,7 +156,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                                                   _isDefault = val ?? false;
                                               });
                                           },
-                                          activeColor: const Color(0xFF008080),
+                                          activeColor: AppTheme.primaryColor,
                                           controlAffinity: ListTileControlAffinity.leading,
                                           contentPadding: EdgeInsets.zero,
                                       ),
@@ -166,8 +167,9 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                                           child: ElevatedButton(
                                               onPressed: provider.isLoading ? null : _onSubmit,
                                               style: ElevatedButton.styleFrom(
-                                                  backgroundColor: const Color(0xFF008080),
-                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r))
+                                                  backgroundColor: AppTheme.tealColor,
+                                                  minimumSize: Size(double.infinity, 45.h),
+                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r))
                                               ),
                                               child: Text(
                                                   widget.addressToEdit != null ? "Update Address" : "Add Address", 
@@ -200,7 +202,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
               validator: validator,
               decoration: InputDecoration(
                   labelText: label,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.r)),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppTheme.inputRadius.r)),
                   contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
               ),
           ),

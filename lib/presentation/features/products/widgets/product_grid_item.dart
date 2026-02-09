@@ -158,7 +158,7 @@ class _ProductGridItemState extends State<ProductGridItem> {
                     SizedBox(height: 2.h),
                     Text(
                       widget.item.title ?? "",
-                      style: TextStyle(color: AppTheme.textColor, fontSize: 12.sp, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: AppTheme.blackColor, fontSize: 12.sp, fontWeight: FontWeight.bold),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -231,7 +231,7 @@ class _ProductGridItemState extends State<ProductGridItem> {
                       Container(
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey[300]!),
-                          borderRadius: BorderRadius.circular(4.r),
+                          borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
                         ),
                         margin: EdgeInsets.only(bottom: 5.h), // Spacing below quantity
                         child: Row(
@@ -271,7 +271,7 @@ class _ProductGridItemState extends State<ProductGridItem> {
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                 color: canAddToCart ? AppTheme.tealColor : AppTheme.redColor,
-                                borderRadius: BorderRadius.circular(4.r),
+                                borderRadius: BorderRadius.circular(AppTheme.productButtonRadius.r),
                               ),
                               child: FittedBox( 
                                 fit: BoxFit.scaleDown,

@@ -227,8 +227,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                           },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: AppTheme.tealColor,
+                                      minimumSize: Size(double.infinity, 45.h),
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(5),
+                                        borderRadius: BorderRadius.circular(AppTheme.authButtonRadius),
                                       ),
                                     ),
                                     child: provider.isLoading
