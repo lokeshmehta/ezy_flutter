@@ -1,13 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:go_router/go_router.dart';
-import '../../../../config/routes/app_routes.dart';
 import '../../../providers/dashboard_provider.dart';
 import 'flash_deal_item_widget.dart';
 import 'section_header_widget.dart';
-import 'wishlist_category_dialog.dart';
 import 'product_details_bottom_sheet.dart';
+import '../../products/product_details_screen.dart';
 
 class FlashDealsSection extends StatefulWidget {
   const FlashDealsSection({super.key});
@@ -18,6 +17,7 @@ class FlashDealsSection extends StatefulWidget {
 
 class _FlashDealsSectionState extends State<FlashDealsSection> {
   final ScrollController _scrollController = ScrollController();
+  Timer? _autoScrollTimer;
   bool _canScrollLeft = false;
   bool _canScrollRight = true;
 
@@ -25,7 +25,33 @@ class _FlashDealsSectionState extends State<FlashDealsSection> {
   void initState() {
     super.initState();
     _scrollController.addListener(_updateScrollState);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _updateScrollState());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateScrollState();
+      _startAutoScroll();
+    });
+  }
+
+  void _startAutoScroll() {
+    _autoScrollTimer?.cancel();
+    _autoScrollTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      if (!_scrollController.hasClients) return;
+      
+      final maxScroll = _scrollController.position.maxScrollExtent;
+      final currentScroll = _scrollController.offset;
+      
+      double target;
+      if (currentScroll >= maxScroll - 5) {
+        target = 0.0;
+      } else {
+        target = currentScroll + 250; // auto-scroll amount
+      }
+
+      _scrollController.animateTo(
+        target.clamp(0.0, maxScroll),
+        duration: const Duration(milliseconds: 600),
+        curve: Curves.easeInOut,
+      );
+    });
   }
 
   void _updateScrollState() {
@@ -34,8 +60,8 @@ class _FlashDealsSectionState extends State<FlashDealsSection> {
     final currentScroll = _scrollController.offset;
     
     setState(() {
-      _canScrollLeft = currentScroll > 0;
-      _canScrollRight = currentScroll < maxScroll;
+      _canScrollLeft = currentScroll > 5;
+      _canScrollRight = currentScroll < maxScroll - 5;
     });
   }
 
@@ -55,7 +81,8 @@ class _FlashDealsSectionState extends State<FlashDealsSection> {
 
   @override
   void dispose() {
-     _scrollController.removeListener(_updateScrollState);
+    _autoScrollTimer?.cancel();
+    _scrollController.removeListener(_updateScrollState);
     _scrollController.dispose();
     super.dispose();
   }
@@ -70,7 +97,7 @@ class _FlashDealsSectionState extends State<FlashDealsSection> {
         }
 
         final products = response.results!;
-        final double width = MediaQuery.of(context).size.width;
+        final double itemWidth = 1.sw - 40.w; // Large card width
 
         return Column(
           children: [
@@ -80,7 +107,7 @@ class _FlashDealsSectionState extends State<FlashDealsSection> {
               onNextTap: _canScrollRight ? () => _scroll(true) : null,
             ),
             SizedBox(
-              height: 280.h, // Dynamic height
+              height: 280.h, // Restored to 280.h to avoid overflow
               child: ListView.builder(
                 controller: _scrollController,
                 padding: EdgeInsets.symmetric(horizontal: 10.w),
@@ -92,19 +119,14 @@ class _FlashDealsSectionState extends State<FlashDealsSection> {
 
                    return FlashDealItemWidget(
                      item: item,
-                     width: width - 40,
+                     width: itemWidth,
                      onTap: () {
-                        context.push(AppRoutes.productDetails, extra: item.productId);
-                     },
-                     onFavorite: () {
-                       final provider = context.read<DashboardProvider>();
-                       if (item.productId != null) {
-                           provider.fetchWishlistCategories(item.productId!);
-                           showDialog(
-                             context: context,
-                             builder: (context) => WishlistCategoryDialog(product: item),
-                           );
-                       }
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProductDetailsScreen(productId: item.productId!),
+                          ),
+                        );
                      },
                      onAddToCart: () {
                        showModalBottomSheet(
@@ -113,6 +135,9 @@ class _FlashDealsSectionState extends State<FlashDealsSection> {
                          backgroundColor: Colors.transparent,
                          builder: (context) => ProductDetailsBottomSheet(product: item),
                        );
+                     },
+                     onFavorite: () {
+                        // Handle favorite
                      },
                    );
                 },

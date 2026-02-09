@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ezy_orders_flutter/presentation/features/dashboard/widgets/section_header_widget.dart';
 import 'package:ezy_orders_flutter/presentation/features/dashboard/widgets/supplier_item_widget.dart';
 import 'package:ezy_orders_flutter/presentation/providers/dashboard_provider.dart';
@@ -14,6 +16,7 @@ class SuppliersSection extends StatefulWidget {
 
 class _SuppliersSectionState extends State<SuppliersSection> {
   final ScrollController _scrollController = ScrollController();
+  Timer? _autoScrollTimer;
   bool _canScrollLeft = false;
   bool _canScrollRight = true;
 
@@ -21,7 +24,33 @@ class _SuppliersSectionState extends State<SuppliersSection> {
   void initState() {
     super.initState();
     _scrollController.addListener(_updateScrollState);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _updateScrollState());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateScrollState();
+      _startAutoScroll();
+    });
+  }
+
+  void _startAutoScroll() {
+    _autoScrollTimer?.cancel();
+    _autoScrollTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      if (!_scrollController.hasClients) return;
+      
+      final maxScroll = _scrollController.position.maxScrollExtent;
+      final currentScroll = _scrollController.offset;
+      
+      double target;
+      if (currentScroll >= maxScroll - 5) {
+        target = 0.0;
+      } else {
+        target = currentScroll + 200; // auto-scroll amount
+      }
+
+      _scrollController.animateTo(
+        target.clamp(0.0, maxScroll),
+        duration: const Duration(milliseconds: 600),
+        curve: Curves.easeInOut,
+      );
+    });
   }
 
   void _updateScrollState() {
@@ -30,8 +59,8 @@ class _SuppliersSectionState extends State<SuppliersSection> {
     final currentScroll = _scrollController.offset;
     
     setState(() {
-      _canScrollLeft = currentScroll > 0;
-      _canScrollRight = currentScroll < maxScroll;
+      _canScrollLeft = currentScroll > 5;
+      _canScrollRight = currentScroll < maxScroll - 5;
     });
   }
 
@@ -51,6 +80,7 @@ class _SuppliersSectionState extends State<SuppliersSection> {
 
   @override
   void dispose() {
+    _autoScrollTimer?.cancel();
     _scrollController.removeListener(_updateScrollState);
     _scrollController.dispose();
     super.dispose();
@@ -75,7 +105,7 @@ class _SuppliersSectionState extends State<SuppliersSection> {
               onNextTap: _canScrollRight ? () => _scroll(true) : null,
             ),
             SizedBox(
-              height: 140.h, 
+              height: 160.h, 
               child: ListView.builder(
                 controller: _scrollController,
                 padding: EdgeInsets.symmetric(horizontal: 10.w),

@@ -43,7 +43,7 @@ class SectionHeaderWidget extends StatelessWidget {
                   onTap: onPrevTap,
                   isActive: onPrevTap != null,
                 ),
-                SizedBox(width: 10.w),
+                SizedBox(width: 12.w),
                 _buildNavButton(
                   icon: Icons.arrow_forward_ios,
                   onTap: onNextTap,

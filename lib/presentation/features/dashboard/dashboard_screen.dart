@@ -1,3 +1,4 @@
+import 'widgets/section_header_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/dashboard_provider.dart';
@@ -38,8 +39,11 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late PageController _bannerController;
+  late PageController _footerPageController;
   Timer? _bannerTimer;
+  Timer? _footerBannerTimer;
   int _currentBannerIndex = 0;
+  int _currentFooterIndex = 0;
   late AnimationController _marqueeController;
   late Animation<double> _marqueeAnimation;
 
@@ -58,9 +62,11 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
       curve: Curves.linear,
     ));
     _bannerController = PageController();
+    _footerPageController = PageController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<DashboardProvider>().init();
       _startBannerTimer();
+      _startFooterBannerTimer();
     });
   }
 
@@ -82,10 +88,32 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
     });
   }
 
+  void _startFooterBannerTimer() {
+    _footerBannerTimer?.cancel();
+    _footerBannerTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      final provider = context.read<DashboardProvider>();
+      if (provider.footerBannersResponse?.results != null && provider.footerBannersResponse!.results!.isNotEmpty) {
+        int nextIndex = _currentFooterIndex + 1;
+        if (nextIndex >= provider.footerBannersResponse!.results!.length) {
+          nextIndex = 0;
+        }
+        if (_footerPageController.hasClients) {
+          _footerPageController.animateToPage(
+            nextIndex,
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+          );
+        }
+      }
+    });
+  }
+
   @override
   void dispose() {
     _bannerTimer?.cancel();
+    _footerBannerTimer?.cancel();
     _bannerController.dispose();
+    _footerPageController.dispose();
     _marqueeController.dispose();
 
     super.dispose();
@@ -168,8 +196,6 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
                   SizedBox(height: 15.h),
                    const HomeBlocksSection(),
                    _buildProductSections(provider),
-                   _buildFooterBanners(provider),
-                   const RecentlyAddedSection(), // Added Recently Added after footer banners
                    _buildBottomSuppliers(provider),
                    SizedBox(height: 100.h), // Bottom padding
                 ],
@@ -527,57 +553,88 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
        children: [
           PromotionsSection(),
           PopularCategoriesSection(),
-          BestSellersSection(),
-          FlashDealsSection(),
           HotSellingSection(),
           NewArrivalsSection(),
           PopularAdsSection(),
+          _buildFooterBanners(provider),
           RecentlyAddedSection(),
+          BestSellersSection(), // Based on Kotlin layout order check
+          FlashDealsSection(),
        ],
      );
   }
 
   Widget _buildFooterBanners(DashboardProvider provider) {
-      if (provider.footerBannersResponse?.results == null ||
-          provider.footerBannersResponse!.results!.isEmpty) {
+      final results = provider.footerBannersResponse?.results;
+      if (results == null || results.isEmpty) {
         return const SizedBox.shrink();
       }
 
-      return Container(
-        height: 150.h, // @dimen/dimen_150
-        margin: EdgeInsets.symmetric(vertical: 10.h , ),
-        child: PageView.builder(
-           itemCount: provider.footerBannersResponse!.results!.length,
-           itemBuilder: (context, index) {
-             final banner = provider.footerBannersResponse!.results![index];
-             if (banner?.image == null) return const SizedBox.shrink();
+      return Column(
+        children: [
+          SectionHeaderWidget(
+            title: "", // No title for footer banners usually, but has arrows
+            onPrevTap: () {
+              int prevIndex = _currentFooterIndex - 1;
+              if (prevIndex < 0) prevIndex = results.length - 1;
+              _footerPageController.animateToPage(
+                prevIndex,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+              );
+            },
+            onNextTap: () {
+              int nextIndex = _currentFooterIndex + 1;
+              if (nextIndex >= results.length) nextIndex = 0;
+              _footerPageController.animateToPage(
+                nextIndex,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+              );
+            },
+          ),
+          Container(
+            height: 150.h,
+            margin: EdgeInsets.symmetric(vertical: 10.h),
+            child: PageView.builder(
+              controller: _footerPageController,
+              onPageChanged: (index) {
+                setState(() {
+                  _currentFooterIndex = index;
+                });
+              },
+              itemCount: results.length,
+              itemBuilder: (context, index) {
+                final banner = results[index];
+                if (banner?.image == null) return const SizedBox.shrink();
 
-             return Padding(
-               padding: const EdgeInsets.symmetric(horizontal: 5.0),
-               child: InkWell(
-                 onTap: () {
-                    final b = banner;
-                    
-                    final productProvider = context.read<ProductListProvider>();
-                    productProvider.clearFilters();
-                    
-                    if (b.groupId != null && b.groupId != "0") {
-                      productProvider.setGroup(b.groupId.toString());
-                    }
-                    if (b.products != null && b.products!.isNotEmpty) {
-                      productProvider.setSelectedProducts(b.products!);
-                    }
-                    if (b.divisionId != null && b.divisionId != "0") {
-                      productProvider.setCategory(b.divisionId.toString());
-                    }
-                    
-                    context.read<DashboardProvider>().setIndex(1);
-                 },
-                 child: _buildNetworkImage(banner!.image, fit: BoxFit.contain),
-               ),
-             );
-           },
-        ),
+                return Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10.w),
+                  child: InkWell(
+                    onTap: () {
+                      final b = banner;
+                      final productProvider = context.read<ProductListProvider>();
+                      productProvider.clearFilters();
+                      
+                      if (b.groupId != null && b.groupId != "0") {
+                        productProvider.setGroup(b.groupId.toString());
+                      }
+                      if (b.products != null && b.products!.isNotEmpty) {
+                        productProvider.setSelectedProducts(b.products!);
+                      }
+                      if (b.divisionId != null && b.divisionId != "0") {
+                        productProvider.setCategory(b.divisionId.toString());
+                      }
+                      
+                      context.read<DashboardProvider>().setIndex(1);
+                    },
+                    child: _buildNetworkImage(banner!.image, fit: BoxFit.contain),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       );
   }
 }
