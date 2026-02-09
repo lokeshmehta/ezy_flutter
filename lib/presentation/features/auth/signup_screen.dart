@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/signup_provider.dart';
 import '../../../core/constants/app_theme.dart';
+import '../../../config/routes/app_routes.dart';
 
 
 class SignUpScreen extends StatelessWidget {
@@ -198,14 +199,14 @@ class SignUpScreen extends StatelessWidget {
                                               child: GestureDetector(
                                                 onTap: () {
                                                     if (context.mounted) {
-                                                      context.go('/login');
+                                                      context.go(AppRoutes.login);
                                                     }
                                                 },
                                                 child: RichText(
                                                   text: TextSpan(
                                                     text: "Already have an account? ",
                                                     style: TextStyle(
-                                                      color: Colors.black, // Match screenshot text color
+                                                      color: AppTheme.blackColor, // Match screenshot text color
                                                       fontSize: 14,
                                                       fontWeight: FontWeight.bold,
                                                       fontFamily: 'Roboto', 

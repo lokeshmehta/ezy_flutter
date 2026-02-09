@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/di/service_locator.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../core/constants/storage_keys.dart';
+import '../../config/routes/app_routes.dart';
 
 class SignUpProvider extends ChangeNotifier {
   final AuthRepository _repository = getIt<AuthRepository>();
@@ -169,7 +170,7 @@ class SignUpProvider extends ChangeNotifier {
           TextButton(
             onPressed: () {
               Navigator.pop(ctx);
-              context.go('/login');
+              context.go(AppRoutes.login);
             },
             child: const Text("OK"),
           )

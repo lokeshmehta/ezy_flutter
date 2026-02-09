@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_theme.dart';
+import '../../../config/routes/app_routes.dart';
 
 import '../../providers/cart_provider.dart';
 import 'widgets/cart_item_widget.dart';
@@ -26,7 +27,7 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50], // Light background
+      backgroundColor: AppTheme.lightGrayBg, // Light background
       appBar: AppBar(
         title: const Text("My Cart"),
         centerTitle: true,
@@ -52,9 +53,9 @@ class _CartScreenState extends State<CartScreen> {
                child: Column(
                  mainAxisAlignment: MainAxisAlignment.center,
                  children: [
-                   Icon(Icons.shopping_cart_outlined, size: 60.sp, color: Colors.grey),
+                   Icon(Icons.shopping_cart_outlined, size: 60.sp, color: AppTheme.hintColor),
                    SizedBox(height: 10.h),
-                   Text("Your cart is empty", style: TextStyle(fontSize: 18.sp, color: Colors.grey)),
+                   Text("Your cart is empty", style: TextStyle(fontSize: 18.sp, color: AppTheme.hintColor)),
                    SizedBox(height: 20.h),
                    ElevatedButton(
                      onPressed: ()=> context.pop(), 
@@ -85,17 +86,17 @@ class _CartScreenState extends State<CartScreen> {
                       
                       // Price Breakdown Section (Mirroring ShoppingCartFragment layout)
                       Container(
-                        color: Colors.white,
+                        color: AppTheme.white,
                         padding: EdgeInsets.all(15.w),
                         child: Column(
                           children: [
                             _buildPriceRow("Sub Total", provider.subTotal),
                             
                             if (double.parse(provider.discount) > 0)
-                              _buildPriceRow("Discount", "- ${provider.discount}", color: Colors.green),
+                              _buildPriceRow("Discount", "- ${provider.discount}", color: AppTheme.successGreen),
                             
                             if (double.parse(provider.couponDiscount) > 0)
-                                _buildPriceRow("Coupon (${provider.couponName})", "- ${provider.couponDiscount}", color: Colors.green),
+                                _buildPriceRow("Coupon (${provider.couponName})", "- ${provider.couponDiscount}", color: AppTheme.successGreen),
 
                             if (double.parse(provider.deliveryCharge) > 0 || double.parse(provider.locationDeliveryCharge) > 0)
                                _buildPriceRow("Shipping", (double.parse(provider.deliveryCharge) + double.parse(provider.locationDeliveryCharge)).toStringAsFixed(2)),
@@ -126,9 +127,9 @@ class _CartScreenState extends State<CartScreen> {
               Container(
                 padding: EdgeInsets.all(15.w),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppTheme.white,
                   boxShadow: [
-                    BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, -2)),
+                    BoxShadow(color: AppTheme.shadowBlack, blurRadius: 4, offset: Offset(0, -2)),
                   ],
                 ),
                 child: SafeArea(
@@ -141,11 +142,11 @@ class _CartScreenState extends State<CartScreen> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
                       ),
                        onPressed: () {
-                          context.push('/checkout');
+                          context.push(AppRoutes.checkout);
                        },
                       child: Text(
                         "PROCEED TO CHECKOUT",
-                        style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold, color: Colors.white),
+                        style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold, color: AppTheme.white),
                       ),
                     ),
                   ),
@@ -164,8 +165,8 @@ class _CartScreenState extends State<CartScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontSize: size ?? 14.sp, fontWeight: isBold ? FontWeight.bold : FontWeight.normal, color: Colors.grey[800])),
-          Text("\$$value", style: TextStyle(fontSize: size ?? 14.sp, fontWeight: isBold ? FontWeight.bold : FontWeight.normal, color: color ?? Colors.black)),
+          Text(label, style: TextStyle(fontSize: size ?? 14.sp, fontWeight: isBold ? FontWeight.bold : FontWeight.normal, color: AppTheme.darkGrayColor)),
+          Text("\$$value", style: TextStyle(fontSize: size ?? 14.sp, fontWeight: isBold ? FontWeight.bold : FontWeight.normal, color: color ?? AppTheme.textColor)),
         ],
       ),
     );

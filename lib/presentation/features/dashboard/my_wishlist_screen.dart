@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_theme.dart';
+import '../../../config/routes/app_routes.dart';
 
 class MyWishlistScreen extends StatefulWidget {
   const MyWishlistScreen({super.key});
@@ -26,7 +27,7 @@ class _MyWishlistScreenState extends State<MyWishlistScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.white,
       appBar: AppBar(
         title: Text(
           "My Favourites", // Parity: Title Match
@@ -36,7 +37,7 @@ class _MyWishlistScreenState extends State<MyWishlistScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: AppTheme.white,
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: AppTheme.primaryColor),
@@ -94,17 +95,11 @@ class _MyWishlistScreenState extends State<MyWishlistScreen> {
                            margin: EdgeInsets.only(right: 10.w),
                            padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 8.h),
                            decoration: BoxDecoration(
-                             color: isSelected ? Colors.white : Colors.white, // In screenshot, selected looks like Outline button style logic in Adapter code?
-                             // Adapter code: `binding.selectedFavLay.background=activity.resources.getDrawable(R.drawable.buttonbackground)` if selected (Blue?)
-                             // Else `edittext_bg` (likely white with border).
-                             // The screenshot shows text styles. Let's follow basic logic: Selected = Highlighted.
-                             // Actually, let's stick to standard behavior:
-                             // Selected: Primary Color BG, White Text
-                             // Unselected: White BG, Primary Color Text, Border
-
+                             color: isSelected ? AppTheme.white : AppTheme.white, 
+                             
                              borderRadius: BorderRadius.circular(4.r),
                              border: Border.all(
-                               color: isSelected ? AppTheme.primaryColor : Colors.grey.shade300,
+                               color: isSelected ? AppTheme.primaryColor : AppTheme.hintColor,
                                width: isSelected ? 2 : 1,
                              ),
                            ),
@@ -112,7 +107,7 @@ class _MyWishlistScreenState extends State<MyWishlistScreen> {
                            child: Text(
                              catName,
                              style: TextStyle(
-                               color: isSelected ? AppTheme.primaryColor : Colors.black, // Matching Screenshot logic likely
+                               color: isSelected ? AppTheme.primaryColor : AppTheme.blackColor, 
                                fontSize: 12.sp,
                                fontWeight: FontWeight.bold,
                              ),
@@ -129,7 +124,7 @@ class _MyWishlistScreenState extends State<MyWishlistScreen> {
                     ? Center(
                         child: Text(
                           "No items in this category",
-                          style: TextStyle(fontSize: 14.sp, color: Colors.grey),
+                          style: TextStyle(fontSize: 14.sp, color: AppTheme.darkGrayColor),
                         ),
                       )
                     : ListView.builder(
@@ -177,7 +172,7 @@ class _MyWishlistScreenState extends State<MyWishlistScreen> {
                                     actions: [
                                       TextButton(
                                         onPressed: () => Navigator.pop(ctx),
-                                        child: const Text("Cancel", style: TextStyle(color: Colors.grey)),
+                                        child: const Text("Cancel", style: TextStyle(color: AppTheme.darkGrayColor)),
                                       ),
                                       TextButton(
                                         onPressed: () {
@@ -205,7 +200,7 @@ class _MyWishlistScreenState extends State<MyWishlistScreen> {
                             },
                             
                             onTap: () {
-                               context.push('/product-details', extra: item);
+                               context.push(AppRoutes.productDetails, extra: item);
                             },
                           );
                         },

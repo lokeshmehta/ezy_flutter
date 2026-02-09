@@ -1,11 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ezy_orders_flutter/core/constants/app_theme.dart';
 import 'package:ezy_orders_flutter/core/constants/url_api_key.dart';
-import 'package:ezy_orders_flutter/presentation/features/products/products_list_screen.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/product_list_provider.dart';
+import '../../../providers/dashboard_provider.dart';
 
 class SupplierItemWidget extends StatelessWidget {
   final String? image;
@@ -34,21 +35,16 @@ class SupplierItemWidget extends StatelessWidget {
           productProvider.clearFilters();
           productProvider.setSupplier(brandId!);
           
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-               builder: (context) => const ProductsListScreen(),
-            ),
-          );
+          context.read<DashboardProvider>().setIndex(1);
         }
       },
-      child: Container(
+        child: Container(
         width: itemWidth,
         margin: EdgeInsets.only(right: 10.w ,
           bottom: 6.h,
         ),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppTheme.white,
           borderRadius: BorderRadius.circular(2.r),
           boxShadow: [
             BoxShadow(
@@ -65,7 +61,7 @@ class SupplierItemWidget extends StatelessWidget {
             Container(
               height: 90.h,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppTheme.white,
                 border: Border.all(
                   color: AppTheme.darkGrayColor,
                   width: 1.5,
@@ -83,7 +79,7 @@ class SupplierItemWidget extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  color: Colors.black,
+                  color: AppTheme.textColor,
                   fontWeight: FontWeight.bold,
                   fontSize: 11.sp,
                 ),
@@ -99,7 +95,7 @@ class SupplierItemWidget extends StatelessWidget {
 
   Widget _buildImage(String? path) {
     if (path == null || path.isEmpty) {
-      return Container(color: Colors.grey[200], height: 120.h);
+      return Container(color: AppTheme.lightGrayBg, height: 120.h);
     }
     String finalUrl = path;
     if (!path.startsWith("http")) {

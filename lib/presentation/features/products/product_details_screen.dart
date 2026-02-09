@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/constants/app_theme.dart';
+import '../../../config/routes/app_routes.dart';
 import '../../../core/constants/url_api_key.dart';
 import '../../../core/network/image_cache_manager.dart';
 import '../../providers/product_list_provider.dart';
@@ -70,19 +72,41 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> with Single
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.white,
       appBar: AppBar(
         title: Text(
           "Product Details",
           style: TextStyle(color: AppTheme.primaryColor, fontWeight: FontWeight.bold, fontSize: 18.sp),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: AppTheme.white,
         elevation: 1,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppTheme.primaryColor),
           onPressed: () => Navigator.pop(context),
         ),
+        actions: [
+          Consumer<DashboardProvider>(
+            builder: (context, dashboardProvider, child) {
+              return Padding(
+                padding: EdgeInsets.only(right: 15.w),
+                child: IconButton(
+                  icon: Badge(
+                    label: Text(
+                      dashboardProvider.cartQuantity,
+                      style: TextStyle(fontSize: 10.sp),
+                    ),
+                    isLabelVisible:  dashboardProvider.cartQuantity != "0",
+                    child: Icon(Icons.shopping_cart_outlined, color: AppTheme.primaryColor, size: 28.sp),
+                  ),
+                  onPressed: () {
+                    context.push(AppRoutes.cart);
+                  },
+                ),
+              );
+            },
+          )
+        ],
       ),
       body: Consumer<ProductListProvider>(
         builder: (context, provider, child) {

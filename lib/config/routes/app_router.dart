@@ -19,76 +19,78 @@ import '../../presentation/features/account/add_address_screen.dart';
 import '../../data/models/profile_models.dart';
 import '../../presentation/features/checkout/order_success_screen.dart';
 
+import 'app_routes.dart';
+
 class AppRouter {
   static final router = GoRouter(
-    initialLocation: '/splash',
+    initialLocation: AppRoutes.splash,
     routes: [
       GoRoute(
-        path: '/splash',
+        path: AppRoutes.splash,
         builder: (context, state) => const SplashScreen(),
       ),
       GoRoute(
-        path: '/companies',
+        path: AppRoutes.companies,
         builder: (context, state) => const CompaniesListScreen(),
       ),
       GoRoute(
-        path: '/login',
+        path: AppRoutes.login,
         builder: (context, state) => const LoginScreen(),
       ),
       GoRoute(
-        path: '/forgot_password',
+        path: AppRoutes.forgotPassword,
         builder: (context, state) => const ForgotPasswordScreen(),
       ),
       GoRoute(
-        path: '/signup',
+        path: AppRoutes.signup,
         builder: (context, state) => const SignUpScreen(),
       ),
       GoRoute(
-        path: '/dashboard',
+        path: AppRoutes.dashboard,
         builder: (context, state) => const MainScreen(),
       ),
       GoRoute(
-        path: '/my-wishlist',
+        path: AppRoutes.myWishlist,
         builder: (context, state) => const MyWishlistScreen(),
       ),
 
       GoRoute(
-        path: '/cart',
+        path: AppRoutes.cart,
         builder: (context, state) => const CartScreen(),
       ),
       GoRoute(
-        path: '/checkout',
+        path: AppRoutes.checkout,
         builder: (context, state) => const CheckoutScreen(),
       ),
       GoRoute(
-        path: '/my-orders',
+        path: AppRoutes.myOrders,
         builder: (context, state) => const MyOrdersScreen(),
       ),
       GoRoute(
-        path: '/my-profile',
+        path: AppRoutes.myProfile,
         builder: (context, state) => const MyProfileScreen(),
       ),
       GoRoute(
-        path: '/change-password',
+        path: AppRoutes.changePassword,
         builder: (context, state) => const ChangePasswordScreen(),
       ),
       GoRoute(
-        path: '/my-account',
+        path: AppRoutes.myAccount,
         builder: (context, state) => const MyAccountScreen(),
       ),
       GoRoute(
-        path: '/my-addresses',
+        path: AppRoutes.myAddresses,
         builder: (context, state) => const MyAddressesScreen(),
       ),
       GoRoute(
-        path: '/add-address',
+        path: AppRoutes.addAddress,
         builder: (context, state) {
             final address = state.extra as AddressItem?;
             return AddAddressScreen(addressToEdit: address);
         },
       ),
       GoRoute(
-        path: '/order-success',
+        path: AppRoutes.orderSuccess,
         builder: (context, state) {
             final orderData = state.extra as Map<String, dynamic>;
             return OrderSuccessScreen(orderData: orderData);

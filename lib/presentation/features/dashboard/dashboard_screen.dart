@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/dashboard_provider.dart';
-import '../../../config/theme/app_theme.dart';
+import '../../../core/constants/app_theme.dart';
+import '../../../config/routes/app_routes.dart';
 import '../../../core/constants/assets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -193,7 +194,7 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
                 return InkWell(
                   onTap: () {
                     Navigator.pop(context); // Close drawer
-                    context.push('/my-profile');
+                    context.push(AppRoutes.myProfile);
                   },
                   child: Container(
                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -247,11 +248,11 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
                     _buildDrawerItem(AppAssets.scanIcon, "Scan to Order", () {}),
                     _buildDrawerItem(AppAssets.favIcon, "My Wishlist", () {
                       context.pop(); // Close drawer
-                      context.push('/my-wishlist');
+                      context.push(AppRoutes.myWishlist);
                     }),
                     _buildDrawerItem(AppAssets.myOrdersIcon, "My Orders", () {
                       context.pop();
-                      context.push('/my-orders');
+                      context.push(AppRoutes.myOrders);
                     }),
                     _buildDrawerItem(AppAssets.orderNowIcon, "Order Now", () {
                       context.pop();
@@ -298,7 +299,7 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
                         onYes: () async {
                            await context.read<DashboardProvider>().logout();
                            if (context.mounted) {
-                             context.go('/login');
+                             context.go(AppRoutes.login);
                            }
                         },
                       ),
@@ -444,7 +445,7 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
                                    overflow: TextOverflow.ellipsis,
                                  ),
                                  SizedBox(height: 8.h),
-                                 InkWell(
+                                   InkWell(
                                    onTap: () {
                                      final productProvider = context.read<ProductListProvider>();
                                      productProvider.clearFilters();
@@ -464,13 +465,13 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
                                    child: Container(
                                      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 6.h),
                                      decoration: BoxDecoration(
-                                       color: const Color(0xFFFCBD5F), // Orange color
+                                       color: AppTheme.orangeColor, // Orange color
                                        borderRadius: BorderRadius.circular(20.r),
                                      ),
                                      child: Text(
                                        "Shop Now",
                                        style: TextStyle(
-                                         color: Colors.white,
+                                         color: AppTheme.white,
                                          fontSize: 10.sp,
                                          fontWeight: FontWeight.bold
                                        ),
@@ -496,8 +497,8 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
              size: Size.square(6.0.w), // Smaller dots
              activeSize: Size(12.0.w, 6.0.w), // Ellipse for active
              activeShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3.0.r)),
-             activeColor: const Color(0xFF1B4E9B), // Dark blue from Image 2
-             color: Colors.grey.withValues(alpha: 0.3),
+             activeColor: AppTheme.darkBlue, // Dark blue from Image 2
+             color: AppTheme.hintColor.withValues(alpha: 0.3),
            ),
          ),
          SizedBox(height: 10.h),

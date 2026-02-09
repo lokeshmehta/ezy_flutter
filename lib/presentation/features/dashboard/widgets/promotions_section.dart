@@ -6,7 +6,7 @@ import 'home_promotion_item_widget.dart';
 import 'section_header_widget.dart';
 import 'package:intl/intl.dart'; 
 import '../../../providers/product_list_provider.dart';
-import '../../products/products_list_screen.dart';
+
 
 class PromotionsSection extends StatefulWidget {
   const PromotionsSection({super.key});
@@ -99,10 +99,7 @@ class _PromotionsSectionState extends State<PromotionsSection> {
                           productProvider.setGroup(item.groupId!);
                         }
 
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const ProductsListScreen()),
-                        );
+                        context.read<DashboardProvider>().setIndex(1);
                      },
                    );
                 },

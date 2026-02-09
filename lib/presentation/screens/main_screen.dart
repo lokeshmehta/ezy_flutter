@@ -6,6 +6,7 @@ import '../features/products/products_list_screen.dart';
 import '../features/cart/cart_screen.dart';
 import '../features/account/my_account_screen.dart';
 import '../providers/dashboard_provider.dart';
+import '../../core/constants/app_theme.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -34,8 +35,8 @@ class _MainScreenState extends State<MainScreen> {
           ),
           bottomNavigationBar: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
-            selectedItemColor: const Color(0xFF1B4E9B), // Dark blue
-            unselectedItemColor: Colors.grey,
+            selectedItemColor: AppTheme.darkBlue, // Dark blue
+            unselectedItemColor: AppTheme.hintColor,
             currentIndex: dashboardProvider.currentIndex,
             selectedLabelStyle: TextStyle(fontSize: 10.sp),
             unselectedLabelStyle: TextStyle(fontSize: 10.sp),

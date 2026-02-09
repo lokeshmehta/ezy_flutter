@@ -3,6 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../providers/checkout_provider.dart';
+import '../../providers/dashboard_provider.dart';
+import '../../../core/constants/app_theme.dart';
+import '../../../config/routes/app_routes.dart';
 
 class OrderSuccessScreen extends StatefulWidget {
   final Map<String, dynamic> orderData;
@@ -84,10 +87,10 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen> {
     // Assuming successful order placement gets us here.
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.white,
       appBar: AppBar(
-        title: const Text("Congratulations", style: TextStyle(color: Colors.white)),
-        backgroundColor: const Color(0xFF008080),
+        title: const Text("Congratulations", style: TextStyle(color: AppTheme.white)),
+        backgroundColor: AppTheme.orderSuccessTeal,
         automaticallyImplyLeading: false,
       ),
       body: Center(
@@ -96,16 +99,16 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-               Icon(Icons.check_circle, color: Colors.green, size: 80.sp),
+               Icon(Icons.check_circle, color: AppTheme.successGreen, size: 80.sp),
                SizedBox(height: 20.h),
                Text(
                    "Thank You!", 
-                   style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold, color: const Color(0xFF008080))
+                   style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold, color: AppTheme.orderSuccessTeal)
                ),
                SizedBox(height: 10.h),
                Text(
                    "Your Order Placed Successfully",
-                   style: TextStyle(fontSize: 18.sp, color: Colors.black87),
+                   style: TextStyle(fontSize: 18.sp, color: AppTheme.textColor),
                    textAlign: TextAlign.center,
                ),
                SizedBox(height: 20.h),
@@ -117,7 +120,7 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen> {
                    SizedBox(height: 8.h),
                    Text(
                        "Transaction ID : $transId",
-                       style: TextStyle(fontSize: 14.sp, color: Colors.grey[700]),
+                       style: TextStyle(fontSize: 14.sp, color: AppTheme.darkGrayColor),
                    ),
                ],
                SizedBox(height: 40.h),
@@ -128,13 +131,14 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen> {
                    height: 45.h,
                    child: ElevatedButton(
                        onPressed: () {
-                           context.go('/dashboard'); // Go Home
+                           context.read<DashboardProvider>().setIndex(1);
+                           context.go(AppRoutes.dashboard); 
                        },
                        style: ElevatedButton.styleFrom(
-                           backgroundColor: const Color(0xFF008080),
+                           backgroundColor: AppTheme.orderSuccessTeal,
                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r))
                        ),
-                       child: const Text("Continue Shopping", style: TextStyle(color: Colors.white)),
+                       child: const Text("Continue Shopping", style: TextStyle(color: AppTheme.white)),
                    ),
                ),
                SizedBox(height: 16.h),
@@ -143,10 +147,10 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen> {
                    height: 45.h,
                    child: OutlinedButton.icon(
                        onPressed: _showSendReceiptDialog,
-                       icon: const Icon(Icons.email_outlined, color: Color(0xFF008080)),
-                       label: const Text("Send Receipt", style: TextStyle(color: Color(0xFF008080))),
+                       icon: const Icon(Icons.email_outlined, color: AppTheme.orderSuccessTeal),
+                       label: const Text("Send Receipt", style: TextStyle(color: AppTheme.orderSuccessTeal)),
                        style: OutlinedButton.styleFrom(
-                           side: const BorderSide(color: Color(0xFF008080)),
+                           side: const BorderSide(color: AppTheme.orderSuccessTeal),
                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r))
                        ),
                    ),

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../providers/forgot_password_provider.dart';
 import '../../../core/constants/app_theme.dart';
 import '../../../core/constants/assets.dart';
+import '../../../config/routes/app_routes.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
   const ForgotPasswordScreen({super.key});
@@ -23,14 +24,14 @@ class ForgotPasswordScreen extends StatelessWidget {
                    children: [
                      Expanded(
                        child: Container(
-                         color: Colors.white,
+                         color: AppTheme.white,
                          child: Column(
                            children: [
                              // Header Card
                              Card(
                                margin: const EdgeInsets.all(5),
                                elevation: 5,
-                               color: Colors.white,
+                               color: AppTheme.white,
                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
                                child: Container(
                                  height: 55,
@@ -41,10 +42,10 @@ class ForgotPasswordScreen extends StatelessWidget {
                                      GestureDetector(
                                        onTap: () {
                                          if (context.mounted) {
-                                            context.go('/login');
+                                            context.go(AppRoutes.login);
                                          }
                                        },
-                                       child: const Icon(Icons.arrow_back, color: Colors.black, size: 30), // @drawable/ic_leftarrow
+                                       child: const Icon(Icons.arrow_back, color: AppTheme.blackColor, size: 30), 
                                      ),
                                      const Expanded(
                                        child: Text(
@@ -88,35 +89,35 @@ class ForgotPasswordScreen extends StatelessWidget {
                                              const Padding(
                                                padding: EdgeInsets.only(left: 3),
                                                child: Text(
-                                                 "Username *", // @string/userid_
+                                                 "Username *", 
                                                  style: TextStyle(
                                                    color: AppTheme.primaryColor,
                                                    fontSize: 14,
                                                  ),
                                                ),
                                              ),
-                                             const SizedBox(height: 5), // top_10 (padding inside was top_10) margin top 5
+                                             const SizedBox(height: 5), 
 
                                              // Input Field
                                              TextField(
                                                controller: provider.userIdController,
                                                decoration: InputDecoration(
-                                                 hintText: "Enter your Email ID/Mobile Number", // @string/enter_your_user_id
-                                                 hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
+                                                 hintText: "Enter your Email ID/Mobile Number", 
+                                                 hintStyle: const TextStyle(color: AppTheme.hintColor, fontSize: 14),
                                                  filled: true,
-                                                 fillColor: const Color(0xFFFFFFFF),
+                                                 fillColor: AppTheme.white,
                                                  contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
                                                  border: OutlineInputBorder(
                                                    borderRadius: BorderRadius.circular(4),
-                                                   borderSide: const BorderSide(color: Colors.black, width: 1),
+                                                   borderSide: const BorderSide(color: AppTheme.blackColor, width: 1),
                                                  ),
                                                  enabledBorder: OutlineInputBorder(
                                                    borderRadius: BorderRadius.circular(4),
-                                                   borderSide: const BorderSide(color: Colors.black, width: 1),
+                                                   borderSide: const BorderSide(color: AppTheme.blackColor, width: 1),
                                                  ),
                                                  focusedBorder: OutlineInputBorder(
                                                    borderRadius: BorderRadius.circular(4),
-                                                   borderSide: const BorderSide(color: Colors.black, width: 2),
+                                                   borderSide: const BorderSide(color: AppTheme.blackColor, width: 2),
                                                  ),
                                                ),
                                                style: const TextStyle(
@@ -136,14 +137,14 @@ class ForgotPasswordScreen extends StatelessWidget {
                                                  style: ElevatedButton.styleFrom(
                                                    backgroundColor: AppTheme.tealColor,
                                                    shape: RoundedRectangleBorder(
-                                                     borderRadius: BorderRadius.circular(5), // buttonbackground usually rounded rect
+                                                     borderRadius: BorderRadius.circular(5), 
                                                    ),
                                                  ),
                                                  child: provider.isLoading 
-                                                  ? const CircularProgressIndicator(color: Colors.white)
+                                                  ? const CircularProgressIndicator(color: AppTheme.white)
                                                   : const Text(
                                                      "Submit",
-                                                     style: TextStyle(color: Colors.white, fontSize: 14),
+                                                     style: TextStyle(color: AppTheme.white, fontSize: 14),
                                                    ),
                                                ),
                                              ),

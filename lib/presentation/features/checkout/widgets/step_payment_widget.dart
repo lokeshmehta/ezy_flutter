@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import '../../../providers/checkout_provider.dart';
+import '../../../../core/constants/app_theme.dart';
+import '../../../../config/routes/app_routes.dart';
 
 
 class StepPaymentWidget extends StatefulWidget {
@@ -42,7 +44,7 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 10.w),
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey.shade300),
+              border: Border.all(color: AppTheme.hintColor),
               borderRadius: BorderRadius.circular(5.r),
             ),
             child: DropdownButtonHideUnderline(
@@ -79,7 +81,7 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
                     contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(5.r),
-                      borderSide: BorderSide(color: Colors.grey.shade300),
+                      borderSide: const BorderSide(color: AppTheme.hintColor),
                     ),
                   ),
                 ),
@@ -92,25 +94,25 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
                        bool success = await provider.applyCoupon();
                        if(!context.mounted) return;
                        if(success) {
-                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Coupon Applied!")));
+                         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Coupon Applied!")));
                        }
                  },
                 style: ElevatedButton.styleFrom(
-                   backgroundColor: Colors.teal,
-                   foregroundColor: Colors.white,
+                   backgroundColor: AppTheme.orderSuccessTeal,
+                   foregroundColor: AppTheme.white,
                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.r)),
                    padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 20.w)
                 ),
                 child: provider.isLoading 
-                    ? SizedBox(width: 20.w, height: 20.w, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) 
-                    : Text("Apply"),
+                    ? SizedBox(width: 20.w, height: 20.w, child: const CircularProgressIndicator(color: AppTheme.white, strokeWidth: 2)) 
+                    : const Text("Apply"),
               )
             ],
           ),
           if(provider.errorMessage.isNotEmpty)
              Padding(
                padding: EdgeInsets.only(top: 5.h),
-               child: Text(provider.errorMessage, style: TextStyle(color: Colors.red, fontSize: 12.sp)),
+               child: Text(provider.errorMessage, style: TextStyle(color: AppTheme.redColor, fontSize: 12.sp)),
              ),
 
           SizedBox(height: 20.h),
@@ -129,14 +131,14 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
           ),
           
           SizedBox(height: 20.h),
-          Divider(),
+          const Divider(),
           // Price Breakdown
           _buildPriceRow("Sub Total", provider.subTotal),
           if (double.tryParse(provider.discount) != 0)
-              _buildPriceRow("Discount", "- ${provider.discount}", color: Colors.green),
+              _buildPriceRow("Discount", "- ${provider.discount}", color: AppTheme.successGreen),
           
           if (double.tryParse(provider.couponDiscount) != 0)
-              _buildPriceRow("Coupon (${provider.couponName})", "- ${provider.couponDiscount}", color: Colors.green),
+              _buildPriceRow("Coupon (${provider.couponName})", "- ${provider.couponDiscount}", color: AppTheme.successGreen),
 
           if (double.tryParse(provider.shippingCharge) != 0)
               _buildPriceRow("Shipping", provider.shippingCharge),
@@ -147,7 +149,7 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
           if (double.tryParse(provider.taxTotal) != 0)
               _buildPriceRow("Tax (GST)", provider.taxTotal),
           
-          Divider(thickness: 1),
+          const Divider(thickness: 1),
           _buildPriceRow("Total Amount", provider.totalAmount, isBold: true, size: 16.sp),
           
           SizedBox(height: 30.h),
@@ -160,10 +162,10 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
                   },
                   style: OutlinedButton.styleFrom(
                      padding: EdgeInsets.symmetric(vertical: 16.h),
-                     side: BorderSide(color: Colors.teal),
+                     side: const BorderSide(color: AppTheme.orderSuccessTeal),
                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r))
                   ),
-                  child: Text("BACK", style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold, color: Colors.teal)),
+                  child: Text("BACK", style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold, color: AppTheme.orderSuccessTeal)),
                 ),
               ),
               SizedBox(width: 20.w),
@@ -177,17 +179,17 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
                               provider.nextStep();
                           }
                       } else {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please select a payment method")));
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please select a payment method")));
                       }
                   },
                   style: ElevatedButton.styleFrom(
-                     backgroundColor: Colors.teal,
-                     foregroundColor: Colors.white,
+                     backgroundColor: AppTheme.orderSuccessTeal,
+                     foregroundColor: AppTheme.white,
                      padding: EdgeInsets.symmetric(vertical: 16.h),
                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r))
                   ),
                   child: provider.isLoading 
-                      ? SizedBox(width: 20.w, height: 20.w, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                      ? SizedBox(width: 20.w, height: 20.w, child: const CircularProgressIndicator(color: AppTheme.white, strokeWidth: 2))
                       : Text(provider.isLastStep ? "SUBMIT ORDER" : "NEXT", style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold)),
                 ),
               ),
@@ -206,18 +208,18 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
       style: TextStyle(
         fontSize: 16.sp,
         fontWeight: FontWeight.bold,
-        color: Colors.black87,
+        color: AppTheme.textColor,
       ),
     );
   }
 
-  Widget _buildPriceRow(String label, String value, {bool isBold = false, Color color = Colors.black, double? size}) {
+  Widget _buildPriceRow(String label, String value, {bool isBold = false, Color color = AppTheme.blackColor, double? size}) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 6.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontSize: size ?? 14.sp, fontWeight: isBold ? FontWeight.bold : FontWeight.normal, color: Colors.black54)),
+          Text(label, style: TextStyle(fontSize: size ?? 14.sp, fontWeight: isBold ? FontWeight.bold : FontWeight.normal, color: AppTheme.darkGrayColor)),
           Text(value, style: TextStyle(fontSize: size ?? 14.sp, fontWeight: isBold ? FontWeight.bold : FontWeight.normal, color: color)),
         ],
       ),
@@ -230,7 +232,7 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
        if(!context.mounted) return;
        
        if(response != null && response['status'] == 200) {
-           context.go('/order-success', extra: response);
+           context.go(AppRoutes.orderSuccess, extra: response);
        } else {
            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(provider.errorMessage.isNotEmpty ? provider.errorMessage : "Order Failed")));
        }
