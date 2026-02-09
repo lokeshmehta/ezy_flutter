@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import '../../../providers/checkout_provider.dart';
 
 
@@ -170,7 +171,11 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
                 child: ElevatedButton(
                   onPressed: () {
                       if(provider.validatePaymentStep()) {
-                          provider.nextStep();
+                          if (provider.isLastStep) {
+                              _submitOrder(context, provider);
+                          } else {
+                              provider.nextStep();
+                          }
                       } else {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please select a payment method")));
                       }
@@ -181,7 +186,9 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
                      padding: EdgeInsets.symmetric(vertical: 16.h),
                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r))
                   ),
-                  child: Text("NEXT", style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold)),
+                  child: provider.isLoading 
+                      ? SizedBox(width: 20.w, height: 20.w, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                      : Text(provider.isLastStep ? "SUBMIT ORDER" : "NEXT", style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold)),
                 ),
               ),
             ],
@@ -215,5 +222,17 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
         ],
       ),
     );
+  }
+  
+  void _submitOrder(BuildContext context, CheckoutProvider provider) async {
+       // Assuming createOrder returns Map<String, dynamic>?
+       final response = await provider.createOrder();
+       if(!context.mounted) return;
+       
+       if(response != null && response['status'] == 200) {
+           context.go('/order-success', extra: response);
+       } else {
+           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(provider.errorMessage.isNotEmpty ? provider.errorMessage : "Order Failed")));
+       }
   }
 }

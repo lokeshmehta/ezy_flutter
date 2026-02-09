@@ -43,7 +43,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final dashboardProvider = context.read<DashboardProvider>();
-    final showSoldAs = dashboardProvider.profileResponse?.results?[0]?.showSoldAs == "Show";
+    final showSoldAs = dashboardProvider.profileResponse?.results?[0]?.showSoldAs == "Yes";
     
     return Container(
       decoration: BoxDecoration(
@@ -150,11 +150,13 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
   }
 
   Widget _buildProductImage() {
-    final hasTag = widget.product.hasPromotion == "Yes" || widget.product.qtyStatus == "New Arrival"; 
     // Simplified tag logic matching Android pdTagTxt
     String tagText = "";
-    if (widget.product.hasPromotion == "Yes") tagText = "Promotion";
-    else if (widget.product.qtyStatus == "New Arrival") tagText = "New Arrival";
+    if (widget.product.hasPromotion == "Yes") {
+      tagText = "Promotion";
+    } else if (widget.product.qtyStatus == "New Arrival") {
+      tagText = "New Arrival";
+    }
 
     return Stack(
       children: [

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 import '../../../data/datasources/auth_remote_data_source.dart';
 import '../../../data/models/home_models.dart' hide PromotionsResponse;
 import '../../../data/models/wishlist_models.dart';
@@ -14,6 +15,7 @@ class DashboardProvider extends ChangeNotifier {
   // State
   bool _isLoading = false;
   String? _errorMsg;
+  String? _accessToken;
 
   // Data Models
   ProfileResponse? _profileResponse;
@@ -61,6 +63,7 @@ class DashboardProvider extends ChangeNotifier {
   // Getters
   bool get isLoading => _isLoading;
   String? get errorMsg => _errorMsg;
+  String? get accessToken => _accessToken;
   
   ProfileResponse? get profileResponse => _profileResponse;
   BannersResponse? get bannersResponse => _bannersResponse;
@@ -163,6 +166,7 @@ class DashboardProvider extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final accessToken = prefs.getString(StorageKeys.accessToken) ?? '';
+      _accessToken = accessToken;
       final customerId = prefs.getString(StorageKeys.userId) ?? ''; 
       
       final response = await _dataSource.getProfile(accessToken, customerId);
@@ -178,9 +182,14 @@ class DashboardProvider extends ChangeNotifier {
     } catch (e) {
       debugPrint("Error fetching profile: $e");
       _isLoading = false;
-      // errorMsg = e.toString(); // Android doesn't show blocking error for dashboard components, just logs/toasts
       notifyListeners();
     }
+  }
+
+  Future<void> fetchAccessToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    _accessToken = prefs.getString(StorageKeys.accessToken);
+    notifyListeners();
   }
 
   Future<void> _fetchBanners() async {
@@ -891,5 +900,150 @@ class DashboardProvider extends ChangeNotifier {
     } catch (e) {
       debugPrint("Error during logout: $e");
     }
+  }
+
+  // Profile Update Methods
+  Future<bool> updateProfile({
+    required String firstName,
+    required String lastName,
+    required String mobile,
+    required String email,
+    required String street,
+    required String street2,
+    required String suburb,
+    required String state,
+    required String postcode,
+  }) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+        final prefs = await SharedPreferences.getInstance();
+        final accessToken = prefs.getString(StorageKeys.accessToken) ?? '';
+        final customerId = prefs.getString(StorageKeys.userId) ?? '';
+        
+        final response = await _dataSource.editProfile(
+            accessToken: accessToken,
+            customerId: customerId,
+            firstName: firstName,
+            lastName: lastName,
+            mobile: mobile,
+            email: email,
+            street: street,
+            street2: street2,
+            suburb: suburb,
+            state: state,
+            postcode: postcode
+        );
+        
+        if (response['status'] == 200) {
+            // Update local profile
+            if (_profileResponse?.results != null && _profileResponse!.results!.isNotEmpty) {
+                var p = _profileResponse!.results![0];
+                p?.firstName = firstName;
+                p?.lastName = lastName;
+                p?.street = street;
+                p?.street2 = street2;
+                p?.suburb = suburb;
+                p?.state = state;
+                p?.postcode = postcode;
+            }
+            _isLoading = false;
+            notifyListeners();
+            return true;
+        } else {
+            _errorMsg = response['message'] ?? "Failed to update profile";
+        }
+    } catch (e) {
+        debugPrint("Error updating profile: $e");
+        _errorMsg = "Failed to update profile";
+    }
+    _isLoading = false;
+    notifyListeners();
+    return false;
+  }
+
+  Future<bool> updateProfileImage(File imageFile) async {
+       _isLoading = true;
+       notifyListeners();
+       try {
+        final prefs = await SharedPreferences.getInstance();
+        final accessToken = prefs.getString(StorageKeys.accessToken) ?? '';
+        final customerId = prefs.getString(StorageKeys.userId) ?? '';
+
+        // 1. Upload Image
+        final uploadResponse = await _dataSource.imageFileUpload(imageFile, accessToken, customerId);
+        
+        if (uploadResponse['status'] == 200) {
+            final imageName = uploadResponse['image_name'];
+            
+            // 2. Update Profile with Image Name
+            if (_profileResponse?.results != null && _profileResponse!.results!.isNotEmpty) {
+                var p = _profileResponse!.results![0];
+                 final response = await _dataSource.editProfileImage(
+                    accessToken: accessToken,
+                    customerId: customerId,
+                    firstName: p?.firstName ?? "",
+                    lastName: p?.lastName ?? "",
+                    mobile: p?.mobile ?? "",
+                    email: p?.email ?? "",
+                    street: p?.street ?? "",
+                    street2: p?.street2 ?? "",
+                    suburb: p?.suburb ?? "",
+                    state: p?.state ?? "",
+                    postcode: p?.postcode ?? "",
+                    imageName: imageName
+                );
+                
+                if (response['status'] == 200) {
+                    p?.image = imageName; // Update local image
+                     _isLoading = false;
+                    notifyListeners();
+                    return true;
+                } else {
+                     _errorMsg = response['message'];
+                }
+
+            }
+        } else {
+             _errorMsg = uploadResponse['message'] ?? "Failed to upload image";
+        }
+       } catch (e) {
+           debugPrint("Error updating profile image: $e");
+           _errorMsg = "Failed to update profile image";
+       }
+       _isLoading = false;
+       notifyListeners();
+       return false;
+  }
+
+  Future<bool> changePassword(String oldPassword, String newPassword) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final accessToken = prefs.getString(StorageKeys.accessToken) ?? '';
+      final customerId = prefs.getString(StorageKeys.userId) ?? '';
+
+      final response = await _dataSource.changePassword(
+        accessToken: accessToken,
+        customerId: customerId,
+        oldPassword: oldPassword,
+        newPassword: newPassword,
+      );
+
+      if (response['status'] == 200) {
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      } else {
+        _errorMsg = response['message'] ?? "Failed to change password";
+      }
+    } catch (e) {
+      debugPrint("Error changing password: $e");
+      _errorMsg = "Failed to change password";
+    }
+    _isLoading = false;
+    notifyListeners();
+    return false;
   }
 }

@@ -45,6 +45,18 @@ class ProductListProvider extends ChangeNotifier {
   String _errorMsg = "";
   String get errorMsg => _errorMsg;
 
+  bool get isFilterApplied {
+    return CommonMethods.supplierIDs != CommonMethods.firstSuppliers ||
+           CommonMethods.categoryIDs != CommonMethods.firstCatIds ||
+           CommonMethods.tagIDs != CommonMethods.firstTags ||
+           CommonMethods.groupIDs != CommonMethods.firstGroupids ||
+           CommonMethods.selecetedProducts != CommonMethods.firstSelProds;
+  }
+
+  bool get isSortApplied {
+    return CommonMethods.sortIDs != "";
+  }
+
   String? _accessToken;
   String? _customerId;
   String? _accountNum;

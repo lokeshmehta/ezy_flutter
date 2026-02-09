@@ -16,15 +16,15 @@ class CartProvider extends ChangeNotifier {
   String? _errorMsg;
   String? get errorMsg => _errorMsg;
 
-  CartDetailsResponse? _cartDetailsResponse;
-  CartDetailsResult? get cartResult => 
-      (_cartDetailsResponse?.results != null && _cartDetailsResponse!.results!.isNotEmpty) 
-      ? _cartDetailsResponse!.results![0] 
+  CartResponse? _cartResponse;
+  CartResult? get cartResult => 
+      (_cartResponse?.results != null && _cartResponse!.results!.isNotEmpty) 
+      ? _cartResponse!.results![0] 
       : null;
 
-  List<CartItem> _flattenedCartItems = [];
-  List<CartItem> get flattenedCartItems => _flattenedCartItems;
-  List<CartItem> get cartItems => _flattenedCartItems;
+  List<CartProduct> _flattenedCartItems = [];
+  List<CartProduct> get flattenedCartItems => _flattenedCartItems;
+  List<CartProduct> get cartItems => _flattenedCartItems;
 
   // Cart Stats (Getters for UI)
   String get subTotal => cartResult?.subTotal ?? "0.00";
@@ -63,12 +63,12 @@ class CartProvider extends ChangeNotifier {
       }
 
       final response = await _remoteDataSource.getCartDetails(accessToken, customerId);
-      _cartDetailsResponse = CartDetailsResponse.fromJson(response);
+      _cartResponse = CartResponse.fromJson(response);
 
-      if (_cartDetailsResponse?.status == 200) {
+      if (_cartResponse?.status == 200) {
         _processCartData();
       } else {
-        _errorMsg = _cartDetailsResponse?.message;
+        _errorMsg = _cartResponse?.message;
         _flattenedCartItems = [];
       }
     } catch (e) {
@@ -87,19 +87,21 @@ class CartProvider extends ChangeNotifier {
 
     // Flatten logic mirroring ShoppingCartFragment.kt
     for (var brand in result.brands!) {
-      if (brand.products != null) {
+      if (brand != null && brand.products != null) {
         for (var product in brand.products!) {
-          // Copy brand info into product
-          product.brandId = brand.brandId;
-          product.brandName = brand.brandName;
-          _flattenedCartItems.add(product);
+          if (product != null) {
+            // Copy brand info into product
+            product.brandId = brand.brandId;
+            product.brandName = brand.brandName;
+            _flattenedCartItems.add(product);
+          }
         }
       }
     }
   }
 
   // Actions
-  Future<void> updateCartItem(CartItem item, String newQty) async {
+  Future<void> updateCartItem(CartProduct item, String newQty) async {
     // Optimistic update? No, safer to wait for API as taxes/totals change complexly
     _isLoading = true;
     notifyListeners();
@@ -137,7 +139,7 @@ class CartProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> deleteCartItem(CartItem item) async {
+  Future<void> deleteCartItem(CartProduct item) async {
     _isLoading = true;
     notifyListeners();
 

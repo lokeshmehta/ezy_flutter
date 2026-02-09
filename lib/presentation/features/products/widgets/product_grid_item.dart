@@ -7,10 +7,10 @@ import '../../../../core/network/image_cache_manager.dart';
 import '../../../../data/models/home_models.dart';
 import '../product_details_screen.dart';
 
-class ProductGridItem extends StatelessWidget {
+class ProductGridItem extends StatefulWidget {
   final ProductItem item;
   final VoidCallback? onTap;
-  final VoidCallback? onAddToCart;
+  final Function(int qty)? onAddToCart;
   final VoidCallback? onFavorite;
   final bool showSoldAs;
 
@@ -24,26 +24,65 @@ class ProductGridItem extends StatelessWidget {
   });
 
   @override
+  State<ProductGridItem> createState() => _ProductGridItemState();
+}
+
+class _ProductGridItemState extends State<ProductGridItem> {
+  late int _quantity;
+  late int _minQty;
+  late TextEditingController _qtyController;
+
+  @override
+  void initState() {
+    super.initState();
+    _minQty = int.tryParse(widget.item.minimumOrderQty ?? "1") ?? 1;
+    if (_minQty < 1) _minQty = 1;
+    _quantity = _minQty;
+    _qtyController = TextEditingController(text: _quantity.toString());
+  }
+
+  void _incrementQty() {
+    setState(() {
+      _quantity++;
+      _qtyController.text = _quantity.toString();
+    });
+  }
+
+  void _decrementQty() {
+    if (_quantity > _minQty) {
+      setState(() {
+        _quantity--;
+        _qtyController.text = _quantity.toString();
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Minimum Quantity Should be $_minQty"), 
+        duration: const Duration(seconds: 1),
+      ));
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final bool isOutOfStock = item.qtyStatus == "Out Of Stock";
-    final bool canAddToCart = item.supplierAvailable == "1" && item.productAvailable == "1" && !isOutOfStock;
-    final bool hasPromotion = item.promotionPrice != null && double.tryParse(item.promotionPrice ?? "0")! > 0;
+    final bool isOutOfStock = widget.item.qtyStatus == "Out Of Stock";
+    final bool canAddToCart = widget.item.supplierAvailable == "1" && widget.item.productAvailable == "1" && !isOutOfStock;
+    final bool hasPromotion = widget.item.promotionPrice != null && double.tryParse(widget.item.promotionPrice ?? "0")! > 0;
 
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.white,
       ),
       child: Card(
         elevation: 2,
         color: Colors.white,
         margin: EdgeInsets.all(2.w),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
         child: InkWell(
-          onTap: onTap ?? () {
+          onTap: widget.onTap ?? () {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ProductDetailsScreen(productId: item.productId!),
+                builder: (context) => ProductDetailsScreen(productId: widget.item.productId!),
               ),
             );
           },
@@ -51,18 +90,18 @@ class ProductGridItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Sold As
-              if (showSoldAs && item.soldAs != null && item.soldAs!.isNotEmpty)
+              if (widget.showSoldAs && widget.item.soldAs != null && widget.item.soldAs!.isNotEmpty)
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.symmetric(vertical: 5.h),
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: AppTheme.tealColor,
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    item.soldAs == "Each" 
+                    widget.item.soldAs == "Each" 
                         ? "Each" 
-                        : "${item.soldAs} (${item.qtyPerOuter} Units)",
+                        : "${widget.item.soldAs} (${widget.item.qtyPerOuter} Units)",
                     style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -75,14 +114,14 @@ class ProductGridItem extends StatelessWidget {
                      width: double.infinity,
                      alignment: Alignment.center,
                      child: CachedNetworkImage(
-                        imageUrl: _getImageUrl(item.image),
+                        imageUrl: _getImageUrl(widget.item.image),
                         fit: BoxFit.contain,
                         cacheManager: ImageCacheManager(),
                         placeholder: (context, url) => Container(color: Colors.grey[100]),
                         errorWidget: (context, url, error) => const Icon(Icons.broken_image),
                      ),
                    ),
-                   if (item.label != null && item.label!.isNotEmpty)
+                   if (widget.item.label != null && widget.item.label!.isNotEmpty)
                      Positioned(
                        top: 5.h,
                        left: 5.w,
@@ -93,7 +132,7 @@ class ProductGridItem extends StatelessWidget {
                            borderRadius: BorderRadius.circular(3.r),
                          ),
                          child: Text(
-                           item.label!,
+                           widget.item.label!,
                            style: TextStyle(color: Colors.white, fontSize: 9.sp, fontWeight: FontWeight.bold),
                          ),
                        ),
@@ -109,7 +148,7 @@ class ProductGridItem extends StatelessWidget {
                     // Vendor
                     SizedBox(height: 5.h),
                     Text(
-                      item.brandName ?? "",
+                      widget.item.brandName ?? "",
                       style: TextStyle(color: Colors.grey, fontSize: 11.sp),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -118,18 +157,18 @@ class ProductGridItem extends StatelessWidget {
                     // Title
                     SizedBox(height: 2.h),
                     Text(
-                      item.title ?? "",
+                      widget.item.title ?? "",
                       style: TextStyle(color: AppTheme.textColor, fontSize: 12.sp, fontWeight: FontWeight.bold),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
 
                     // MOQ
-                    if (item.minimumOrderQty != null && item.minimumOrderQty != "0" && item.minimumOrderQty != "1")
+                    if (widget.item.minimumOrderQty != null && widget.item.minimumOrderQty != "0" && widget.item.minimumOrderQty != "1")
                       Padding(
                         padding: EdgeInsets.only(top: 5.h),
                         child: Text(
-                          "MOQ : ${item.minimumOrderQty}",
+                          "MOQ : ${widget.item.minimumOrderQty}",
                           style: TextStyle(color: AppTheme.redColor, fontSize: 11.sp, fontWeight: FontWeight.bold),
                         ),
                       ),
@@ -138,7 +177,7 @@ class ProductGridItem extends StatelessWidget {
                     SizedBox(height: 5.h),
                     if (!hasPromotion)
                       Text(
-                        _formatPrice(item.price),
+                        _formatPrice(widget.item.price),
                         style: TextStyle(color: Colors.grey[700], fontSize: 12.sp),
                       )
                     else
@@ -148,7 +187,7 @@ class ProductGridItem extends StatelessWidget {
                           Row(
                             children: [
                                Text(
-                                 _formatPrice(item.price),
+                                 _formatPrice(widget.item.price),
                                  style: TextStyle(
                                    color: Colors.grey, 
                                    fontSize: 12.sp,
@@ -157,7 +196,7 @@ class ProductGridItem extends StatelessWidget {
                                ),
                                SizedBox(width: 5.w),
                                Text(
-                                 _formatPrice(item.promotionPrice),
+                                 _formatPrice(widget.item.promotionPrice),
                                  style: TextStyle(color: AppTheme.redColor, fontSize: 12.sp, fontWeight: FontWeight.bold),
                                ),
                             ],
@@ -170,7 +209,7 @@ class ProductGridItem extends StatelessWidget {
                               borderRadius: BorderRadius.circular(2.r),
                             ),
                             child: Text(
-                              "-${_calculateDiscount(item.price, item.promotionPrice)}%",
+                              "-${_calculateDiscount(widget.item.price, widget.item.promotionPrice)}%",
                               style: TextStyle(color: Colors.white, fontSize: 8.sp, fontWeight: FontWeight.bold),
                             ),
                           ),
@@ -185,40 +224,79 @@ class ProductGridItem extends StatelessWidget {
               // Actions
               Padding(
                 padding: EdgeInsets.all(5.w),
-                child: Row(
+                child: Column(
                   children: [
-                    Expanded(
-                      child: InkWell(
-                        onTap: canAddToCart ? onAddToCart : null,
-                        child: Container(
-                          height: 40.h, // Standardized touch target
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: canAddToCart ? AppTheme.tealColor : AppTheme.redColor,
-                            borderRadius: BorderRadius.circular(4.r),
-                          ),
-                          child: FittedBox( // Prevent text overflow in button
-                            fit: BoxFit.scaleDown,
-                            child: Text(
-                               isOutOfStock 
-                                  ? "Out Of Stock" 
-                                  : (item.addedToCart == "Yes" 
-                                      ? "Update Cart [${item.addedQty ?? '1'}]" 
-                                      : "Add To Cart"),
-                               style: TextStyle(color: Colors.white, fontSize: 11.sp, fontWeight: FontWeight.bold),
+                    // Quantity Control
+                    if (canAddToCart)
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey[300]!),
+                          borderRadius: BorderRadius.circular(4.r),
+                        ),
+                        margin: EdgeInsets.only(bottom: 5.h), // Spacing below quantity
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            InkWell(
+                              onTap: _decrementQty,
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 3.h),
+                                child: Icon(Icons.remove, size: 16.sp, color: Colors.grey[600]),
+                              ),
+                            ),
+                            Text(
+                               _quantity.toString(),
+                               style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold),
+                            ),
+                            InkWell(
+                              onTap: _incrementQty,
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 3.h),
+                                child: Icon(Icons.add, size: 16.sp, color: Colors.grey[600]),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: InkWell(
+                            onTap: canAddToCart && widget.onAddToCart != null 
+                                 ? () => widget.onAddToCart!(_quantity) 
+                                 : null,
+                            child: Container(
+                              height: 35.h, 
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: canAddToCart ? AppTheme.tealColor : AppTheme.redColor,
+                                borderRadius: BorderRadius.circular(4.r),
+                              ),
+                              child: FittedBox( 
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                   isOutOfStock 
+                                      ? "Out Of Stock" 
+                                      : (widget.item.addedToCart == "Yes" 
+                                          ? "Update" // Shortened for Grid
+                                          : "Add"), // Shortened for Grid
+                                   style: TextStyle(color: Colors.white, fontSize: 11.sp, fontWeight: FontWeight.bold),
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ),
-                    SizedBox(width: 5.w),
-                    InkWell(
-                      onTap: onFavorite,
-                      child: Image.asset(
-                        item.isFavourite == "Yes" ? "assets/images/favadded.png" : "assets/images/fav_new.png",
-                        width: 40.h, // Match button height
-                        height: 40.h,
-                      ),
+                        SizedBox(width: 5.w),
+                        InkWell(
+                          onTap: widget.onFavorite,
+                          child: Image.asset(
+                            widget.item.isFavourite == "Yes" ? "assets/images/favadded.png" : "assets/images/fav_new.png",
+                            width: 35.h,
+                            height: 35.h,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

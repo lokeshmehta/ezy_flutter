@@ -275,21 +275,24 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         _buildIconButton(
-                          iconPath: "assets/images/sort_icon.png", // Assuming icon exists
+                          iconPath: "assets/images/sort_icon.png", 
                           fallbackIcon: Icons.sort,
                           onTap: _showSortDialog,
+                          isActive: provider.isSortApplied,
                         ),
                         SizedBox(width: 8.w),
                         _buildIconButton(
                           iconPath: "assets/images/filter_icon.png",
                           fallbackIcon: Icons.filter_list,
                           onTap: _showFilterDialog,
+                          isActive: provider.isFilterApplied,
                         ),
                         SizedBox(width: 8.w),
                         _buildIconButton(
                           iconPath: provider.isGridView ? "assets/images/listview_icon.png" : "assets/images/gridview_icon.png",
                           fallbackIcon: provider.isGridView ? Icons.view_list : Icons.grid_view,
                           onTap: () => provider.setGridView(!provider.isGridView),
+                          isActive: false, // Toggle button doesn't use "Active" style in Android, acts as toggle
                         ),
                       ],
                     ),
@@ -303,7 +306,12 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
     );
   }
 
-  Widget _buildIconButton({String? iconPath, required IconData fallbackIcon, required VoidCallback onTap}) {
+  Widget _buildIconButton({
+    String? iconPath, 
+    required IconData fallbackIcon, 
+    required VoidCallback onTap,
+    bool isActive = false,
+  }) {
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -311,16 +319,23 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
         height: 38.w,
         padding: EdgeInsets.all(8.w),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey[300]!),
+          color: isActive ? AppTheme.primaryColor : Colors.white,
+          border: Border.all(color: isActive ? AppTheme.primaryColor : Colors.grey[300]!),
           borderRadius: BorderRadius.circular(4.r),
         ),
-        child: Icon(fallbackIcon, color: AppTheme.primaryColor, size: 20.sp),
-        // Note: Using Icon for now as asset paths might be slightly different or need scaling
+        child: Icon(
+          fallbackIcon, 
+          color: isActive ? Colors.white : AppTheme.primaryColor, 
+          size: 20.sp
+        ),
       ),
     );
   }
 
   Widget _buildListView(ProductListProvider provider) {
+    final dashboardProvider = context.read<DashboardProvider>();
+    final showSoldAs = dashboardProvider.profileResponse?.results?[0]?.showSoldAs == "Yes";
+
     return ListView.builder(
       controller: _scrollController,
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
@@ -335,7 +350,8 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
         final product = provider.products[index];
         return ProductListItem(
           item: product,
-          onAddToCart: () => _onAddToCart(product),
+          showSoldAs: showSoldAs,
+          onAddToCart: (qty) => _onAddToCart(product), // Pass qty if we update logic later, currently just trigger
           onFavorite: () => _onFavorite(product),
         );
       },
@@ -343,12 +359,15 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
   }
 
   Widget _buildGridView(ProductListProvider provider) {
+    final dashboardProvider = context.read<DashboardProvider>();
+    final showSoldAs = dashboardProvider.profileResponse?.results?[0]?.showSoldAs == "Yes";
+
     return GridView.builder(
       controller: _scrollController,
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        mainAxisExtent: 320.h, // Fixed height per tile, safe for all widths
+        mainAxisExtent: 350.h, // Increased height for Quantity Row
         crossAxisSpacing: 10.w,
         mainAxisSpacing: 10.h,
       ),
@@ -360,7 +379,8 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
          final product = provider.products[index];
          return ProductGridItem(
             item: product, 
-            onAddToCart: () => _onAddToCart(product),
+            showSoldAs: showSoldAs, // Now available in method scope since I added it above ListView
+            onAddToCart: (qty) => _onAddToCart(product),
             onFavorite: () => _onFavorite(product),
          );
       },

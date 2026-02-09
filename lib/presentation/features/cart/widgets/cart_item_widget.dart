@@ -9,7 +9,7 @@ import '../../../../data/models/cart_models.dart';
 import '../../../providers/cart_provider.dart';
 
 class CartItemWidget extends StatelessWidget {
-  final CartItem item;
+  final CartProduct item;
 
   const CartItemWidget({super.key, required this.item});
 
@@ -99,7 +99,7 @@ class CartItemWidget extends StatelessWidget {
                           children: [
                             InkWell(
                               onTap: () {
-                                int currentQty = int.tryParse(item.qty ?? "0") ?? 0;
+                                int currentQty = item.qty ?? 0;
                                 if (currentQty > 0) {
                                   context.read<CartProvider>().updateCartItem(item, (currentQty - 1).toString());
                                 }
@@ -115,13 +115,13 @@ class CartItemWidget extends StatelessWidget {
                               color: Colors.grey[100],
                               padding: EdgeInsets.symmetric(vertical: 4.h),
                               child: Text(
-                                item.qty ?? "0",
+                                item.qty?.toString() ?? "0",
                                 style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
                               ),
                             ),
                             InkWell(
                               onTap: () {
-                                int currentQty = int.tryParse(item.qty ?? "0") ?? 0;
+                                int currentQty = item.qty ?? 0;
                                 context.read<CartProvider>().updateCartItem(item, (currentQty + 1).toString());
                               },
                               child: Padding(

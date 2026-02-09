@@ -190,47 +190,53 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
                     ? provider.profileResponse!.results![0] 
                     : null;
                 
-                return Container(
-                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                   decoration: const BoxDecoration(color: AppTheme.secondaryColor), // Teal
-                   child: SafeArea(
-                     bottom: false,
-                     child: Row(
-                       crossAxisAlignment: CrossAxisAlignment.center,
-                       children: [
-                          CircleAvatar(
-                            radius: 30.r,
-                            backgroundColor: Colors.white,
-                            backgroundImage: user?.image != null && user!.image!.isNotEmpty
-                                ? CachedNetworkImageProvider(_getImageUrl(user.image)) as ImageProvider
-                                : const AssetImage(AppAssets.userIcon),
-                          ),
-                          SizedBox(width: 10.w),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  "${user?.firstName ?? ''} ${user?.lastName ?? ''}", // Fixed: ProfileResult has firstName/lastName
-                                  style: TextStyle(color: Colors.white, fontSize: 16.sp, fontWeight: FontWeight.bold),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                Text(
-                                  user?.email ?? "user@example.com",
-                                  style: TextStyle(color: Colors.white70, fontSize: 13.sp),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
+                return InkWell(
+                  onTap: () {
+                    Navigator.pop(context); // Close drawer
+                    context.push('/my-profile');
+                  },
+                  child: Container(
+                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                     decoration: const BoxDecoration(color: AppTheme.secondaryColor), // Teal
+                     child: SafeArea(
+                       bottom: false,
+                       child: Row(
+                         crossAxisAlignment: CrossAxisAlignment.center,
+                         children: [
+                            CircleAvatar(
+                              radius: 30.r,
+                              backgroundColor: Colors.white,
+                              backgroundImage: user?.image != null && user!.image!.isNotEmpty
+                                  ? CachedNetworkImageProvider(_getImageUrl(user.image)) as ImageProvider
+                                  : const AssetImage(AppAssets.userIcon),
                             ),
-                          ),
-                          IconButton(
-                            icon: Image.asset(AppAssets.menuCloseIcon, width: 20.w, height: 20.w, color: Colors.white),
-                            onPressed: () => Navigator.pop(context),
-                          )
-                       ],
+                            SizedBox(width: 10.w),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    "${user?.firstName ?? ''} ${user?.lastName ?? ''}", 
+                                    style: TextStyle(color: Colors.white, fontSize: 16.sp, fontWeight: FontWeight.bold),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text(
+                                    user?.email ?? "user@example.com",
+                                    style: TextStyle(color: Colors.white70, fontSize: 13.sp),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            IconButton(
+                              icon: Image.asset(AppAssets.menuCloseIcon, width: 20.w, height: 20.w, color: Colors.white),
+                              onPressed: () => Navigator.pop(context),
+                            )
+                         ],
+                       ),
                      ),
-                   ),
+                  ),
                 );
              },
            ),
@@ -243,7 +249,10 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
                       context.pop(); // Close drawer
                       context.push('/my-wishlist');
                     }),
-                    _buildDrawerItem(AppAssets.myOrdersIcon, "My Orders", () {}),
+                    _buildDrawerItem(AppAssets.myOrdersIcon, "My Orders", () {
+                      context.pop();
+                      context.push('/my-orders');
+                    }),
                     _buildDrawerItem(AppAssets.orderNowIcon, "Order Now", () {
                       context.pop();
                       final productProvider = context.read<ProductListProvider>();
@@ -609,8 +618,8 @@ class _DashboardScreenState extends State<DashboardScreen>   with SingleTickerPr
             break;
           case 3:
             // My Account
-             // Navigator.push(context, MaterialPageRoute(builder: (context) => const MyAccountScreen()));
-             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Account Feature Coming Soon")));
+             context.push('/my-account');
+             // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Account Feature Coming Soon")));
             break;
         }
       },

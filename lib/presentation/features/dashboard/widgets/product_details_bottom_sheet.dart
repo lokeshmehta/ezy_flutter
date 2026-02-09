@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../../../core/constants/app_theme.dart';
 import '../../../../core/constants/url_api_key.dart';
 import '../../../../data/models/home_models.dart';
+import '../../../../config/theme/app_theme.dart';
 import '../../../providers/dashboard_provider.dart';
 
 class ProductDetailsBottomSheet extends StatefulWidget {
@@ -189,43 +189,43 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
            // Spinner / Sold As Label
            // Logic: If show_sold_as=Yes && sold_as=Each -> Show Dropdown
            // Else -> Show Label
-           // Assuming 'Each' allows switching to 'Carton'
-           if (widget.product.soldAs == "Each" && (widget.product.qtyPerOuter != null))
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey[300]!),
-                  borderRadius: BorderRadius.circular(5.r),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: _selectedSoldAs,
-                    isExpanded: true,
-                    items: _soldAsOptions.map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (newValue) {
-                      setState(() {
-                        _selectedSoldAs = newValue!;
-                        _calculatePrices();
-                      });
-                    },
-                  ),
-                ),
-              )
-           else if (widget.product.soldAs != null)
-              Container(
-                 width: double.infinity,
-                 padding: EdgeInsets.all(10.w),
-                 color: Colors.grey[100],
-                 child: Text(
-                    "${widget.product.soldAs} (${widget.product.qtyPerOuter ?? "0"} Units)",
-                    style: TextStyle(fontWeight: FontWeight.bold),
+            // Assuming 'Each' allows switching to 'Carton'
+            if (widget.product.soldAs == "Each" && (widget.product.qtyPerOuter != null)) 
+               Container(
+                 padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+                 decoration: BoxDecoration(
+                   border: Border.all(color: Colors.grey[300]!),
+                   borderRadius: BorderRadius.circular(5.r),
                  ),
-              ),
+                 child: DropdownButtonHideUnderline(
+                   child: DropdownButton<String>(
+                     value: _selectedSoldAs,
+                     isExpanded: true,
+                     items: _soldAsOptions.map((String value) {
+                       return DropdownMenuItem<String>(
+                         value: value,
+                         child: Text(value),
+                       );
+                     }).toList(),
+                     onChanged: (newValue) {
+                       setState(() {
+                         _selectedSoldAs = newValue!;
+                         _calculatePrices();
+                       });
+                     },
+                   ),
+                 ),
+               )
+            else if (widget.product.soldAs != null) 
+               Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(10.w),
+                  color: Colors.grey[100],
+                  child: Text(
+                     "${widget.product.soldAs} (${widget.product.qtyPerOuter ?? "0"} Units)",
+                     style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+               ),
               
            SizedBox(height: 20.h),
            

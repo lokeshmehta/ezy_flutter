@@ -7,6 +7,8 @@ class AppTheme {
   static const Color secondaryColor = Color(0xFFFFB347); // yellow/tealcolor
   static const Color redColor = Color(0xFFE4134A);
   static const Color textColor = Color(0xFF333333);
+  static const Color tealColor = Color(0xFF009688);
+  static const Color white = Colors.white;
   
   static ThemeData get lightTheme {
     return ThemeData(

@@ -122,6 +122,11 @@ class ProfileResult {
   String? lastName; 
   String? email;
   String? mobile;
+  String? street;
+  String? street2;
+  String? suburb;
+  String? state;
+  String? postcode;
   String? image;
   String? unreadNotificationsCount; 
   String? wishlistPageHeading; 
@@ -158,6 +163,7 @@ class ProfileResult {
   String? companyPostcode;
   List<ProductItem?>? wishlist; // Added
   int? wishlistCount; // Added
+  String? allowToReviewOrderBeforeSubmitting; // Added
 
   ProfileResult({
     this.customerId,
@@ -165,6 +171,11 @@ class ProfileResult {
     this.lastName,
     this.email,
     this.mobile,
+    this.street,
+    this.street2,
+    this.suburb,
+    this.state,
+    this.postcode,
     this.image,
     this.unreadNotificationsCount,
     this.wishlistPageHeading,
@@ -201,6 +212,7 @@ class ProfileResult {
     this.companyPostcode,
     this.wishlist, // Added
     this.wishlistCount, // Added
+    this.allowToReviewOrderBeforeSubmitting, // Added
   });
 
   factory ProfileResult.fromJson(Map<String, dynamic> json) {
@@ -210,6 +222,11 @@ class ProfileResult {
       lastName: json['last_name']?.toString(),
       email: json['email']?.toString(),
       mobile: json['mobile']?.toString(),
+      street: json['street']?.toString(),
+      street2: json['street2']?.toString(),
+      suburb: json['suburb']?.toString(),
+      state: json['state']?.toString(),
+      postcode: json['postcode']?.toString(),
       image: json['image']?.toString(),
       unreadNotificationsCount: json['unread_notifications_count']?.toString(),
       wishlistPageHeading: json['wishlist_page_heading']?.toString(),
@@ -248,6 +265,7 @@ class ProfileResult {
           ? (json['wishlist'] as List).map((i) => i != null ? ProductItem.fromJson(i) : null).toList()
           : null,
       wishlistCount: json['wishlist_count'],
+      allowToReviewOrderBeforeSubmitting: json['allow_to_review_order_before_submmitting']?.toString(),
     );
   }
 }

@@ -4,6 +4,8 @@ import '../../domain/entities/user_entity.dart';
 import '../../domain/entities/companies_response.dart';
 import '../../core/constants/url_api_key.dart';
 import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class AuthRemoteDataSource {
   final ApiClient apiClient;
@@ -78,6 +80,92 @@ class AuthRemoteDataSource {
       },
     );
     // Return raw response for provider to parse status
+    return response;
+  }
+
+  Future<Map<String, dynamic>> getOrderHistory({
+    required String accessToken,
+    required String customerId,
+    required int page,
+    String? searchText,
+    String? startDate,
+    String? endDate,
+  }) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}order-history",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'page': page.toString(),
+        'search_text': searchText ?? "",
+        'start_date': startDate ?? "",
+        'end_date': endDate ?? "",
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> getOrderDetails({
+    required String accessToken,
+    required String customerId,
+    required String orderId,
+  }) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}order-details",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'order_id': orderId,
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> deleteOrder({
+    required String accessToken,
+    required String customerId,
+    required String orderId,
+  }) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}delete-order",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'order_id': orderId,
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> duplicateOrder({
+    required String accessToken,
+    required String customerId,
+    required String oldOrderId,
+  }) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}duplicate-order",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'old_order_id': oldOrderId,
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> reorderOrder({
+    required String accessToken,
+    required String customerId,
+    required String oldOrderId,
+  }) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}re-order",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'old_order_id': oldOrderId,
+      },
+    );
     return response;
   }
 
@@ -342,6 +430,20 @@ class AuthRemoteDataSource {
         'access_token': accessToken,
         'customer_id': customerId,
         'wishlist_id': wishlistId,
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> clearCart({
+    required String accessToken,
+    required String customerId,
+  }) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}clear-cart",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
       },
     );
     return response;
@@ -648,6 +750,215 @@ class AuthRemoteDataSource {
         'device_type': Platform.operatingSystem, // Uses dart:io
         'browser_type': browserType,
         'ip_address': ipAddress,
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> editProfile({
+    required String accessToken,
+    required String customerId,
+    required String firstName,
+    required String lastName,
+    required String mobile,
+    required String email,
+    required String street,
+    required String street2,
+    required String suburb,
+    required String state,
+    required String postcode,
+  }) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}edit-profile",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'first_name': firstName,
+        'last_name': lastName,
+        'mobile': mobile,
+        'email': email,
+        'street': street,
+        'street2': street2,
+        'suburb': suburb,
+        'state': state,
+        'postcode': postcode,
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> editProfileImage({
+    required String accessToken,
+    required String customerId,
+    required String firstName,
+    required String lastName,
+    required String mobile,
+    required String email,
+    required String street,
+    required String street2,
+    required String suburb,
+    required String state,
+    required String postcode,
+    required String imageName,
+  }) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}edit-profile-image",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'first_name': firstName,
+        'last_name': lastName,
+        'mobile': mobile,
+        'email': email,
+        'street': street,
+        'street2': street2,
+        'suburb': suburb,
+        'state': state,
+        'postcode': postcode,
+        'image_name': imageName,
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> imageFileUpload(File file, String accessToken, String customerId) async {
+    // Note: This requires 'package:http/http.dart' as http import
+    var request = http.MultipartRequest("POST", Uri.parse("${UrlApiKey.baseUrl}image-file_upload"));
+    request.fields['access_token'] = accessToken;
+    request.fields['customer_id'] = customerId;
+    
+    var pic = await http.MultipartFile.fromPath("uploaded_file", file.path);
+    request.files.add(pic);
+    
+    var response = await request.send();
+    var responseData = await response.stream.toBytes();
+    var responseString = String.fromCharCodes(responseData);
+    
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+       return json.decode(responseString);
+    } else {
+       throw const FormatException("File upload failed");
+    }
+  }
+
+  Future<Map<String, dynamic>> changePassword({
+    required String accessToken,
+    required String customerId,
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}change-password",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'old_pw': oldPassword,
+        'new_pw': newPassword,
+      },
+    );
+    return response;
+  }
+
+  // Address Book APIs
+  Future<Map<String, dynamic>> addAddress({
+    required String accessToken,
+    required String customerId,
+    required String firstName,
+    required String lastName,
+    required String mobile,
+    required String email,
+    required String street,
+    required String street2,
+    required String suburb,
+    required String state,
+    required String postcode,
+    required String defaultAddress,
+  }) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}add-address",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'first_name': firstName,
+        'last_name': lastName,
+        'phone': mobile, // Android maps mobile -> phone param usually
+        'email': email,
+        'street': street,
+        'street2': street2,
+        'suburb': suburb,
+        'state': state,
+        'postcode': postcode,
+        'default_address': defaultAddress,
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> editAddressBook({
+    required String accessToken,
+    required String customerId,
+    required String addressId,
+    required String firstName,
+    required String lastName,
+    required String mobile,
+    required String email,
+    required String street,
+    required String street2,
+    required String suburb,
+    required String state,
+    required String postcode,
+    required String defaultAddress,
+  }) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}edit-address",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'address_id': addressId,
+        'first_name': firstName,
+        'last_name': lastName,
+        'phone': mobile,
+        'email': email,
+        'street': street,
+        'street2': street2,
+        'suburb': suburb,
+        'state': state,
+        'postcode': postcode,
+        'default_address': defaultAddress,
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> deleteAddress({
+    required String accessToken,
+    required String customerId,
+    required String addressId,
+  }) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}delete-address",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'address_id': addressId,
+      },
+    );
+    return response;
+  }
+
+  Future<Map<String, dynamic>> sendOrderReceipt({
+    required String accessToken,
+    required String customerId,
+    required String orderId,
+    required String emails,
+  }) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}send-order-receipt", // Inferred endpoint
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'order_id': orderId,
+        'email_id': emails, // "enterEmailsIdsTxt" in Android maps to email parameter usually
       },
     );
     return response;

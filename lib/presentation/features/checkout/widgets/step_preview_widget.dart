@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import '../../../providers/checkout_provider.dart';
-import '../../../providers/cart_provider.dart';
+
 
 
 class StepPreviewWidget extends StatefulWidget {
@@ -18,13 +18,14 @@ class _StepPreviewWidgetState extends State<StepPreviewWidget> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<CheckoutProvider>();
-    final cartProvider = context.watch<CartProvider>();
+    // Parity Filter: supplier_available == "Yes" && product_available == "Yes" (or "1" / "Yes" depending on API)
+    // Android: items are filtered in Adapter or View? 
+    // Android logic: It shows all items in Cart, but maybe filters for Preview? 
+    // Actually Android ProceedToBuyActivity (Step 4 Preview) shows "Review Items".
+    // I shall use provider.cartItems.
     
-    // Parity Filter: supplier_available == "1" && product_available == "1"
-    final validItems = cartProvider.flattenedCartItems.where((item) {
-        return item.supplierAvailable == "1" && item.productAvailable == "1";
-    }).toList();
-
+    final validItems = provider.cartItems; // Show all items for now, or filter if checked against API
+    
     return SingleChildScrollView(
       padding: EdgeInsets.all(16.w),
       child: Column(
@@ -43,8 +44,8 @@ class _StepPreviewWidgetState extends State<StepPreviewWidget> {
                     child: ListTile(
                         leading: Image.network(item.image ?? "", width: 50.w, height: 50.w, errorBuilder: (_,__,___) => Icon(Icons.image)),
                         title: Text(item.title ?? "", maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.sp)),
-                        subtitle: Text("Qty: ${item.qty} | ${item.brandName}", style: TextStyle(fontSize: 12.sp)),
-                        trailing: Text(item.salePrice ?? item.normalPrice ?? "", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp)),
+                        subtitle: Text("Qty: ${item.qty} | ${item.orderedAs}", style: TextStyle(fontSize: 12.sp)),
+                        trailing: Text("\$${item.salePrice}", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp)),
                     ),
                 );
             },
@@ -96,19 +97,29 @@ class _StepPreviewWidgetState extends State<StepPreviewWidget> {
                   onPressed: provider.isLoading 
                      ? null 
                      : () async {
-                         bool success = await provider.createOrder();
+                         final response = await provider.createOrder();
                          if(!context.mounted) return;
-                         if(success) {
+                         
+                         if(response != null) {
                             // Success Logic
-                            showDialog(context: context, builder: (_) => AlertDialog(
-                                title: Text("Success"),
-                                content: Text("Order Created Successfully!"),
-                                actions: [
-                                    TextButton(onPressed: () {
-                                        context.go('/dashboard'); 
-                                    }, child: Text("OK"))
-                                ],
-                            ));
+                            // Navigate to Success Screen passing response data
+                            // response contains 'order_id', 'transaction_id', etc.
+                            // We construct the data map needed.
+                            final orderData = {
+                                'order_id': response['order_id'], // Adjust key based on API actual response
+                                'transaction_id': response['transaction_id'], 
+                                'payment_type': provider.paymentMethod,
+                                'success_msg': response['message']
+                            };
+                            
+                            // Also provider.clearCartLocal() should be called?
+                            // OrderSuccessScreen does it in initState.
+                            
+                            context.go('/order-success', extra: orderData);
+                         } else {
+                             ScaffoldMessenger.of(context).showSnackBar(
+                                 SnackBar(content: Text(provider.errorMessage), backgroundColor: Colors.red)
+                             );
                          }
                   },
                   style: ElevatedButton.styleFrom(

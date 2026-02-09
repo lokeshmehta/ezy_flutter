@@ -7,10 +7,10 @@ import '../../../../core/network/image_cache_manager.dart';
 import '../../../../data/models/home_models.dart';
 import '../product_details_screen.dart';
 
-class ProductListItem extends StatelessWidget {
+class ProductListItem extends StatefulWidget {
   final ProductItem item;
   final VoidCallback? onTap;
-  final VoidCallback? onAddToCart;
+  final Function(int qty)? onAddToCart;
   final VoidCallback? onFavorite;
   final bool showSoldAs;
 
@@ -24,23 +24,69 @@ class ProductListItem extends StatelessWidget {
   });
 
   @override
+  State<ProductListItem> createState() => _ProductListItemState();
+}
+
+class _ProductListItemState extends State<ProductListItem> {
+  late int _quantity;
+  late int _minQty;
+  late TextEditingController _qtyController;
+
+  @override
+  void initState() {
+    super.initState();
+    _minQty = int.tryParse(widget.item.minimumOrderQty ?? "1") ?? 1;
+    if (_minQty < 1) _minQty = 1;
+    _quantity = _minQty;
+    _qtyController = TextEditingController(text: _quantity.toString());
+  }
+
+  void _incrementQty() {
+    setState(() {
+      _quantity++;
+      _qtyController.text = _quantity.toString();
+    });
+  }
+
+  void _decrementQty() {
+    if (_quantity > _minQty) {
+      setState(() {
+        _quantity--;
+        _qtyController.text = _quantity.toString();
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Minimum Quantity Should be $_minQty"),
+        duration: const Duration(seconds: 1),
+      ));
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final bool isOutOfStock = item.qtyStatus == "Out Of Stock";
-    final bool canAddToCart = item.supplierAvailable == "1" && item.productAvailable == "1" && !isOutOfStock;
-    final bool hasPromotion = item.promotionPrice != null && double.tryParse(item.promotionPrice ?? "0")! > 0;
+    // Logic matching ProductslistAdapter.kt
+    
+    // Out of Stock Logic
+    // Android: if(qty_status.equals("Out Of Stock")) -> disable buttons, red tint
+    final bool isOutOfStock = widget.item.qtyStatus == "Out Of Stock";
+    
+    // Supplier/Product Available Logic (Android Line 195)
+    final bool canAddToCart = widget.item.supplierAvailable == "1" && widget.item.productAvailable == "1" && !isOutOfStock;
+    
+    final bool hasPromotion = widget.item.promotionPrice != null && double.tryParse(widget.item.promotionPrice ?? "0")! > 0;
 
     return Container(
       margin: EdgeInsets.only(bottom: 6.h),
       child: Card(
         elevation: 2,
         color: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
         child: InkWell(
-          onTap: onTap ?? () {
+          onTap: widget.onTap ?? () {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ProductDetailsScreen(productId: item.productId!),
+                builder: (context) => ProductDetailsScreen(productId: widget.item.productId!),
               ),
             );
           },
@@ -55,18 +101,18 @@ class ProductListItem extends StatelessWidget {
                     Stack(
                       children: [
                         Container(
-                          width: 140.w, // Matching @dimen/dimen_160 but with screenutil
-                          height: 100.h, // Matching @dimen/dimen_120 but with screenutil
+                          width: 140.w, 
+                          height: 100.h, 
                           alignment: Alignment.center,
                           child: CachedNetworkImage(
-                            imageUrl: _getImageUrl(item.image),
+                            imageUrl: _getImageUrl(widget.item.image),
                             fit: BoxFit.contain,
                             cacheManager: ImageCacheManager(),
                             placeholder: (context, url) => Container(color: Colors.grey[100]),
                             errorWidget: (context, url, error) => const Icon(Icons.broken_image),
                           ),
                         ),
-                        if (item.label != null && item.label!.isNotEmpty)
+                        if (widget.item.label != null && widget.item.label!.isNotEmpty)
                           Positioned(
                             top: 5.h,
                             left: 5.w,
@@ -77,7 +123,7 @@ class ProductListItem extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(3.r),
                               ),
                               child: Text(
-                                item.label!,
+                                widget.item.label!,
                                 style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold),
                               ),
                             ),
@@ -91,26 +137,26 @@ class ProductListItem extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // Sold As Bar
-                          if (showSoldAs && item.soldAs != null && item.soldAs!.isNotEmpty)
+                          if (widget.showSoldAs && widget.item.soldAs != null && widget.item.soldAs!.isNotEmpty)
                             Container(
                               width: double.infinity,
                               margin: EdgeInsets.only(bottom: 5.h),
                               padding: EdgeInsets.symmetric(vertical: 5.h),
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 color: AppTheme.tealColor,
                               ),
                               alignment: Alignment.center,
                               child: Text(
-                                item.soldAs == "Each" 
+                                widget.item.soldAs == "Each" 
                                     ? "Each" 
-                                    : "${item.soldAs} (${item.qtyPerOuter} Units)",
+                                    : "${widget.item.soldAs} (${widget.item.qtyPerOuter} Units)",
                                 style: TextStyle(color: Colors.white, fontSize: 11.sp, fontWeight: FontWeight.bold),
                               ),
                             ),
                           
                           // Vendor
                           Text(
-                            item.brandName ?? "",
+                            widget.item.brandName ?? "",
                             style: TextStyle(color: Colors.grey, fontSize: 11.sp),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -119,18 +165,18 @@ class ProductListItem extends StatelessWidget {
                           // Product Name
                           SizedBox(height: 2.h),
                           Text(
-                            item.title ?? "",
+                            widget.item.title ?? "",
                             style: TextStyle(color: Colors.blue[900], fontSize: 13.sp, fontWeight: FontWeight.bold),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
                           
                           // MOQ
-                          if (item.minimumOrderQty != null && item.minimumOrderQty != "0" && item.minimumOrderQty != "1")
+                          if (widget.item.minimumOrderQty != null && widget.item.minimumOrderQty != "0" && widget.item.minimumOrderQty != "1")
                             Padding(
                               padding: EdgeInsets.only(top: 10.h),
                               child: Text(
-                                "MOQ : ${item.minimumOrderQty}",
+                                "MOQ : ${widget.item.minimumOrderQty}",
                                 style: TextStyle(color: AppTheme.redColor, fontSize: 12.sp, fontWeight: FontWeight.bold),
                               ),
                             ),
@@ -139,7 +185,7 @@ class ProductListItem extends StatelessWidget {
                           SizedBox(height: 5.h),
                           if (!hasPromotion)
                             Text(
-                              _formatPrice(item.price),
+                              _formatPrice(widget.item.price),
                               style: TextStyle(color: Colors.grey[700], fontSize: 13.sp),
                             )
                           else
@@ -147,13 +193,13 @@ class ProductListItem extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  _formatPrice(item.promotionPrice),
+                                  _formatPrice(widget.item.promotionPrice),
                                   style: TextStyle(color: Colors.grey[700], fontSize: 13.sp, fontWeight: FontWeight.bold),
                                 ),
                                 Row(
                                   children: [
                                     Text(
-                                      _formatPrice(item.price),
+                                      _formatPrice(widget.item.price),
                                       style: TextStyle(
                                         color: Colors.blue[900], 
                                         fontSize: 13.sp,
@@ -168,7 +214,7 @@ class ProductListItem extends StatelessWidget {
                                         borderRadius: BorderRadius.circular(2.r),
                                       ),
                                       child: Text(
-                                        "-${_calculateDiscount(item.price, item.promotionPrice)}%",
+                                        "-${_calculateDiscount(widget.item.price, widget.item.promotionPrice)}%",
                                         style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold),
                                       ),
                                     ),
@@ -188,24 +234,62 @@ class ProductListItem extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
                 child: Row(
                   children: [
+                    // Quantity Control
+                    if (canAddToCart)
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey[300]!),
+                          borderRadius: BorderRadius.circular(4.r),
+                        ),
+                        margin: EdgeInsets.only(right: 10.w),
+                        child: Row(
+                          children: [
+                            InkWell(
+                              onTap: _decrementQty,
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 5.h),
+                                child: Icon(Icons.remove, size: 16.sp, color: Colors.grey[600]),
+                              ),
+                            ),
+                            Container(
+                              width: 30.w,
+                              alignment: Alignment.center,
+                               child: Text(
+                                  _quantity.toString(),
+                                  style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.bold),
+                               ),
+                            ),
+                            InkWell(
+                              onTap: _incrementQty,
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 5.h),
+                                child: Icon(Icons.add, size: 16.sp, color: Colors.grey[600]),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
                     Expanded(
                       flex: 6,
                       child: InkWell(
-                        onTap: canAddToCart ? onAddToCart : null,
+                        onTap: canAddToCart && widget.onAddToCart != null 
+                             ? () => widget.onAddToCart!(_quantity) 
+                             : null,
                         child: Container(
-                          height: 40.h, // Standardized
+                          height: 40.h,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: canAddToCart ? AppTheme.tealColor : AppTheme.redColor,
                             borderRadius: BorderRadius.circular(4.r),
                           ),
-                          child: FittedBox( // Prevent overflow
+                          child: FittedBox(
                             fit: BoxFit.scaleDown,
                             child: Text(
                                isOutOfStock 
                                   ? "Out Of Stock" 
-                                  : (item.addedToCart == "Yes" 
-                                      ? "Update Cart [${item.addedQty ?? '1'}]" 
+                                  : (widget.item.addedToCart == "Yes" 
+                                      ? "Update Cart [${widget.item.addedQty ?? '1'}]" 
                                       : "Add To Cart"),
                                style: TextStyle(color: Colors.white, fontSize: 13.sp, fontWeight: FontWeight.normal),
                             ),
@@ -218,9 +302,9 @@ class ProductListItem extends StatelessWidget {
                       child: Align(
                         alignment: Alignment.centerRight,
                         child: InkWell(
-                          onTap: onFavorite,
+                          onTap: widget.onFavorite,
                           child: Image.asset(
-                            item.isFavourite == "Yes" ? "assets/images/favadded.png" : "assets/images/fav_new.png",
+                            widget.item.isFavourite == "Yes" ? "assets/images/favadded.png" : "assets/images/fav_new.png",
                             width: 35.w,
                             height: 35.w,
                           ),
