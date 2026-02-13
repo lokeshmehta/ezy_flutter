@@ -3,6 +3,8 @@ import '../../data/datasources/auth_remote_data_source.dart';
 import '../../data/models/cart_models.dart';
 import '../../data/models/profile_models.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:go_router/go_router.dart';
+import '../../config/routes/app_routes.dart';
 import '../../core/constants/app_messages.dart';
 import '../../core/constants/storage_keys.dart';
 
@@ -299,7 +301,25 @@ class CheckoutProvider extends ChangeNotifier {
     notifyListeners();
   }
   
+
   // Navigation
+  void goToStep(int step) {
+    setStep(step);
+  }
+
+  Future<void> placeOrder(BuildContext context) async {
+       final result = await createOrder();
+       if(result != null && result['status'] == 200) {
+           if(context.mounted) {
+               context.go(AppRoutes.orderSuccess, extra: result);
+           }
+       } else {
+           if(context.mounted) {
+               ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(_errorMessage)));
+           }
+       }
+  }
+
   void nextStep() {
       if(_currentStep == 0) {
           // Validate Cart Step

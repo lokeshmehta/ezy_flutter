@@ -62,7 +62,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     String title = "My Cart";
     if(provider.currentStep == 1) title = "Address Details";
     if(provider.currentStep == 2) title = "Select Payment Method";
-    if(provider.currentStep == 3) title = "Preview Order";
+    if(provider.currentStep == 3) title = "Review Details";
 
     return PopScope(
       canPop: provider.currentStep == 0,

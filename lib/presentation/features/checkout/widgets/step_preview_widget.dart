@@ -2,172 +2,320 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 import '../../../providers/checkout_provider.dart';
 import '../../../../core/constants/app_theme.dart';
-import '../../../../config/routes/app_routes.dart';
 
 
 
-class StepPreviewWidget extends StatefulWidget {
+class StepPreviewWidget extends StatelessWidget {
   const StepPreviewWidget({super.key});
 
   @override
-  State<StepPreviewWidget> createState() => _StepPreviewWidgetState();
-}
-
-class _StepPreviewWidgetState extends State<StepPreviewWidget> {
-  @override
   Widget build(BuildContext context) {
     final provider = context.watch<CheckoutProvider>();
-    final validItems = provider.cartItems; 
-    
+    // Use cartResult.brands for grouped items, fallback to cartItems if empty
+    final brands = provider.cartResult?.brands;
+    final flatItems = provider.cartItems;
+    final hasBrands = brands != null && brands.isNotEmpty;
+
     return SingleChildScrollView(
       padding: EdgeInsets.all(16.w),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _buildSectionTitle("Review Items"),
-          SizedBox(height: 10.h),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: validItems.length,
-            itemBuilder: (ctx, i) {
-                final item = validItems[i];
-                return Card(
-                    margin: EdgeInsets.only(bottom: 8.h),
-                    child: ListTile(
-                        leading: Image.network(item.image ?? "", width: 50.w, height: 50.w, errorBuilder: (_,__,___) => const Icon(Icons.image)),
-                        title: Text(item.title ?? "", maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.sp)),
-                        subtitle: Text("Qty: ${item.qty} | ${item.orderedAs}", style: TextStyle(fontSize: 12.sp)),
-                        trailing: Text("AUD ${item.salePrice}", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp)),
-                    ),
-                );
-            },
+          // 1. Order Details Card
+          _buildCard(
+            context,
+            title: "Order Details",
+            onEdit: () => provider.goToStep(0), // Go to Cart
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Items Header
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Items", style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: Colors.grey.shade600)),
+                    Text("Qty", style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: Colors.blue.shade900)),
+                  ],
+                ),
+                SizedBox(height: 10.h),
+                const Divider(),
+                
+                // Grouped Items (by Brand) OR Flat list
+                if (hasBrands)
+                  ...brands.map((brand) {
+                    if (brand == null || brand.products == null) return const SizedBox.shrink();
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 10.h),
+                        Text(
+                          brand.brandName ?? "Unknown Vendor",
+                          style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.bold, color: Colors.grey.shade800),
+                        ),
+                        SizedBox(height: 5.h),
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey.shade300),
+                            borderRadius: BorderRadius.circular(4.r),
+                          ),
+                          child: Column(
+                            children: brand.products!.map((product) {
+                              if (product == null) return const SizedBox.shrink();
+                              return Padding(
+                                padding: EdgeInsets.all(8.w),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            product.title ?? "",
+                                            style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: AppTheme.primaryColor),
+                                          ),
+                                          SizedBox(height: 4.h),
+                                          Text(
+                                            "AUD ${product.salePrice}",
+                                            style: TextStyle(fontSize: 13.sp, color: Colors.grey.shade700),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Text(
+                                      "${product.qty}",
+                                      style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: AppTheme.primaryColor),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ],
+                    );
+                  })
+                else
+                   ...flatItems.map((item) {
+                      return Padding(
+                         padding: EdgeInsets.symmetric(vertical: 5.h),
+                         child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                               Expanded(
+                                 child: Text(item.title ?? "", style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: AppTheme.primaryColor)),
+                               ),
+                               Text("${item.qty}", style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: AppTheme.primaryColor)),
+                            ]
+                         ),
+                      );
+                   }),
+
+                SizedBox(height: 15.h),
+                const Divider(),
+                SizedBox(height: 10.h),
+
+                // Price Breakdown
+                _buildSummaryRow(provider.cartResult?.subTotalHeading ?? "Sub-Total", "AUD ${provider.subTotal}"),
+                _buildSummaryRow("Ex. GST :", "AUD ${provider.subTotal}", isBlueValue: true),
+                
+                if((double.tryParse(provider.shippingCharge) ?? 0) > 0)
+                   _buildSummaryRow("Shipping :", "AUD ${provider.shippingCharge}", isBlueValue: true),
+                   
+                if((double.tryParse(provider.supplierCharge) ?? 0) > 0)
+                   _buildSummaryRow("Supplier Charges :", "AUD ${provider.supplierCharge}", isBlueValue: true),
+
+                if((double.tryParse(provider.taxTotal) ?? 0) > 0)
+                   _buildSummaryRow("GST :", "AUD ${provider.taxTotal}", isBlueValue: true),
+
+                if((double.tryParse(provider.couponDiscount) ?? 0) > 0)
+                    _buildSummaryRow("Coupon (${provider.couponName})", "-AUD ${provider.couponDiscount}", isDiscount: true),
+
+                SizedBox(height: 5.h),
+                Text("Grand Total", style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: Colors.grey.shade700)),
+                _buildSummaryRow("Inc. GST :", "AUD ${provider.totalAmount}", isBlueValue: true),
+              ],
+            ),
           ),
-          
-          SizedBox(height: 20.h),
-          _buildSectionTitle("Order Summary"),
-          SizedBox(height: 10.h),
-          // Price Breakdown
-           _buildPriceRow("Sub Total", provider.subTotal),
-          if (double.tryParse(provider.discount) != 0)
-              _buildPriceRow("Discount", "- ${provider.discount}", color: AppTheme.successGreen),
-          
-          if (double.tryParse(provider.couponDiscount) != 0)
-              _buildPriceRow("Coupon (${provider.couponName})", "- ${provider.couponDiscount}", color: AppTheme.successGreen),
 
-          if (double.tryParse(provider.shippingCharge) != 0)
-              _buildPriceRow("Shipping", provider.shippingCharge),
-          
-          if (double.tryParse(provider.supplierCharge) != 0)
-              _buildPriceRow("Supplier Surcharge", provider.supplierCharge),
+          SizedBox(height: 15.h),
 
-          if (double.tryParse(provider.taxTotal) != 0)
-              _buildPriceRow("Tax (GST)", provider.taxTotal),
-          
-          const Divider(thickness: 1),
-          _buildPriceRow("Total Amount", provider.totalAmount, isBold: true, size: 16.sp),
+          // 2. Address Details Card
+          _buildCard(
+            context,
+            title: "Address Details",
+            onEdit: () => provider.goToStep(1), // Go to Address
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Delivery Address", style: TextStyle(fontSize: 12.sp, color: Colors.grey)),
+                SizedBox(height: 2.h),
+                Text(
+                  _formatAddress(
+                    provider.shipFirstNameController.text,
+                    provider.shipLastNameController.text,
+                    provider.shipStreetController.text,
+                    provider.shipCityController.text,
+                    provider.shipStateController.text,
+                    provider.shipPostCodeController.text,
+                  ),
+                  style: TextStyle(fontSize: 13.sp, color: AppTheme.primaryColor, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10.h),
+                Text("Billing Address", style: TextStyle(fontSize: 12.sp, color: Colors.grey)),
+                SizedBox(height: 2.h),
+                Text(
+                  _formatAddress(
+                    provider.billFirstNameController.text, // Assuming Billing is same or populated
+                    provider.billLastNameController.text,
+                    provider.billStreetController.text,
+                    provider.billCityController.text,
+                    provider.billStateController.text,
+                    provider.billPostCodeController.text,
+                  ),
+                  style: TextStyle(fontSize: 13.sp, color: AppTheme.primaryColor, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
 
-          
+          SizedBox(height: 15.h),
+
+          // 3. Payment Details Card
+          _buildCard(
+            context,
+            title: "Payment Details",
+            onEdit: () => provider.goToStep(2), // Go to Payment
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Payment Method", style: TextStyle(fontSize: 12.sp, color: Colors.grey)),
+                SizedBox(height: 2.h),
+                Text(
+                  provider.paymentMethod.isNotEmpty ? provider.paymentMethod : "Not Selected",
+                  style: TextStyle(fontSize: 13.sp, color: AppTheme.primaryColor, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
 
           SizedBox(height: 30.h),
-          
-          // Navigation Buttons
-          Row(
-            children: [
-               // Back Button
-               Expanded(
-                 child: InkWell(
-                   onTap: () {
-                      provider.previousStep();
-                   },
-                   child: Container(
-                     height: 45.h,
-                     decoration: BoxDecoration(
-                       color: AppTheme.tealColor, // Filled Teal
-                       borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r),
-                     ),
-                     child: Row(
-                       mainAxisAlignment: MainAxisAlignment.center,
-                       children: [
-                         Icon(Icons.arrow_back_ios, color: Colors.white, size: 16.sp),
-                         SizedBox(width: 8.w),
-                         Text("Back", style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: Colors.white)),
-                       ],
-                     ),
-                   ),
-                 ),
-               ),
-               SizedBox(width: 15.w),
-               
-               // Submit Button
-               Expanded(
-                 child: InkWell(
-                   onTap: provider.isLoading 
-                     ? null 
-                     : () async {
-                         final response = await provider.createOrder();
-                         if(!context.mounted) return;
-                         
-                         if(response != null) {
-                            // Construct simple object or pass response directly if OrderSuccessScreen handles it
-                            final orderData = {
-                                'order_id': response['order_id'], 
-                                'transaction_id': response['transaction_id'], 
-                                'payment_type': provider.paymentMethod,
-                                'success_msg': response['message']
-                            };
-                            
-                            context.go(AppRoutes.orderSuccess, extra: orderData); // Ensure AppRoutes.orderSuccess expects this map
-                         } else {
-                             ScaffoldMessenger.of(context).showSnackBar(
-                                 SnackBar(content: Text(provider.errorMessage.isNotEmpty ? provider.errorMessage : "Order Failed"), backgroundColor: AppTheme.redColor)
-                             );
-                         } 
-                   },
-                   child: Container(
-                     height: 45.h,
-                     decoration: BoxDecoration(
-                       color: AppTheme.tealColor,
-                       borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r),
-                     ),
-                     child: Center(
-                        child: provider.isLoading 
-                          ? SizedBox(width: 20.w, height: 20.w, child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) 
-                          : Text("Proceed to Pay", style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold, color: Colors.white)),
-                     ),
-                   ),
-                 ),
-               ),
-            ],
+
+          // Submit Button
+          SizedBox(
+            width: double.infinity,
+            height: 45.h,
+            child: ElevatedButton(
+              onPressed: provider.isLoading
+                  ? null
+                  : () {
+                      provider.placeOrder(context);
+                    },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFF5A623), // Orange
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5.r),
+                ),
+                elevation: 2,
+              ),
+              child: provider.isLoading
+                  ? SizedBox(
+                      width: 20.w,
+                      height: 20.w,
+                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                    )
+                  : Text(
+                      "Submit Order",
+                      style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+                    ),
+            ),
           ),
-          SizedBox(height: 50.h),
+          SizedBox(height: 20.h),
         ],
       ),
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: TextStyle(
-        fontSize: 16.sp,
-        fontWeight: FontWeight.bold,
-        color: AppTheme.textColor,
+  String _formatAddress(String fName, String lName, String street, String city, String state, String zip) {
+    List<String> parts = [];
+    String name = "$fName $lName".trim();
+    if(name.isNotEmpty) parts.add(name);
+    // Logic matches Android: "rajat mehra, malviya nagar, jaipur, jaipur rajasthan 302017"
+    if(street.isNotEmpty) parts.add(street);
+    if(city.isNotEmpty) parts.add(city);
+    String stateZip = "$state $zip".trim();
+    if(stateZip.isNotEmpty) parts.add(stateZip);
+    
+    if(parts.isEmpty) return "Not provided";
+    return parts.join(", "); 
+  }
+
+  Widget _buildCard(BuildContext context, {required String title, required VoidCallback onEdit, required Widget child}) {
+    return Container(
+      padding: EdgeInsets.all(15.w),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(color: Colors.grey.withValues(alpha: 0.2), blurRadius: 4, spreadRadius: 1),
+        ],
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.primaryColor, // Blue
+                ),
+              ),
+              InkWell(
+                onTap: onEdit,
+                child: Icon(Icons.edit_outlined, color: AppTheme.primaryColor, size: 20.sp),
+              ),
+            ],
+          ),
+          SizedBox(height: 10.h),
+          const Divider(),
+          SizedBox(height: 10.h),
+          child,
+        ],
       ),
     );
   }
 
-  Widget _buildPriceRow(String label, String value, {bool isBold = false, Color color = AppTheme.blackColor, double? size}) {
+  Widget _buildSummaryRow(String label, String value, {bool isBlueValue = false, bool isDiscount = false, bool isGrandTotal = false}) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 6.h),
+      padding: EdgeInsets.only(bottom: 8.h),
       child: Row(
+        crossAxisAlignment: isGrandTotal ? CrossAxisAlignment.start : CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontSize: size ?? 14.sp, fontWeight: isBold ? FontWeight.bold : FontWeight.normal, color: AppTheme.darkGrayColor)),
-          Text(value, style: TextStyle(fontSize: size ?? 14.sp, fontWeight: isBold ? FontWeight.bold : FontWeight.normal, color: color)),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: isGrandTotal ? FontWeight.bold : FontWeight.normal,
+              color: Colors.grey.shade700
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.bold,
+              color: isDiscount ? Colors.red : (isBlueValue ? AppTheme.primaryColor : Colors.black),
+            ),
+          ),
         ],
       ),
     );
