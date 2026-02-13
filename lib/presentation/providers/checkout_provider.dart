@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import '../../data/datasources/auth_remote_data_source.dart';
 import '../../data/models/cart_models.dart';
 import '../../data/models/profile_models.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/constants/app_messages.dart';
+import '../../core/constants/storage_keys.dart';
 
 class CheckoutProvider extends ChangeNotifier {
   final AuthRemoteDataSource authRemoteDataSource;
@@ -93,6 +95,10 @@ class CheckoutProvider extends ChangeNotifier {
   // Payment State
   String _paymentMethod = ""; // "COD" or "Online Payment"
   String get paymentMethod => _paymentMethod;
+  
+  List<String> _availablePaymentMethods = [];
+  List<String> get availablePaymentMethods => _availablePaymentMethods;
+
   final TextEditingController couponController = TextEditingController();
   final TextEditingController orderNotesController = TextEditingController();
 
@@ -108,6 +114,9 @@ class CheckoutProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
+      // 0. Load Payment Methods (Synced from Company Preferences)
+      await _loadPaymentMethods();
+
       // 1. Fetch Cart Details First (Essential for Step 0)
       await refreshCartSummary(customerId, accessToken);
 
@@ -140,6 +149,31 @@ class CheckoutProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<void> _loadPaymentMethods() async {
+      final prefs = await SharedPreferences.getInstance();
+      String methodsStr = prefs.getString(StorageKeys.paymentMethods) ?? "";
+      
+      // Android Logic: replace("COD","Cash on Delivery").split(",")
+      // Note: Android does replace BEFORE split.
+      // Make sure we handle potential spaces or empty strings.
+      
+      if(methodsStr.isNotEmpty) {
+          // Replace COD first
+          methodsStr = methodsStr.replaceAll("COD", "Cash on Delivery");
+          
+          _availablePaymentMethods = methodsStr.split(",").where((s) => s.isNotEmpty).toList();
+          
+          // Auto-select first if available and nothing selected
+          if(_availablePaymentMethods.isNotEmpty && _paymentMethod.isEmpty) {
+              _paymentMethod = _availablePaymentMethods[0];
+          }
+      } else {
+          _availablePaymentMethods = ["Cash on Delivery"]; // Fallback default?
+          _paymentMethod = "Cash on Delivery";
+      }
+      notifyListeners();
   }
   
   // Cart Logic

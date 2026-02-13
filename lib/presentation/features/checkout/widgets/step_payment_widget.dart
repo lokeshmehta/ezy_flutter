@@ -14,17 +14,11 @@ class StepPaymentWidget extends StatefulWidget {
 }
 
 class _StepPaymentWidgetState extends State<StepPaymentWidget> {
-  // Hardcoded mirroring Android preference logic default
-  final List<String> _paymentMethods = ["Cash on Delivery", "Online Payment"];
 
   @override
   void initState() {
     super.initState();
-    // Set default payment method if not set
-    final provider = context.read<CheckoutProvider>();
-    if(provider.paymentMethod.isEmpty) {
-       provider.selectPaymentMethod("Cash on Delivery");
-    }
+    // Payment method default selection is now handled in CheckoutProvider._loadPaymentMethods()
   }
 
   @override
@@ -197,12 +191,12 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
                       isExpanded: true,
-                      value: provider.paymentMethod.isNotEmpty && _paymentMethods.contains(provider.paymentMethod) 
+                      value: provider.paymentMethod.isNotEmpty && provider.availablePaymentMethods.contains(provider.paymentMethod) 
                           ? provider.paymentMethod 
-                          : _paymentMethods[0],
+                          : (provider.availablePaymentMethods.isNotEmpty ? provider.availablePaymentMethods[0] : null), // Safe fallback
                       icon: Icon(Icons.keyboard_arrow_down),
                       style: TextStyle(color: Colors.black, fontSize: 14.sp, fontWeight: FontWeight.bold),
-                      items: _paymentMethods.map((String value) {
+                      items: provider.availablePaymentMethods.map((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value),
@@ -213,6 +207,7 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
                           provider.selectPaymentMethod(val);
                         }
                       },
+                      hint: Text("Select Payment Method", style: TextStyle(color: Colors.grey)), 
                     ),
                   ),
                 ),
