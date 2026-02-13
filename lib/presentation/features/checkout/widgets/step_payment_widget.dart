@@ -3,10 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import '../../../providers/checkout_provider.dart';
-import '../../../../core/constants/app_theme.dart';
 import '../../../../config/routes/app_routes.dart';
 import '../../../../core/constants/app_messages.dart';
-
 
 class StepPaymentWidget extends StatefulWidget {
   const StepPaymentWidget({super.key});
@@ -38,199 +36,258 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionTitle("Select Payment Method"),
-          SizedBox(height: 10.h),
-          
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 10.w),
-            decoration: BoxDecoration(
-              border: Border.all(color: AppTheme.hintColor),
-              borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
-            ),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                isExpanded: true,
-                value: provider.paymentMethod.isNotEmpty && _paymentMethods.contains(provider.paymentMethod) 
-                    ? provider.paymentMethod 
-                    : _paymentMethods[0],
-                items: _paymentMethods.map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (val) {
-                  if (val != null) {
-                    provider.selectPaymentMethod(val);
-                  }
-                },
-              ),
-            ),
-          ),
-          
-          SizedBox(height: 20.h),
-          _buildSectionTitle("Promo Code"),
-          SizedBox(height: 10.h),
+          // "Order Summary" Header
           Row(
             children: [
-              Expanded(
-                child: TextFormField(
-                  controller: provider.couponController,
+              Icon(Icons.description_outlined, color: Color(0xFF0038FF), size: 20.sp), // Document Icon
+              SizedBox(width: 8.w),
+              Text(
+                "Order Summary",
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF0038FF), // Blue
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 10.h),
+
+          // Main Card
+          Container(
+            padding: EdgeInsets.all(15.w),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(5.r),
+              boxShadow: [
+                BoxShadow(color: Colors.grey.withValues(alpha: 0.2), blurRadius: 5, spreadRadius: 1),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Additional Information
+                _buildSectionTitle("Additional Information"),
+                SizedBox(height: 5.h),
+                Text("Order Notes", style: TextStyle(fontSize: 14.sp, color: Colors.grey.shade700, fontWeight: FontWeight.bold)),
+                SizedBox(height: 5.h),
+                TextFormField(
+                  controller: provider.orderNotesController,
+                  maxLines: 4,
                   decoration: InputDecoration(
-                    hintText: "Enter Coupon Code",
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                    hintText: "Notes about your order, e.g special notes for delivery",
+                    hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13.sp),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
-                      borderSide: const BorderSide(color: AppTheme.hintColor),
+                      borderRadius: BorderRadius.circular(5.r),
+                      borderSide: BorderSide(color: Colors.grey.shade400),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.r),
+                      borderSide: BorderSide(color: Colors.grey.shade400),
+                    ),
+                    contentPadding: EdgeInsets.all(10.w),
+                  ),
+                ),
+
+                SizedBox(height: 15.h),
+
+                // Use Coupon Code
+                _buildSectionTitle("Use Coupon Code"),
+                SizedBox(height: 5.h),
+                Text("Enter your coupon code if you have one.", style: TextStyle(fontSize: 13.sp, color: Colors.grey.shade700)),
+                SizedBox(height: 10.h),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: SizedBox(
+                        height: 40.h,
+                        child: TextFormField(
+                          controller: provider.couponController,
+                          decoration: InputDecoration(
+                            hintText: "Enter Promo Code",
+                            hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13.sp),
+                            contentPadding: EdgeInsets.symmetric(horizontal: 10.w),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.r),
+                              borderSide: BorderSide(color: Colors.grey.shade400),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.r),
+                              borderSide: BorderSide(color: Colors.grey.shade400),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 10.w),
+                    Expanded(
+                      flex: 1,
+                      child: SizedBox(
+                        height: 40.h,
+                        child: ElevatedButton(
+                          onPressed: provider.isLoading 
+                             ? null 
+                             : () async {
+                                 bool success = await provider.applyCoupon();
+                                 if(!context.mounted) return;
+                                 if(success) {
+                                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppMessages.couponAppliedSuccessfully)));
+                                 }
+                           },
+                          style: ElevatedButton.styleFrom(
+                             backgroundColor: Color(0xFFF5A623), // Orange
+                             foregroundColor: Colors.white,
+                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.r)),
+                             padding: EdgeInsets.zero,
+                          ),
+                          child: provider.isLoading 
+                              ? SizedBox(width: 20.w, height: 20.w, child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) 
+                              : Text("Apply", style: TextStyle(fontSize: 14.sp)),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                if(provider.errorMessage.isNotEmpty)
+                   Padding(
+                     padding: EdgeInsets.only(top: 5.h),
+                     child: Text(provider.errorMessage, style: TextStyle(color: Colors.red, fontSize: 12.sp)),
+                   ),
+
+                SizedBox(height: 15.h),
+
+                // Order Details
+                _buildSectionTitle("Order Details"),
+                SizedBox(height: 10.h),
+                // Price Breakdown logic (matching Step 1 refined)
+                _buildSummaryRow(provider.cartResult?.subTotalHeading ?? "Sub-Total", "AUD ${provider.subTotal}"),
+                
+                // Ex GST (Blue)
+                _buildSummaryRow("Ex. GST :", "AUD ${provider.subTotal}", isBlueValue: true), // Assuming logic same as step 1
+
+                if((double.tryParse(provider.shippingCharge) ?? 0) > 0)
+                   _buildSummaryRow("Shipping :", "AUD ${provider.shippingCharge}", isBlueValue: true),
+
+                if((double.tryParse(provider.supplierCharge) ?? 0) > 0)
+                   _buildSummaryRow("Supplier Charges :", "AUD ${provider.supplierCharge}", isBlueValue: true),
+                   
+                _buildSummaryRow("GST :", "AUD ${provider.taxTotal}", isBlueValue: true),
+                
+                if((double.tryParse(provider.couponDiscount) ?? 0) > 0)
+                    _buildSummaryRow("Coupon (${provider.couponName})", "-AUD ${provider.couponDiscount}", isDiscount: true),
+                
+                SizedBox(height: 5.h),
+                Text("Grand Total", style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: Colors.grey.shade700)),
+                _buildSummaryRow("Inc. GST :", "AUD ${provider.totalAmount}", isBlueValue: true),
+
+                SizedBox(height: 15.h),
+                
+                // Payment Method
+                _buildSectionTitle("Payment Method"),
+                SizedBox(height: 5.h),
+                Text("Choose Your Payment Method", style: TextStyle(fontSize: 13.sp, color: Colors.grey.shade700)),
+                SizedBox(height: 5.h),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10.w),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black), // Screenshot looks like black border
+                    borderRadius: BorderRadius.circular(5.r),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      isExpanded: true,
+                      value: provider.paymentMethod.isNotEmpty && _paymentMethods.contains(provider.paymentMethod) 
+                          ? provider.paymentMethod 
+                          : _paymentMethods[0],
+                      icon: Icon(Icons.keyboard_arrow_down),
+                      style: TextStyle(color: Colors.black, fontSize: 14.sp, fontWeight: FontWeight.bold),
+                      items: _paymentMethods.map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (val) {
+                        if (val != null) {
+                          provider.selectPaymentMethod(val);
+                        }
+                      },
                     ),
                   ),
                 ),
-              ),
-              SizedBox(width: 10.w),
-              ElevatedButton(
-                onPressed: provider.isLoading 
-                   ? null 
-                   : () async {
-                       bool success = await provider.applyCoupon();
-                       if(!context.mounted) return;
-                       if(success) {
-                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppMessages.couponAppliedSuccessfully)));
-                       }
-                 },
-                style: ElevatedButton.styleFrom(
-                   backgroundColor: AppTheme.orderSuccessTeal,
-                   foregroundColor: AppTheme.white,
-                   minimumSize: Size(0, 45.h),
-                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r)),
-                   padding: EdgeInsets.symmetric(horizontal: 20.w)
-                ),
-                child: provider.isLoading 
-                    ? SizedBox(width: 20.w, height: 20.w, child: const CircularProgressIndicator(color: AppTheme.white, strokeWidth: 2)) 
-                    : const Text("Apply"),
-              )
-            ],
-          ),
-          if(provider.errorMessage.isNotEmpty)
-             Padding(
-               padding: EdgeInsets.only(top: 5.h),
-               child: Text(provider.errorMessage, style: TextStyle(color: AppTheme.redColor, fontSize: 12.sp)),
-             ),
-
-          SizedBox(height: 20.h),
-          _buildSectionTitle("Order Notes"),
-          SizedBox(height: 10.h),
-          TextFormField(
-            controller: provider.orderNotesController,
-            maxLines: 4,
-            decoration: InputDecoration(
-              hintText: "Reason for ordering...", // Android hint
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
-                borderSide: BorderSide(color: Colors.grey.shade300),
-              ),
+              ],
             ),
           ),
-          
-          SizedBox(height: 20.h),
-          const Divider(),
-          // Price Breakdown
-          _buildPriceRow("Sub Total", provider.subTotal),
-          if (double.tryParse(provider.discount) != 0)
-              _buildPriceRow("Discount", "- ${provider.discount}", color: AppTheme.successGreen),
-          
-          if (double.tryParse(provider.couponDiscount) != 0)
-              _buildPriceRow("Coupon (${provider.couponName})", "- ${provider.couponDiscount}", color: AppTheme.successGreen),
-
-          if (double.tryParse(provider.shippingCharge) != 0)
-              _buildPriceRow("Shipping", provider.shippingCharge),
-          
-          if (double.tryParse(provider.supplierCharge) != 0)
-              _buildPriceRow("Supplier Surcharge", provider.supplierCharge),
-
-          if (double.tryParse(provider.taxTotal) != 0)
-              _buildPriceRow("Tax (GST)", provider.taxTotal),
-          
-          const Divider(thickness: 1),
-          _buildPriceRow("Total Amount", provider.totalAmount, isBold: true, size: 16.sp),
-          
 
           SizedBox(height: 30.h),
           
-          // Navigation Buttons
+          // Navigation Buttons (Back | 3/3 | Place Order)
           Row(
             children: [
-               // Back Button
+               // Back Button (Orange)
                Expanded(
-                 child: InkWell(
-                   onTap: () {
-                      provider.previousStep();
-                   },
-                   child: Container(
-                     height: 45.h,
-                     decoration: BoxDecoration(
-                       color: AppTheme.tealColor, // Filled Teal as per plan
-                       borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r),
+                 flex: 3,
+                 child: SizedBox(
+                   height: 40.h,
+                   child: ElevatedButton(
+                     onPressed: () {
+                        provider.previousStep();
+                     },
+                     style: ElevatedButton.styleFrom(
+                       backgroundColor: Color(0xFFF5A623), // Orange
+                       foregroundColor: Colors.white,
+                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.r)),
+                       padding: EdgeInsets.zero,
                      ),
                      child: Row(
                        mainAxisAlignment: MainAxisAlignment.center,
                        children: [
-                         Icon(Icons.arrow_back_ios, color: Colors.white, size: 16.sp),
-                         SizedBox(width: 8.w),
-                         Text("Back", style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: Colors.white)),
+                         Icon(Icons.arrow_back_ios, size: 14.sp, color: Colors.white),
+                         Text(" Back", style: TextStyle(fontSize: 14.sp)),
                        ],
                      ),
                    ),
                  ),
                ),
-               SizedBox(width: 15.w),
                
-               // Next / Place Order Button
+               // 3/3 Indicator
                Expanded(
-                 child: InkWell(
-                   onTap: () {
-                      if(provider.validatePaymentStep()) {
-                          if (provider.isLastStep) {
-                              _submitOrder(context, provider);
-                          } else {
-                              provider.nextStep();
-                          }
-                      } else {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppMessages.pleaseSelectPaymentMethod)));
-                      }
-                   },
-                   child: Container(
-                     height: 45.h,
-                     decoration: BoxDecoration(
-                       color: AppTheme.tealColor,
-                       borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r),
+                 flex: 4,
+                 child: Center(
+                   child: Text("3/3", style: TextStyle(color: Color(0xFF0038FF), fontSize: 15.sp, fontWeight: FontWeight.bold)),
+                 ),
+               ),
+               
+               // Place Order Button (Orange)
+               Expanded(
+                 flex: 4,
+                 child: SizedBox(
+                   height: 40.h,
+                   child: ElevatedButton(
+                     onPressed: () {
+                        if(provider.validatePaymentStep()) {
+                            _submitOrder(context, provider);
+                        } else {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppMessages.pleaseSelectPaymentMethod)));
+                        }
+                     },
+                     style: ElevatedButton.styleFrom(
+                       backgroundColor: Color(0xFFF5A623), // Orange
+                       foregroundColor: Colors.white,
+                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.r)),
+                       padding: EdgeInsets.zero,
                      ),
-                     child: Row(
-                       mainAxisAlignment: MainAxisAlignment.center,
-                       children: [
-                         if(provider.isLoading)
-                            SizedBox(width: 20.w, height: 20.w, child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                         else ...[
-                            Text(provider.isLastStep ? "Place Order" : "Next", style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: Colors.white)),
-                            if(!provider.isLastStep) ...[
-                               SizedBox(width: 8.w),
-                               Icon(Icons.arrow_forward_ios, color: Colors.white, size: 16.sp),
-                            ]
-                         ]
-                       ],
-                     ),
+                     child: provider.isLoading 
+                         ? SizedBox(width: 20.w, height: 20.w, child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) 
+                         : Text("Place Order", style: TextStyle(fontSize: 14.sp)),
                    ),
                  ),
                ),
             ],
           ),
           
-          SizedBox(height: 30.h),
-          
-          if(provider.isLastStep)
-             Padding(
-               padding: EdgeInsets.only(bottom: 20.h),
-               child: Center(child: Text("By placing an order you agree to our Terms", style: TextStyle(color: Colors.grey, fontSize: 12.sp))),
-             ),
+          SizedBox(height: 20.h),
         ],
       ),
     );
@@ -240,28 +297,31 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
     return Text(
       title,
       style: TextStyle(
-        fontSize: 16.sp,
+        fontSize: 15.sp,
         fontWeight: FontWeight.bold,
-        color: AppTheme.textColor,
+        color: Color(0xFF0038FF), // Blue
       ),
     );
   }
 
-  Widget _buildPriceRow(String label, String value, {bool isBold = false, Color color = AppTheme.blackColor, double? size}) {
+  Widget _buildSummaryRow(String label, String value, {bool isDiscount = false, bool isBlueValue = false}) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 6.h),
+      padding: EdgeInsets.symmetric(vertical: 4.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontSize: size ?? 14.sp, fontWeight: isBold ? FontWeight.bold : FontWeight.normal, color: AppTheme.darkGrayColor)),
-          Text(value, style: TextStyle(fontSize: size ?? 14.sp, fontWeight: isBold ? FontWeight.bold : FontWeight.normal, color: color)),
+          Text(label, style: TextStyle(fontSize: 13.sp, color: Colors.grey.shade700, fontWeight: FontWeight.w600)), 
+          Text(value, style: TextStyle(
+              fontSize: 14.sp, 
+              color: isDiscount ? Colors.red : (isBlueValue ? Color(0xFF0038FF) : Colors.black), 
+              fontWeight: FontWeight.bold 
+          )),
         ],
       ),
     );
   }
   
   void _submitOrder(BuildContext context, CheckoutProvider provider) async {
-       // Assuming createOrder returns Map<String, dynamic>?
        final response = await provider.createOrder();
        if(!context.mounted) return;
        
