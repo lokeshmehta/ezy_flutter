@@ -25,6 +25,7 @@ import 'widgets/home_blocks_section.dart';
 import 'widgets/logout_dialog.dart';
 import 'widgets/popular_ads_section.dart';
 import 'widgets/popular_categories_section.dart';
+import '../../widgets/custom_loader_widget.dart';
 import 'widgets/promotions_section.dart';
 import 'widgets/section_header_widget.dart';
 import 'widgets/standard_product_sections.dart';
@@ -192,7 +193,7 @@ class _DashboardScreenState extends State<DashboardScreen>
       body: Consumer<DashboardProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: CustomLoaderWidget(size: 40.w));
           }
           if (provider.errorMsg != null) {
             // Android parity: Show toast/dialog but allow retry? For now simplified error screen

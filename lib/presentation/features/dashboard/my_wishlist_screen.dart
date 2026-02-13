@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_theme.dart';
 import '../../../config/routes/app_routes.dart';
+import '../../widgets/custom_loader_widget.dart';
 
 class MyWishlistScreen extends StatefulWidget {
   const MyWishlistScreen({super.key});
@@ -48,7 +49,7 @@ class _MyWishlistScreenState extends State<MyWishlistScreen> {
       body: Consumer<DashboardProvider>(
         builder: (context, provider, child) {
           if (provider.isFetchingMyWishlist) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: CustomLoaderWidget(size: 40.w));
           }
 
           if (provider.myWishlistItems.isEmpty && provider.myWishlistCategories.isEmpty) {

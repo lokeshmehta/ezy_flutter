@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../core/constants/app_theme.dart';
 import '../../../core/constants/assets.dart';
 import '../../../core/utils/common_methods.dart';
+import '../../widgets/custom_loader_widget.dart';
 import '../../providers/product_list_provider.dart';
 import '../../providers/dashboard_provider.dart';
 import '../dashboard/widgets/wishlist_category_dialog.dart';
@@ -124,7 +125,7 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
             child: Consumer<ProductListProvider>(
               builder: (context, provider, child) {
                 if (provider.isLoading && provider.products.isEmpty) {
-                  return const Center(child: CircularProgressIndicator());
+                  return Center(child: CustomLoaderWidget(size: 40.w));
                 }
                 
                 if (provider.products.isEmpty && !provider.isLoading) {
@@ -344,9 +345,9 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
       itemCount: provider.products.length + (provider.isLoading ? 1 : 0),
       itemBuilder: (context, index) {
         if (index == provider.products.length) {
-          return const Center(child: Padding(
-            padding: EdgeInsets.all(8.0),
-            child: CircularProgressIndicator(),
+          return Center(child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: CustomLoaderWidget(size: 30.w),
           ));
         }
         final product = provider.products[index];
@@ -376,7 +377,7 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
       itemCount: provider.products.length + (provider.isLoading ? 1 : 0),
       itemBuilder: (context, index) {
          if (index == provider.products.length) {
-           return const Center(child: CircularProgressIndicator());
+           return Center(child: CustomLoaderWidget(size: 30.w));
          }
          final product = provider.products[index];
          return ProductGridItem(

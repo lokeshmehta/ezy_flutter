@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/product_list_provider.dart';
 import '../../../providers/dashboard_provider.dart';
+import '../../../widgets/custom_loader_widget.dart';
 
 class SupplierItemWidget extends StatelessWidget {
   final String? image;
@@ -111,10 +112,7 @@ class SupplierItemWidget extends StatelessWidget {
         child: SizedBox(
           width: 20.w,
           height: 20.w,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
-          ),
+          child: CustomLoaderWidget(size: 20.w),
         ),
       ),
       errorWidget: (context, url, error) => Icon(Icons.error, size: 24.sp),
