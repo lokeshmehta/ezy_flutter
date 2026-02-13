@@ -4,7 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../providers/checkout_provider.dart';
 import '../../providers/dashboard_provider.dart';
-import '../../../core/constants/app_theme.dart';
+
+import 'package:lottie/lottie.dart';
 import '../../../config/routes/app_routes.dart';
 
 class OrderSuccessScreen extends StatefulWidget {
@@ -20,12 +21,8 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen> {
   @override
   void initState() {
     super.initState();
-    // Clear cart on success? 
-    // Usually done by Provider after CreateOrder success, but we can ensure it here.
     WidgetsBinding.instance.addPostFrameCallback((_) {
          context.read<CheckoutProvider>().clearCartLocal();
-         // Also refresh My Orders?
-         // context.read<OrdersProvider>().fetchOrders(1);
     });
   }
   
@@ -44,7 +41,7 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen> {
                           controller: emailController,
                           decoration: InputDecoration(
                               hintText: "example@email.com, test@email.com",
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppTheme.inputRadius.r))
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.r))
                           ),
                       )
                   ],
@@ -79,86 +76,99 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final orderId = widget.orderData['order_id'] ?? "";
-    final transId = widget.orderData['transaction_id'] ?? "";
-    // final paymentType = widget.orderData['payment_type'] ?? "";
-    
-    // Payment Status handling (if passed)
-    // Assuming successful order placement gets us here.
+    final orderId = widget.orderData['order_id'] ?? widget.orderData['refNo'] ?? ""; // Handle both keys
 
     return Scaffold(
-      backgroundColor: AppTheme.white,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Congratulations", style: TextStyle(color: AppTheme.white)),
-        backgroundColor: AppTheme.orderSuccessTeal,
+        title: Text(
+            "Order Success", 
+            style: TextStyle(color: const Color(0xFF0038FF), fontWeight: FontWeight.bold, fontSize: 18.sp)
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        elevation: 0,
         automaticallyImplyLeading: false,
       ),
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.all(20.w),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-               Icon(Icons.check_circle, color: AppTheme.successGreen, size: 80.sp),
-               SizedBox(height: 20.h),
-               Text(
-                   "Thank You!", 
-                   style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold, color: AppTheme.orderSuccessTeal)
-               ),
-               SizedBox(height: 10.h),
-               Text(
-                   "Your Order Placed Successfully",
-                   style: TextStyle(fontSize: 18.sp, color: AppTheme.textColor),
-                   textAlign: TextAlign.center,
-               ),
-               SizedBox(height: 20.h),
-               Text(
-                   "Order ID : #$orderId",
-                   style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
-               ),
-               if (transId.isNotEmpty && transId != "null") ...[
-                   SizedBox(height: 8.h),
-                   Text(
-                       "Transaction ID : $transId",
-                       style: TextStyle(fontSize: 14.sp, color: AppTheme.darkGrayColor),
-                   ),
-               ],
-               SizedBox(height: 40.h),
-               
-               // Buttons
-               SizedBox(
-                   width: double.infinity,
-                   height: 45.h,
-                   child: ElevatedButton(
-                       onPressed: () {
-                           context.read<DashboardProvider>().setIndex(1);
-                           context.go(AppRoutes.dashboard); 
-                       },
-                       style: ElevatedButton.styleFrom(
-                           backgroundColor: AppTheme.orderSuccessTeal,
-                           minimumSize: Size(double.infinity, 45.h),
-                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r))
-                       ),
-                       child: const Text("Continue Shopping", style: TextStyle(color: AppTheme.white)),
-                   ),
-               ),
-               SizedBox(height: 16.h),
-               SizedBox(
-                   width: double.infinity,
-                   height: 45.h,
-                   child: OutlinedButton.icon(
-                       onPressed: _showSendReceiptDialog,
-                       icon: const Icon(Icons.email_outlined, color: AppTheme.orderSuccessTeal),
-                       label: const Text("Send Receipt", style: TextStyle(color: AppTheme.orderSuccessTeal)),
-                       style: OutlinedButton.styleFrom(
-                           side: const BorderSide(color: AppTheme.orderSuccessTeal),
-                           minimumSize: Size(double.infinity, 45.h),
-                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r))
-                       ),
-                   ),
-               ),
-            ],
-          ),
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 30.w),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+             // Blue Circle Icon / Lottie Animation
+             SizedBox(
+                 width: 220.w, // Matching android dimens_220
+                 height: 220.w,
+                 child: Lottie.asset(
+                    'assets/animations/congrats_check.json',
+                    repeat: true,
+                    reverse: false,
+                    animate: true,
+                 ),
+             ),
+
+
+             // Main Message
+             Text(
+                 "Thank you for submitting your order.\nWe will validate with the supplier\nand give you the order delivery\nconfirmation.",
+                 style: TextStyle(
+                     fontSize: 16.sp, 
+                     color: const Color(0xFF1D2671), // Dark Blue text
+                     fontWeight: FontWeight.w600,
+                     height: 1.5
+                 ),
+                 textAlign: TextAlign.center,
+             ),
+             SizedBox(height: 40.h),
+
+             // Order ID
+             Text(
+                 "Order ID : #$orderId",
+                 style: TextStyle(
+                     fontSize: 16.sp, 
+                     fontWeight: FontWeight.bold,
+                     color: const Color(0xFF2E7D32) // Green color
+                 ),
+             ),
+             
+             SizedBox(height: 50.h),
+             
+             // Send Order Receipt Email Button (Orange)
+             SizedBox(
+                 width: double.infinity,
+                 height: 45.h,
+                 child: ElevatedButton(
+                     onPressed: _showSendReceiptDialog,
+                     style: ElevatedButton.styleFrom(
+                         backgroundColor: const Color(0xFFF5A623), // Orange
+                         foregroundColor: Colors.white,
+                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.r)),
+                         elevation: 2,
+                     ),
+                     child: Text("Send Order Receipt Email", style: TextStyle(fontSize: 14.sp)),
+                 ),
+             ),
+             SizedBox(height: 15.h),
+
+             // Back to Home Button (Dark Blue)
+             SizedBox(
+                 width: double.infinity,
+                 height: 45.h,
+                 child: ElevatedButton(
+                     onPressed: () {
+                         context.read<DashboardProvider>().setIndex(0); // Home Tab
+                         context.go(AppRoutes.dashboard); 
+                     },
+                     style: ElevatedButton.styleFrom(
+                         backgroundColor: const Color(0xFF1D2671), // Dark Blue
+                         foregroundColor: Colors.white,
+                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.r)),
+                         elevation: 2,
+                     ),
+                     child: Text("Back to Home", style: TextStyle(fontSize: 14.sp)),
+                 ),
+             ),
+          ],
         ),
       ),
     );
