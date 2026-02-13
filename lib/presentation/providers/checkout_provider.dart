@@ -101,8 +101,8 @@ class CheckoutProvider extends ChangeNotifier {
   String _accessToken = "";
 
   // Initialization
-  Future<void> initCheckout(String customerId, String accessToken) async {
-    _currentStep = 0; // Always start at Cart
+  Future<void> initCheckout(String customerId, String accessToken, {int initialStep = 0}) async {
+    _currentStep = initialStep;
     _customerId = customerId;
     _accessToken = accessToken;
     _isLoading = true;

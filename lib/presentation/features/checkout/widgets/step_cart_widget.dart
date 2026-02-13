@@ -74,11 +74,18 @@ class _StepCartWidgetState extends State<StepCartWidget> {
                 children: brand.products?.map((product) {
                     if (product == null) return SizedBox.shrink();
                     int pIndex = brand.products!.indexOf(product);
+
                     return CartItemRefinedWidget(
                       item: product,
                       showHeader: pIndex == 0, // Show header for first item of brand
                       brandName: brand.brandName ?? "",
                       brandId: brand.brandId ?? "",
+                      onUpdateQty: (newQty) {
+                          provider.updateCartItem(product.productId!, newQty, brand.brandId!, product.salePrice ?? "0", product.orderedAs ?? "");
+                      },
+                      onDelete: () {
+                          provider.deleteCartItem(product.productId!, brand.brandId!);
+                      },
                     );
                 }).toList() ?? [],
               );

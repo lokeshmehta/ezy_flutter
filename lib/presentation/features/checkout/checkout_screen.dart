@@ -13,7 +13,8 @@ import 'widgets/icon_stepper_widget.dart';
 import '../../../../core/constants/app_theme.dart';
 
 class CheckoutScreen extends StatefulWidget {
-  const CheckoutScreen({super.key});
+  final int initialStep;
+  const CheckoutScreen({super.key, this.initialStep = 0});
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
@@ -39,7 +40,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       final userId = prefs.getString(StorageKeys.userId) ?? "";
       
       if(mounted) {
-         context.read<CheckoutProvider>().initCheckout(userId, token);
+         context.read<CheckoutProvider>().initCheckout(userId, token, initialStep: widget.initialStep);
       }
   }
 

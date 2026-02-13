@@ -2,8 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../data/models/cart_models.dart';
-import 'package:provider/provider.dart';
-import '../../../providers/checkout_provider.dart';
 import '../../../../core/constants/app_theme.dart';
 
 class CartItemRefinedWidget extends StatelessWidget {
@@ -11,6 +9,8 @@ class CartItemRefinedWidget extends StatelessWidget {
   final bool showHeader;
   final String brandName;
   final String brandId;
+  final Function(String newQty) onUpdateQty;
+  final VoidCallback onDelete;
 
   const CartItemRefinedWidget({
     super.key,
@@ -18,6 +18,8 @@ class CartItemRefinedWidget extends StatelessWidget {
     this.showHeader = false,
     required this.brandName,
     required this.brandId,
+    required this.onUpdateQty,
+    required this.onDelete,
   });
 
   @override
@@ -111,22 +113,20 @@ class CartItemRefinedWidget extends StatelessWidget {
                                 children: [
                                    // Delete Icon
                                    InkWell(
-                                     onTap: () {
-                                        context.read<CheckoutProvider>().deleteCartItem(item.productId!, brandId);
-                                     },
+                                     onTap: onDelete,
                                      child: Padding(
                                        padding: EdgeInsets.all(2.w),
                                        child: Icon(Icons.delete, color: AppTheme.redColor, size: 28.w),
                                      ),
                                    ),
-                                   SizedBox(height: 5.h), // margin top 15 in xml roughly
+                                   SizedBox(height: 5.h), 
                                    
                                    // Qty Control Box
                                    Container(
                                      width: 110.w,
                                      height: 32.h,
                                      decoration: BoxDecoration(
-                                        color: Colors.white, // edittext_bg usually white with border
+                                        color: Colors.white, 
                                         border: Border.all(color: AppTheme.darkGrayColor),
                                         borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
                                      ),
@@ -137,7 +137,7 @@ class CartItemRefinedWidget extends StatelessWidget {
                                            child: InkWell(
                                              onTap: () {
                                                 if(qty > 1) {
-                                                   context.read<CheckoutProvider>().updateCartItem(item.productId!, (qty-1).toString(), brandId, item.salePrice ?? "0", item.orderedAs ?? "");
+                                                   onUpdateQty((qty-1).toString());
                                                 }
                                              },
                                              child: Center(child: Text("-", style: TextStyle(fontSize: 22.sp, color: AppTheme.darkGrayColor))),
@@ -153,7 +153,7 @@ class CartItemRefinedWidget extends StatelessWidget {
                                          Expanded(
                                            child: InkWell(
                                              onTap: () {
-                                                 context.read<CheckoutProvider>().updateCartItem(item.productId!, (qty+1).toString(), brandId, item.salePrice ?? "0", item.orderedAs ?? "");
+                                                 onUpdateQty((qty+1).toString());
                                              },
                                              child: Center(child: Text("+", style: TextStyle(fontSize: 22.sp, color: AppTheme.darkGrayColor))),
                                            ),
@@ -167,7 +167,7 @@ class CartItemRefinedWidget extends StatelessWidget {
                          ],
                        ),
                        
-                       // Ordered As (Optional)
+                       // Ordered As
                        if(item.orderedAs != null && item.orderedAs!.isNotEmpty)
                        Padding(
                          padding: EdgeInsets.only(top: 3.h),
@@ -199,11 +199,6 @@ class CartItemRefinedWidget extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
-    // Header logic moved inside Card or maintained here? 
-    // In XML, Supplier Title is INSIDE the Card view's LinearLayout.
-    // So I moved it inside above. This method might be redundant if we strictly follow XML where title is part of the card content.
-    // But `cart_listitem.xml` shows `supplierTitleTxt` inside the main `LinearLayout` inside `CardView`.
-    // So it is inside.
     return SizedBox.shrink(); 
   }
 }

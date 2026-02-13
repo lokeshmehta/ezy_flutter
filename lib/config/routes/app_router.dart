@@ -62,7 +62,11 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.checkout,
-        builder: (context, state) => const CheckoutScreen(),
+        builder: (context, state) {
+           final extra = state.extra as Map<String, dynamic>?;
+           final int initialStep = extra?['initialStep'] ?? 0;
+           return CheckoutScreen(initialStep: initialStep);
+        },
       ),
       GoRoute(
         path: AppRoutes.myOrders,
