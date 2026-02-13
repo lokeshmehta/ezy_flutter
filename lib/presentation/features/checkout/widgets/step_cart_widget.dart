@@ -4,7 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/checkout_provider.dart';
 import '../../../../core/constants/app_theme.dart';
+import '../../../widgets/custom_loader_widget.dart';
 import 'cart_item_refined_widget.dart';
+
 
 class StepCartWidget extends StatefulWidget {
   const StepCartWidget({super.key});
@@ -22,7 +24,7 @@ class _StepCartWidgetState extends State<StepCartWidget> {
     final cartResult = provider.cartResult;
 
     if (provider.isLoading) {
-      return Center(child: CircularProgressIndicator());
+      return Center(child: CustomLoaderWidget(size: 40.w));
     }
 
     if (cartResult == null || (cartResult.brands?.isEmpty ?? true)) {

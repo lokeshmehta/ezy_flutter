@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../providers/checkout_provider.dart';
 import '../../../../config/routes/app_routes.dart';
 import '../../../../core/constants/app_messages.dart';
+import '../../widgets/custom_loader_widget.dart';
 
 class StepPaymentWidget extends StatefulWidget {
   const StepPaymentWidget({super.key});
@@ -136,7 +137,7 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
                              padding: EdgeInsets.zero,
                           ),
                           child: provider.isLoading 
-                              ? SizedBox(width: 20.w, height: 20.w, child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) 
+                              ? SizedBox(width: 20.w, height: 20.w, child: const CustomLoaderWidget(size: 20)) 
                               : Text("Apply", style: TextStyle(fontSize: 14.sp)),
                         ),
                       ),
@@ -278,7 +279,7 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
                        padding: EdgeInsets.zero,
                      ),
                      child: provider.isLoading 
-                         ? SizedBox(width: 20.w, height: 20.w, child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) 
+                         ? SizedBox(width: 20.w, height: 20.w, child: const CustomLoaderWidget(size: 20)) 
                          : Text(provider.isPreviewEnabled ? "Review Order" : "Place Order", style: TextStyle(fontSize: 14.sp)),
                    ),
                  ),

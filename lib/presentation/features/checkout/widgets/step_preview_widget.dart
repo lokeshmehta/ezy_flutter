@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../providers/checkout_provider.dart';
 import '../../../../core/constants/app_theme.dart';
+import '../../../widgets/custom_loader_widget.dart';
+
 
 
 
@@ -225,7 +227,7 @@ class StepPreviewWidget extends StatelessWidget {
                   ? SizedBox(
                       width: 20.w,
                       height: 20.w,
-                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                      child: CustomLoaderWidget(size: 20.w),
                     )
                   : Text(
                       provider.paymentMethod == "Cash on Delivery" ? "Submit Order" : "Proceed To Pay",
