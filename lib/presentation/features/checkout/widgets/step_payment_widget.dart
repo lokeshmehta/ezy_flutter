@@ -262,7 +262,11 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
                    child: ElevatedButton(
                      onPressed: () {
                         if(provider.validatePaymentStep()) {
-                            _submitOrder(context, provider);
+                            if(provider.isPreviewEnabled) {
+                                provider.nextStep();
+                            } else {
+                                _submitOrder(context, provider);
+                            }
                         } else {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppMessages.pleaseSelectPaymentMethod)));
                         }
@@ -275,7 +279,7 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
                      ),
                      child: provider.isLoading 
                          ? SizedBox(width: 20.w, height: 20.w, child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) 
-                         : Text("Place Order", style: TextStyle(fontSize: 14.sp)),
+                         : Text(provider.isPreviewEnabled ? "Review Order" : "Place Order", style: TextStyle(fontSize: 14.sp)),
                    ),
                  ),
                ),
