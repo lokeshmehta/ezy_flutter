@@ -3,9 +3,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import '../features/dashboard/dashboard_screen.dart';
 import '../features/products/products_list_screen.dart';
-import '../features/cart/cart_screen.dart';
+
 import '../features/account/my_account_screen.dart';
 import '../providers/dashboard_provider.dart';
+import 'package:go_router/go_router.dart';
+import '../../config/routes/app_routes.dart';
 import '../../core/constants/app_theme.dart';
 
 class MainScreen extends StatefulWidget {
@@ -29,7 +31,7 @@ class _MainScreenState extends State<MainScreen> {
             children: const [
               DashboardScreen(),
               ProductsListScreen(), 
-              CartScreen(), 
+              SizedBox(), // Cart Tab (Handled by push) 
               MyAccountScreen(),
             ],
           ),
@@ -68,9 +70,16 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ],
             onTap: (index) {
+              if (index == 2) {
+                 // Cart Tab -> Open Checkout Screen (Step 0)
+                 // Keeping current index as is (visually staying on previous tab)
+                 // or maybe we should just push?
+                 context.push(AppRoutes.checkout, extra: {'initialStep': 0});
+                 return;
+              }
+              
               if (index == 0 && dashboardProvider.currentIndex == 0) {
-                 // Reset Home? Or do nothing?
-                 // Usually popping to root of stack if nested.
+                 // Reset Home logic if needed
               }
               dashboardProvider.setIndex(index);
             },

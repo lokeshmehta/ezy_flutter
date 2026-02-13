@@ -1,5 +1,5 @@
 import 'package:go_router/go_router.dart';
-import '../../presentation/features/cart/cart_screen.dart';
+
 import '../../presentation/features/auth/login_screen.dart';
 import '../../presentation/features/companies/companies_list_screen.dart';
 import '../../presentation/features/auth/signup_screen.dart';
@@ -58,7 +58,7 @@ class AppRouter {
 
       GoRoute(
         path: AppRoutes.cart,
-        builder: (context, state) => const CartScreen(),
+        builder: (context, state) => const CheckoutScreen(initialStep: 0),
       ),
       GoRoute(
         path: AppRoutes.checkout,
