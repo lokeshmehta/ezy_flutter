@@ -57,7 +57,7 @@ class SupplierItemWidget extends StatelessWidget {
           ],
         ),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          //mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               height: 90.h,
@@ -73,7 +73,7 @@ class SupplierItemWidget extends StatelessWidget {
               child: _buildImage(image),
             ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
+              padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 6.h),
               child: Text(
                 brandName ?? "",
                 textAlign: TextAlign.center,
@@ -81,7 +81,7 @@ class SupplierItemWidget extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: AppTheme.textColor,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w900,
                   fontSize: 11.sp,
                 ),
               ),

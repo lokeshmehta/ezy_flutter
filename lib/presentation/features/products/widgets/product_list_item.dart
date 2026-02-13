@@ -157,8 +157,8 @@ class _ProductListItemState extends State<ProductListItem> {
                           // Vendor
                           Text(
                             widget.item.brandName ?? "",
-                            style: TextStyle(color: Colors.grey, fontSize: 11.sp),
-                            maxLines: 1,
+                            style: TextStyle(color: Colors.black, fontSize: 11.sp),
+                            maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
                           
@@ -166,7 +166,7 @@ class _ProductListItemState extends State<ProductListItem> {
                           SizedBox(height: 2.h),
                           Text(
                             widget.item.title ?? "",
-                            style: TextStyle(color: AppTheme.blackColor, fontSize: 13.sp, fontWeight: FontWeight.bold),
+                            style: TextStyle(color: AppTheme.blackColor, fontSize: 13.sp, fontWeight: FontWeight.w700),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -186,7 +186,7 @@ class _ProductListItemState extends State<ProductListItem> {
                           if (!hasPromotion)
                             Text(
                               _formatPrice(widget.item.price),
-                              style: TextStyle(color: Colors.grey[700], fontSize: 13.sp),
+                              style: TextStyle(color: Colors.grey[700], fontSize: 13.sp , fontWeight: FontWeight.w800),
                             )
                           else
                             Column(
@@ -235,7 +235,7 @@ class _ProductListItemState extends State<ProductListItem> {
                 child: Row(
                   children: [
                     // Quantity Control
-                    if (canAddToCart)
+                    /*if (canAddToCart)
                       Container(
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey[300]!),
@@ -268,10 +268,10 @@ class _ProductListItemState extends State<ProductListItem> {
                             ),
                           ],
                         ),
-                      ),
+                      ),*/
 
                     Expanded(
-                      flex: 6,
+                      flex: 2,
                       child: InkWell(
                         onTap: canAddToCart && widget.onAddToCart != null 
                              ? () => widget.onAddToCart!(_quantity) 
@@ -289,9 +289,9 @@ class _ProductListItemState extends State<ProductListItem> {
                                isOutOfStock 
                                   ? "Out Of Stock" 
                                   : (widget.item.addedToCart == "Yes" 
-                                      ? "Update Cart [${widget.item.addedQty ?? '1'}]" 
+                                      ? "Update Cart [${widget.item.addedQty ?? '1'}]"
                                       : "Add To Cart"),
-                               style: TextStyle(color: Colors.white, fontSize: 13.sp, fontWeight: FontWeight.normal),
+                               style: TextStyle(color: Colors.white, fontSize: 12.sp, fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
@@ -305,8 +305,8 @@ class _ProductListItemState extends State<ProductListItem> {
                           onTap: widget.onFavorite,
                           child: Image.asset(
                             widget.item.isFavourite == "Yes" ? "assets/images/favadded.png" : "assets/images/fav_new.png",
-                            width: 35.w,
-                            height: 35.w,
+                            width: 30.w,
+                            height: 30.w,
                           ),
                         ),
                       ),

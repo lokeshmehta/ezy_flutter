@@ -92,11 +92,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     // Replicating Layout from Android XML likely (Simple form)
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Change Password", style: TextStyle(color: Colors.white)),
-        backgroundColor: const Color(0xFF008080), // Teal color
+        elevation: 4, // 👈 controls shadow intensity
+        shadowColor: Colors.black.withOpacity(0.25),
+        surfaceTintColor: Colors.transparent,
+        title: const Text("Change Password", style: TextStyle(color: Colors.black)),
+        backgroundColor: Colors.white, // Teal color
         iconTheme: const IconThemeData(color: Colors.white),
         leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
+            icon: const Icon(Icons.arrow_back , color: Colors.black,),
             onPressed: () => context.pop(),
         ),
       ),
@@ -111,21 +114,21 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                         children: [
                              SizedBox(height: 20.h),
                              // Old Password
-                             _buildLabel("Current Password"),
+                             _buildLabel("Current Password *"),
                              _buildPasswordField(_oldPasswordController, _oldPasswordVisible, (val) {
                                  setState(() => _oldPasswordVisible = val);
                              }),
                              SizedBox(height: 20.h),
                              
                              // New Password
-                             _buildLabel("New Password"),
+                             _buildLabel("New Password *"),
                              _buildPasswordField(_newPasswordController, _newPasswordVisible, (val) {
                                  setState(() => _newPasswordVisible = val);
                              }),
                              SizedBox(height: 20.h),
                              
                              // Confirm Password
-                             _buildLabel("Confirm Password"),
+                             _buildLabel("Confirm Password * "),
                              _buildPasswordField(_confirmPasswordController, _confirmPasswordVisible, (val) {
                                  setState(() => _confirmPasswordVisible = val);
                              }),
@@ -166,7 +169,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Widget _buildLabel(String text) {
       return Padding(
           padding: EdgeInsets.only(bottom: 8.h),
-          child: Text(text, style: TextStyle(fontSize: 14.sp, color: Colors.grey[700])),
+          child: Text(text, style: TextStyle(fontSize: 12.sp, color: AppTheme.primaryColor , fontWeight: FontWeight.bold)),
       );
   }
   
@@ -189,7 +192,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               ),
               contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
               suffixIcon: IconButton(
-                  icon: Icon(isVisible ? Icons.visibility : Icons.visibility_off, color: Colors.grey),
+                  icon: Icon(isVisible ? Icons.visibility : Icons.visibility_off, color: AppTheme.primaryColor),
                   onPressed: () => onToggle(!isVisible),
               ),
           ),

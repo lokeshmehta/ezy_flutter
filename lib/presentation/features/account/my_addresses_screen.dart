@@ -54,9 +54,42 @@ class _MyAddressesScreenState extends State<MyAddressesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("My Addresses", style: TextStyle(color: AppTheme.white)),
-        backgroundColor: AppTheme.orderSuccessTeal,
+        elevation: 4,
+        shadowColor: Colors.black.withOpacity(0.25),
+        surfaceTintColor: Colors.transparent,
+        title: const Text("My Addresses", style: TextStyle(color: AppTheme.blackColor)),
+        backgroundColor: AppTheme.white,
         iconTheme: const IconThemeData(color: AppTheme.white),
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_rounded,
+            color: AppTheme.blackColor,
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        actions: [
+          InkWell(
+            onTap: (){
+              context.push(AppRoutes.addAddress);
+            },
+            child: Padding(
+              padding:  EdgeInsets.only(right: 12.w),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 22.w,vertical: 4.h),
+                decoration: BoxDecoration(
+                  color: AppTheme.secondaryColor,
+                  borderRadius: BorderRadius.circular(4)
+                ),
+                child: Text('Add' , style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold
+                ),)
+              ),
+            ),
+          ),
+
+        ],
+
       ),
       body: Consumer<AddressProvider>(
         builder: (context, provider, child) {
@@ -69,7 +102,7 @@ class _MyAddressesScreenState extends State<MyAddressesScreen> {
                  child: Column(
                      mainAxisAlignment: MainAxisAlignment.center,
                      children: [
-                         Icon(Icons.location_off, size: 60.sp, color: AppTheme.darkGrayColor),
+                         Icon(Icons.location_off, size: 60.sp, color: AppTheme.primaryColor),
                          SizedBox(height: 10.h),
                          Text("No addresses found", style: TextStyle(fontSize: 16.sp, color: AppTheme.darkGrayColor)),
                          SizedBox(height: 20.h),
@@ -77,7 +110,7 @@ class _MyAddressesScreenState extends State<MyAddressesScreen> {
                              onPressed: () => context.push(AppRoutes.addAddress),
                              icon: const Icon(Icons.add, color: AppTheme.white),
                              label: const Text("Add New Address", style: TextStyle(color: AppTheme.white)),
-                             style: ElevatedButton.styleFrom(backgroundColor: AppTheme.orderSuccessTeal),
+                             style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryColor),
                          )
                      ],
                  )
@@ -94,73 +127,155 @@ class _MyAddressesScreenState extends State<MyAddressesScreen> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push(AppRoutes.addAddress),
-        backgroundColor: AppTheme.orderSuccessTeal,
-        child: const Icon(Icons.add, color: AppTheme.white),
+    );
+  }
+
+  Widget _buildAddressItem(AddressItem address) {
+    final bool isDefault = address.defaultAddress == "Yes";
+
+    return Container(
+      margin: EdgeInsets.only(bottom: 20.h),
+      padding: EdgeInsets.all(8.w),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(2.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.09),
+            blurRadius: 2,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          /// TOP ROW (Name + Edit Icon)
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  "${address.firstName ?? ""} ${address.lastName ?? ""}",
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.primaryColor,
+                  ),
+                ),
+              ),
+
+              /// Edit Icon
+              InkWell(
+                onTap: () {
+                  context.push(AppRoutes.addAddress, extra: address);
+                },
+                child: Container(
+                  padding: EdgeInsets.all(2.w),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(2.r),
+                  ),
+                  child: Icon(
+                    Icons.edit_outlined,
+                    size: 18.sp,
+                    color: Colors.grey.shade700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          //SizedBox(height: 6.h),
+
+          /// Address Line (single paragraph like screenshot)
+          Text(
+            "${address.street ?? ""}"
+                "${address.street2 != null && address.street2!.isNotEmpty ? ", ${address.street2}" : ""}, "
+                "${address.suburb ?? ""}, ${address.state ?? ""}, ${address.postcode ?? ""}",
+            style: TextStyle(
+              fontSize: 12.sp,
+              color: Colors.grey.shade700,
+            ),
+          ),
+
+          SizedBox(height: 18.h),
+
+          /// Mobile
+          Text(
+            "Mobile : ${address.phone ?? ""}",
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+
+
+
+          /// Default Billing & Shipping Row + Delete Icon
+          Row(
+            children: [
+              /// Radio indicator
+              Container(
+                width: 18.w,
+                height: 18.w,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: isDefault
+                        ? AppTheme.primaryColor
+                        : Colors.grey,
+                    width: 2,
+                  ),
+                ),
+                child: isDefault
+                    ? Center(
+                  child: Container(
+                    width: 8.w,
+                    height: 8.w,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppTheme.primaryColor,
+                    ),
+                  ),
+                )
+                    : null,
+              ),
+
+              SizedBox(width: 8.w),
+
+              Expanded(
+                child: Text(
+                  "Default Billing and Shipping",
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    color: AppTheme.primaryColor,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+
+              /// Delete Icon
+              InkWell(
+                onTap: () => _confirmDelete(address.addressId ?? ""),
+                child: Container(
+                  padding: EdgeInsets.all(2.w),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(6.r),
+                  ),
+                  child: Icon(
+                    Icons.close,
+                    size: 18.sp,
+                    color: Colors.grey.shade700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
-  
-  Widget _buildAddressItem(AddressItem address) {
-      bool isDefault = address.defaultAddress == "Yes";
-      return Card(
-          margin: EdgeInsets.symmetric(vertical: 8.h),
-          elevation: 2,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
-          child: Padding(
-              padding: EdgeInsets.all(12.w),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                              Text("${address.firstName ?? ""} ${address.lastName ?? ""}", 
-                                  style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold)),
-                              if (isDefault)
-                                  Container(
-                                      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
-                                      decoration: BoxDecoration(
-                                          color: AppTheme.lightGreenBg,
-                                          borderRadius: BorderRadius.circular(4.r)
-                                      ),
-                                      child: Text("DEFAULT", style: TextStyle(fontSize: 10.sp, color: AppTheme.darkGreenText, fontWeight: FontWeight.bold)),
-                                  )
-                          ],
-                      ),
-                      SizedBox(height: 4.h),
-                      Text(address.street ?? "", style: TextStyle(fontSize: 14.sp)),
-                      if (address.street2 != null && address.street2!.isNotEmpty)
-                         Text(address.street2!, style: TextStyle(fontSize: 14.sp)),
-                      Text("${address.suburb ?? ""}, ${address.state ?? ""} ${address.postcode ?? ""}", 
-                          style: TextStyle(fontSize: 14.sp)),
-                      SizedBox(height: 4.h),
-                      Text("Phone: ${address.phone ?? ""}", style: TextStyle(fontSize: 13.sp, color: AppTheme.darkGrayColor)),
-                      
-                      SizedBox(height: 10.h),
-                      Divider(thickness: 1, color: AppTheme.hintColor),
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                               TextButton.icon(
-                                   onPressed: () {
-                                       // Pass address object to edit screen
-                                       context.push(AppRoutes.addAddress, extra: address);
-                                   },
-                                   icon: Icon(Icons.edit, size: 16.sp, color: AppTheme.primaryColor),
-                                   label: Text("Edit", style: TextStyle(color: AppTheme.primaryColor, fontSize: 13.sp))
-                               ),
-                               TextButton.icon(
-                                   onPressed: () => _confirmDelete(address.addressId ?? ""),
-                                   icon: Icon(Icons.delete, size: 16.sp, color: AppTheme.redColor),
-                                   label: Text("Delete", style: TextStyle(color: AppTheme.redColor, fontSize: 13.sp))
-                               ),
-                          ],
-                      )
-                  ],
-              ),
-          ),
-      );
-  }
+
 }

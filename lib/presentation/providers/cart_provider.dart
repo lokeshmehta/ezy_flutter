@@ -139,7 +139,6 @@ class CartProvider extends ChangeNotifier {
     }
   }
 
-
   Future<void> deleteCartItem(CartProduct item) async {
     _isLoading = true;
     notifyListeners();
@@ -154,35 +153,6 @@ class CartProvider extends ChangeNotifier {
         customerId: customerId,
         productId: item.productId ?? "",
         brandId: item.brandId ?? "",
-      );
-
-      if (response['status'] == 200) {
-         await _updateGlobalCartStats(response);
-         await fetchCartDetails();
-      } else {
-        _errorMsg = response['message'];
-        _isLoading = false;
-        notifyListeners();
-      }
-    } catch (e) {
-      _errorMsg = e.toString();
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  Future<void> clearCart() async {
-    _isLoading = true;
-    notifyListeners();
-
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final accessToken = prefs.getString(StorageKeys.accessToken) ?? "";
-      final customerId = prefs.getString(StorageKeys.userId) ?? "";
-
-      final response = await _remoteDataSource.clearCart(
-        accessToken: accessToken,
-        customerId: customerId,
       );
 
       if (response['status'] == 200) {

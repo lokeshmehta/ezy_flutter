@@ -149,12 +149,15 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       appBar: AppBar(
         title: Text(
           "Notifications",
-          style: TextStyle(color: Colors.white, fontSize: 18.sp),
+          style: TextStyle(color: Colors.black, fontSize: 18.sp),
         ),
-        backgroundColor: AppTheme.primaryColor,
+        backgroundColor: Colors.white,
+        elevation: 4, // 👈 controls shadow intensity
+        shadowColor: Colors.black.withOpacity(0.25),
+        surfaceTintColor: Colors.transparent,
         iconTheme: IconThemeData(color: Colors.white),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back , color: Colors.black,),
           onPressed: () {
              if (context.canPop()) {
                context.pop();
@@ -176,7 +179,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             return Center(
               child: Text(
                 "No Notifications Available",
-                style: TextStyle(fontSize: 16.sp, color: Colors.grey),
+                style: TextStyle(fontSize: 16.sp, color: AppTheme.secondaryColor , fontWeight: FontWeight.bold),
               ),
             );
           }

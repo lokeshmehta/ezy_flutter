@@ -69,7 +69,8 @@ class HomePromotionItemWidget extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: 10.sp,
-                    color: Colors.grey,
+                    color: Colors.black54,
+                    fontWeight: FontWeight.bold
                   ),
                 ),
 
@@ -78,20 +79,18 @@ class HomePromotionItemWidget extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Expanded(
-                      child: Text(
-                        "Shop Now",
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 11.sp,
-                          color: const Color(0xFF1B4E9B),
-                          fontWeight: FontWeight.bold,
-                        ),
+                    Text(
+                      "Shop Now",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: const Color(0xFF1B4E9B),
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                     SizedBox(width: 2.w),
-                    Icon(Icons.arrow_forward_ios, color: const Color(0xFF1B4E9B), size: 10.sp),
+                    Icon(Icons.arrow_forward_ios, color: const Color(0xFF1B4E9B), size: 12.sp),
                   ],
                 ),
                 SizedBox(height: 5.h),

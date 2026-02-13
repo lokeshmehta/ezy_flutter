@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import '../../core/constants/api_endpoints.dart';
 import '../../core/network/api_client.dart';
 import '../../domain/entities/user_entity.dart';
@@ -835,7 +836,15 @@ class AuthRemoteDataSource {
     var responseString = String.fromCharCodes(responseData);
     
     if (response.statusCode >= 200 && response.statusCode < 300) {
-       return json.decode(responseString);
+       try {
+        return json.decode(responseString);
+      } catch (e) {
+        debugPrint("JSON Decode Error: $e\nResponse: $responseString");
+        return {
+          'status': 0,
+          'message': 'Server returned invalid format. Please try again later.'
+        };
+      }
     } else {
        throw const FormatException("File upload failed");
     }

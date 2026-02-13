@@ -12,7 +12,8 @@ class AppAssets {
   static const String loginImage = '$images/loginpng.png';
   static const String dashboardBg = '$images/dashboardbg.png';
   static const String activityBg = '$images/activity_bg.png';
-  
+  static const String bellIcon = '$images/bellicon.png';
+
   // Banners
   static const String bannerImage = '$images/banner_image.png';
   static const String bannerOne = '$images/banner_one.png';

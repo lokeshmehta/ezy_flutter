@@ -15,65 +15,55 @@ class SuppliersSection extends StatefulWidget {
 }
 
 class _SuppliersSectionState extends State<SuppliersSection> {
-  final ScrollController _scrollController = ScrollController();
+  late PageController _pageController;
   Timer? _autoScrollTimer;
-  bool _canScrollLeft = false;
-  bool _canScrollRight = true;
+  int _currentPage = 0;
 
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(_updateScrollState);
+    _pageController = PageController(viewportFraction: 1.0);
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _updateScrollState();
       _startAutoScroll();
     });
   }
 
   void _startAutoScroll() {
     _autoScrollTimer?.cancel();
-    _autoScrollTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      if (!_scrollController.hasClients) return;
-      
-      final maxScroll = _scrollController.position.maxScrollExtent;
-      final currentScroll = _scrollController.offset;
-      
-      double target;
-      if (currentScroll >= maxScroll - 5) {
-        target = 0.0;
-      } else {
-        target = currentScroll + 200; // auto-scroll amount
-      }
+    _autoScrollTimer =
+        Timer.periodic(const Duration(seconds: 5), (timer) {
+          if (!_pageController.hasClients) return;
 
-      _scrollController.animateTo(
-        target.clamp(0.0, maxScroll),
-        duration: const Duration(milliseconds: 600),
-        curve: Curves.easeInOut,
-      );
-    });
+          final provider = context.read<DashboardProvider>();
+          final suppliers = provider.supplierLogosResponse?.results ?? [];
+
+          if (suppliers.isEmpty) return;
+
+          final totalPages = (suppliers.length / 2).ceil();
+
+          int nextPage = _currentPage + 1;
+          if (nextPage >= totalPages) {
+            nextPage = 0;
+          }
+
+          _pageController.animateToPage(
+            nextPage,
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+          );
+        });
   }
 
-  void _updateScrollState() {
-    if (!_scrollController.hasClients) return;
-    final maxScroll = _scrollController.position.maxScrollExtent;
-    final currentScroll = _scrollController.offset;
-    
-    setState(() {
-      _canScrollLeft = currentScroll > 5;
-      _canScrollRight = currentScroll < maxScroll - 5;
-    });
-  }
+  void _goToPage(bool forward, int totalPages) {
+    int nextPage = forward ? _currentPage + 1 : _currentPage - 1;
 
-  void _scroll(bool forward) {
-    if (!_scrollController.hasClients) return;
-    const double scrollAmount = 200;
-    final double target = forward
-        ? _scrollController.offset + scrollAmount
-        : _scrollController.offset - scrollAmount;
+    if (nextPage < 0) nextPage = totalPages - 1;
+    if (nextPage >= totalPages) nextPage = 0;
 
-    _scrollController.animateTo(
-      target.clamp(0.0, _scrollController.position.maxScrollExtent),
-      duration: const Duration(milliseconds: 300),
+    _pageController.animateToPage(
+      nextPage,
+      duration: const Duration(milliseconds: 400),
       curve: Curves.easeInOut,
     );
   }
@@ -81,8 +71,7 @@ class _SuppliersSectionState extends State<SuppliersSection> {
   @override
   void dispose() {
     _autoScrollTimer?.cancel();
-    _scrollController.removeListener(_updateScrollState);
-    _scrollController.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -91,34 +80,71 @@ class _SuppliersSectionState extends State<SuppliersSection> {
     return Consumer<DashboardProvider>(
       builder: (context, provider, child) {
         final response = provider.supplierLogosResponse;
-        if (response == null || response.results == null || response.results!.isEmpty) {
+
+        if (response == null ||
+            response.results == null ||
+            response.results!.isEmpty) {
           return const SizedBox.shrink();
         }
 
         final suppliers = response.results!;
+        final totalPages = (suppliers.length / 2).ceil();
 
         return Column(
           children: [
-             SectionHeaderWidget(
+            SectionHeaderWidget(
               title: "Suppliers",
-              onPrevTap: _canScrollLeft ? () => _scroll(false) : null,
-              onNextTap: _canScrollRight ? () => _scroll(true) : null,
+              onPrevTap: totalPages > 1
+                  ? () => _goToPage(false, totalPages)
+                  : null,
+              onNextTap: totalPages > 1
+                  ? () => _goToPage(true, totalPages)
+                  : null,
             ),
             SizedBox(
-              height: 160.h, 
-              child: ListView.builder(
-                controller: _scrollController,
-                padding: EdgeInsets.symmetric(horizontal: 10.w),
-                scrollDirection: Axis.horizontal,
-                itemCount: suppliers.length,
-                itemBuilder: (context, index) {
-                  final item = suppliers[index];
-                  if (item == null) return const SizedBox.shrink();
+              height: 140.h,
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: totalPages,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentPage = index;
+                  });
+                },
+                itemBuilder: (context, pageIndex) {
+                  final firstIndex = pageIndex * 2;
+                  final secondIndex = firstIndex + 1;
 
-                  return SupplierItemWidget(
-                    image: item.image,
-                    brandName: item.brandName,
-                    brandId: item.brandId?.toString() ?? item.companyId?.toString(),
+                  return Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10.w),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: SupplierItemWidget(
+                            image: suppliers[firstIndex]?.image,
+                            brandName: suppliers[firstIndex]?.brandName,
+                            brandId: suppliers[firstIndex]?.brandId
+                                ?.toString() ??
+                                suppliers[firstIndex]?.companyId
+                                    ?.toString(),
+                          ),
+                        ),
+                        SizedBox(width: 15.w),
+                        Expanded(
+                          child: secondIndex < suppliers.length
+                              ? SupplierItemWidget(
+                            image: suppliers[secondIndex]?.image,
+                            brandName:
+                            suppliers[secondIndex]?.brandName,
+                            brandId: suppliers[secondIndex]?.brandId
+                                ?.toString() ??
+                                suppliers[secondIndex]?.companyId
+                                    ?.toString(),
+                          )
+                              : const SizedBox(),
+                        ),
+                      ],
+                    ),
                   );
                 },
               ),

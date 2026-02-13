@@ -102,9 +102,11 @@ class WishlistItemWidget extends StatelessWidget {
                          children: [
                             Text(
                               item.brandName ?? "",
-                              maxLines: 1,
+                              maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(color: Colors.grey, fontSize: 11.sp),
+                              style: TextStyle(color: Colors.grey, fontSize: 12.sp,
+                                fontWeight: FontWeight.bold
+                              ),
                             ),
                             SizedBox(height: 2.h),
                             Text(

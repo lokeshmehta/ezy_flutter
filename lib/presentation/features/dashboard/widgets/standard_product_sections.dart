@@ -39,8 +39,6 @@ class NewArrivalsSection extends StatelessWidget {
           return const SizedBox.shrink();
         }
 
-
-
         return ProductListSection(
           title: "New Arrivals",
           products: provider.newArrivalsResponse?.results,

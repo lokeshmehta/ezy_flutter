@@ -149,8 +149,8 @@ class _ProductGridItemState extends State<ProductGridItem> {
                     SizedBox(height: 5.h),
                     Text(
                       widget.item.brandName ?? "",
-                      style: TextStyle(color: Colors.grey, fontSize: 11.sp),
-                      maxLines: 1,
+                      style: TextStyle(color: Colors.black54, fontSize: 11.sp , fontWeight: FontWeight.w800),
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
 
@@ -158,7 +158,7 @@ class _ProductGridItemState extends State<ProductGridItem> {
                     SizedBox(height: 2.h),
                     Text(
                       widget.item.title ?? "",
-                      style: TextStyle(color: AppTheme.blackColor, fontSize: 12.sp, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: AppTheme.blackColor, fontSize: 12.sp, fontWeight: FontWeight.w800),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -178,7 +178,7 @@ class _ProductGridItemState extends State<ProductGridItem> {
                     if (!hasPromotion)
                       Text(
                         _formatPrice(widget.item.price),
-                        style: TextStyle(color: Colors.grey[700], fontSize: 12.sp),
+                        style: TextStyle(color: Colors.grey[700], fontSize: 12.sp, fontWeight: FontWeight.w800),
                       )
                     else
                       Column(
@@ -227,7 +227,7 @@ class _ProductGridItemState extends State<ProductGridItem> {
                 child: Column(
                   children: [
                     // Quantity Control
-                    if (canAddToCart)
+                    /*if (canAddToCart)
                       Container(
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey[300]!),
@@ -257,43 +257,43 @@ class _ProductGridItemState extends State<ProductGridItem> {
                             ),
                           ],
                         ),
-                      ),
+                      ),*/
 
                     Row(
                       children: [
                         Expanded(
                           child: InkWell(
-                            onTap: canAddToCart && widget.onAddToCart != null 
-                                 ? () => widget.onAddToCart!(_quantity) 
+                            onTap: canAddToCart && widget.onAddToCart != null
+                                 ? () => widget.onAddToCart!(_quantity)
                                  : null,
                             child: Container(
-                              height: 35.h, 
+                              height: 35.h,
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                 color: canAddToCart ? AppTheme.tealColor : AppTheme.redColor,
                                 borderRadius: BorderRadius.circular(AppTheme.productButtonRadius.r),
                               ),
-                              child: FittedBox( 
+                              child: FittedBox(
                                 fit: BoxFit.scaleDown,
                                 child: Text(
-                                   isOutOfStock 
-                                      ? "Out Of Stock" 
-                                      : (widget.item.addedToCart == "Yes" 
-                                          ? "Update" // Shortened for Grid
-                                          : "Add"), // Shortened for Grid
-                                   style: TextStyle(color: Colors.white, fontSize: 11.sp, fontWeight: FontWeight.bold),
+                                   isOutOfStock
+                                      ? "Out Of Stock"
+                                      : (widget.item.addedToCart == "Yes"
+                                          ? "Update Cart" // Shortened for Grid
+                                          : "Add To Cart"), // Shortened for Grid
+                                   style: TextStyle(color: Colors.white, fontSize: 12.sp, fontWeight: FontWeight.bold),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                        SizedBox(width: 5.w),
+                        SizedBox(width: 20.w),
                         InkWell(
                           onTap: widget.onFavorite,
                           child: Image.asset(
                             widget.item.isFavourite == "Yes" ? "assets/images/favadded.png" : "assets/images/fav_new.png",
-                            width: 35.h,
-                            height: 35.h,
+                            width: 30.h,
+                            height: 30.h,
                           ),
                         ),
                       ],

@@ -17,6 +17,7 @@ class MyOrdersScreen extends StatefulWidget {
   State<MyOrdersScreen> createState() => _MyOrdersScreenState();
 }
 
+
 class _MyOrdersScreenState extends State<MyOrdersScreen> {
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _fromDateController = TextEditingController();
@@ -95,9 +96,16 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("My Orders"),
+        backgroundColor:Colors.white,
+        elevation: 4, // 👈 controls shadow intensity
+        shadowColor: Colors.black.withOpacity(0.25),
+        surfaceTintColor: Colors.transparent,
+        title: const Text("My Orders" ,
+          style: TextStyle(
+            color: Colors.black ,
+          ) ,),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.black,),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -173,7 +181,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                 child: ElevatedButton(
                   onPressed: _submitFilters,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryColor,
+                    backgroundColor: AppTheme.secondaryColor,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.r)),
                   ),
                   child: const Text("Submit", style: TextStyle(color: Colors.white)),
@@ -184,7 +192,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                 child: ElevatedButton(
                   onPressed: _clearFilters,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey,
+                    backgroundColor: Colors.red,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.r)),
                   ),
                   child: const Text("Clear", style: TextStyle(color: Colors.white)),
@@ -205,7 +213,11 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
         }
 
         if (provider.orders.isEmpty) {
-          return const Center(child: Text("No orders found"));
+          return  Center(child: Text("No orders data found",
+            style: TextStyle(
+              fontWeight: FontWeight.w800,
+              fontSize: 16
+            ) ,));
         }
 
         return ListView.builder(

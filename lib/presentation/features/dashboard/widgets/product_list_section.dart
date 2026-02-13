@@ -30,37 +30,23 @@ class ProductListSection extends StatefulWidget {
 }
 
 class _ProductListSectionState extends State<ProductListSection> {
-  final ScrollController _scrollController = ScrollController();
-  bool _canScrollLeft = false;
-  bool _canScrollRight = true;
+  late PageController _pageController;
+  int _currentPage = 0;
 
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(_updateScrollState);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _updateScrollState());
+    _pageController = PageController(viewportFraction: 1.0);
   }
 
-  void _updateScrollState() {
-    if (!_scrollController.hasClients) return;
-    final maxScroll = _scrollController.position.maxScrollExtent;
-    final currentScroll = _scrollController.offset;
-    
-    setState(() {
-      _canScrollLeft = currentScroll > 0;
-      _canScrollRight = currentScroll < maxScroll;
-    });
-  }
+  void _goToPage(bool forward, int totalPages) {
+    int nextPage = forward ? _currentPage + 1 : _currentPage - 1;
 
-  void _scroll(bool forward) {
-    if (!_scrollController.hasClients) return;
-    const double scrollAmount = 300;
-    final double target = forward 
-        ? _scrollController.offset + scrollAmount 
-        : _scrollController.offset - scrollAmount;
-    
-    _scrollController.animateTo(
-      target.clamp(0.0, _scrollController.position.maxScrollExtent),
+    if (nextPage < 0) nextPage = totalPages - 1;
+    if (nextPage >= totalPages) nextPage = 0;
+
+    _pageController.animateToPage(
+      nextPage,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
@@ -68,8 +54,7 @@ class _ProductListSectionState extends State<ProductListSection> {
 
   @override
   void dispose() {
-    _scrollController.removeListener(_updateScrollState);
-    _scrollController.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -79,51 +64,56 @@ class _ProductListSectionState extends State<ProductListSection> {
       return const SizedBox.shrink();
     }
 
+    final products = widget.products!;
+    final totalPages = (products.length / 2).ceil();
     final double itemWidth = (1.sw / 2) - 25.w;
 
     return Column(
       children: [
         SectionHeaderWidget(
           title: widget.title,
-          onPrevTap: _canScrollLeft ? () => _scroll(false) : null,
-          onNextTap: _canScrollRight ? () => _scroll(true) : null,
+          onPrevTap:
+          totalPages > 1 ? () => _goToPage(false, totalPages) : null,
+          onNextTap:
+          totalPages > 1 ? () => _goToPage(true, totalPages) : null,
         ),
         SizedBox(
-          height: 340.h, 
-          child: ListView.builder(
-            controller: _scrollController,
-            padding: EdgeInsets.symmetric(horizontal: 10.w),
-            scrollDirection: Axis.horizontal,
-            itemCount: widget.products!.length,
-            itemBuilder: (context, index) {
-              final product = widget.products![index];
-              if (product == null) return const SizedBox.shrink();
+          height: 290.h,
+          child: PageView.builder(
+            controller: _pageController,
+            itemCount: totalPages,
+            onPageChanged: (index) {
+              setState(() {
+                _currentPage = index;
+              });
+            },
+            itemBuilder: (context, pageIndex) {
+              final firstIndex = pageIndex * 2;
+              final secondIndex = firstIndex + 1;
 
-              return ProductItemWidget(
-                item: product,
-                width: itemWidth,
-                onTap: () {
-                   context.push(AppRoutes.productDetails, extra: product.productId);
-                },
-                onFavorite: () {
-                  final provider = context.read<DashboardProvider>();
-                  if (product.productId != null) {
-                       provider.fetchWishlistCategories(product.productId!);
-                       showDialog(
-                         context: context,
-                         builder: (context) => WishlistCategoryDialog(product: product),
-                       );
-                  }
-                },
-                onAddToCart: () {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.transparent,
-                    builder: (context) => ProductDetailsBottomSheet(product: product),
-                  );
-                },
-                badgeLabel: widget.badgeLabel,
+              return Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10.w),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _buildProduct(
+                        context,
+                        products[firstIndex],
+                        itemWidth,
+                      ),
+                    ),
+                    SizedBox(width: 15.w),
+                    Expanded(
+                      child: secondIndex < products.length
+                          ? _buildProduct(
+                        context,
+                        products[secondIndex],
+                        itemWidth,
+                      )
+                          : const SizedBox(),
+                    ),
+                  ],
+                ),
               );
             },
           ),
@@ -131,4 +121,43 @@ class _ProductListSectionState extends State<ProductListSection> {
       ],
     );
   }
+
+  Widget _buildProduct(
+      BuildContext context,
+      ProductItem? product,
+      double itemWidth,
+      ) {
+    if (product == null) return const SizedBox.shrink();
+
+    return ProductItemWidget(
+      item: product,
+      width: itemWidth,
+      onTap: () {
+        context.push(AppRoutes.productDetails,
+            extra: product.productId);
+      },
+      onFavorite: () {
+        final provider = context.read<DashboardProvider>();
+        if (product.productId != null) {
+          provider.fetchWishlistCategories(product.productId!);
+          showDialog(
+            context: context,
+            builder: (context) =>
+                WishlistCategoryDialog(product: product),
+          );
+        }
+      },
+      onAddToCart: () {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (context) =>
+              ProductDetailsBottomSheet(product: product),
+        );
+      },
+      badgeLabel: widget.badgeLabel,
+    );
+  }
 }
+

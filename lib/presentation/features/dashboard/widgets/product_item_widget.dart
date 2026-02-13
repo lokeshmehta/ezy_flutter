@@ -132,9 +132,9 @@ class ProductItemWidget extends StatelessWidget {
                     padding: EdgeInsets.only(bottom: 2.h),
                     child: Text(
                       item.brandName!,
-                      maxLines: 1,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: Colors.grey, fontSize: 11.sp),
+                      style: TextStyle(color: Colors.black, fontSize: 11.sp,fontWeight: FontWeight.w500),
                     ),
                   ),
 
@@ -147,7 +147,7 @@ class ProductItemWidget extends StatelessWidget {
                   style: TextStyle(
                       color: AppTheme.textColor, 
                       fontSize: 12.sp, 
-                      fontWeight: FontWeight.bold
+                      fontWeight: FontWeight.w800
                   ),
                 ),
 
@@ -214,7 +214,8 @@ class ProductItemWidget extends StatelessWidget {
                 SizedBox(height: 5.h),
 
                 // Add To Cart & Fav
-                SizedBox(height: 8.h),
+                //SizedBox(height: 8.h),
+                Spacer(),
                 Row(
                   children: [
                     Expanded(
@@ -250,12 +251,13 @@ class ProductItemWidget extends StatelessWidget {
                       onTap: onFavorite,
                       child: Image.asset(
                         item.isFavourite == "Yes" ? "assets/images/favadded.png" : "assets/images/fav_new.png",
-                        width: 35.h, // Matched height
-                        height: 35.h,
+                        width: 30.h, // Matched height
+                        height: 30.h,
                       ),
                     )
                   ],
                 ),
+                SizedBox(height: 5.h),
                 
                 // Shop Now (Hidden by default in FutureProducts except Pop Categories?)
                 // Assuming this generic widget is for products.

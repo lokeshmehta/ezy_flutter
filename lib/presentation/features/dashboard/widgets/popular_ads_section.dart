@@ -14,37 +14,23 @@ class PopularAdsSection extends StatefulWidget {
 }
 
 class _PopularAdsSectionState extends State<PopularAdsSection> {
-  final ScrollController _scrollController = ScrollController();
-  bool _canScrollLeft = false;
-  bool _canScrollRight = true;
+  late PageController _pageController;
+  int _currentPage = 0;
 
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(_updateScrollState);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _updateScrollState());
+    _pageController = PageController(viewportFraction: 1.0);
   }
 
-  void _updateScrollState() {
-    if (!_scrollController.hasClients) return;
-    final maxScroll = _scrollController.position.maxScrollExtent;
-    final currentScroll = _scrollController.offset;
-    
-    setState(() {
-      _canScrollLeft = currentScroll > 0;
-      _canScrollRight = currentScroll < maxScroll;
-    });
-  }
+  void _goToPage(bool forward, int totalPages) {
+    int nextPage = forward ? _currentPage + 1 : _currentPage - 1;
 
-  void _scroll(bool forward) {
-    if (!_scrollController.hasClients) return;
-    const double scrollAmount = 300;
-    final double target = forward 
-        ? _scrollController.offset + scrollAmount 
-        : _scrollController.offset - scrollAmount;
-    
-    _scrollController.animateTo(
-      target.clamp(0.0, _scrollController.position.maxScrollExtent),
+    if (nextPage < 0) nextPage = totalPages - 1;
+    if (nextPage >= totalPages) nextPage = 0;
+
+    _pageController.animateToPage(
+      nextPage,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
@@ -52,8 +38,7 @@ class _PopularAdsSectionState extends State<PopularAdsSection> {
 
   @override
   void dispose() {
-    _scrollController.removeListener(_updateScrollState);
-    _scrollController.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -62,42 +47,58 @@ class _PopularAdsSectionState extends State<PopularAdsSection> {
     return Consumer<DashboardProvider>(
       builder: (context, provider, child) {
         final response = provider.popularAdvertisementsResponse;
-        if (response == null || response.results == null || response.results!.isEmpty) {
+
+        if (response == null ||
+            response.results == null ||
+            response.results!.isEmpty) {
           return const SizedBox.shrink();
         }
 
         final items = response.results!;
+        final totalPages = items.length;
 
         return Column(
           children: [
             SectionHeaderWidget(
               title: "Popular Ads",
-              onPrevTap: _canScrollLeft ? () => _scroll(false) : null,
-              onNextTap: _canScrollRight ? () => _scroll(true) : null,
+              onPrevTap:
+              totalPages > 1 ? () => _goToPage(false, totalPages) : null,
+              onNextTap:
+              totalPages > 1 ? () => _goToPage(true, totalPages) : null,
             ),
             SizedBox(
               height: 180.h,
-              child: ListView.builder(
-                controller: _scrollController,
-                padding: EdgeInsets.symmetric(horizontal: 10.w),
-                scrollDirection: Axis.horizontal,
-                itemCount: items.length,
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: totalPages,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentPage = index;
+                  });
+                },
                 itemBuilder: (context, index) {
-                   final item = items[index];
-                   if (item == null) return const SizedBox.shrink();
+                  final item = items[index];
+                  if (item == null) return const SizedBox.shrink();
 
-                   return DashboardBannerItemWidget(
-                     item: item,
-                     onTap: () {
-                        if (item.brandid != null && item.brandid != "0") {
-                          final productProvider = context.read<ProductListProvider>();
+                  return Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10.w),
+                    child: DashboardBannerItemWidget(
+                      item: item,
+                      onTap: () {
+                        if (item.brandid != null &&
+                            item.brandid != "0") {
+                          final productProvider =
+                          context.read<ProductListProvider>();
                           productProvider.clearFilters();
                           productProvider.setSupplier(item.brandid!);
-                          
-                          context.read<DashboardProvider>().setIndex(1);
+
+                          context
+                              .read<DashboardProvider>()
+                              .setIndex(1);
                         }
-                     },
-                   );
+                      },
+                    ),
+                  );
                 },
               ),
             ),
@@ -107,3 +108,4 @@ class _PopularAdsSectionState extends State<PopularAdsSection> {
     );
   }
 }
+

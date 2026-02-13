@@ -100,10 +100,16 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Image.asset(AppAssets.appLogo, height: 35.h),
+        title: Text("Products",
+          style: TextStyle(
+            color: AppTheme.primaryColor,
+            fontWeight: FontWeight.bold
+        ),),
         centerTitle: true,
         backgroundColor: Colors.white,
-        elevation: 0,
+        elevation: 4, // 👈 controls shadow intensity
+        shadowColor: Colors.black.withOpacity(0.25),
+        surfaceTintColor: Colors.transparent,
         leading: Navigator.canPop(context)
           ? IconButton(
               icon: const Icon(Icons.arrow_back, color: AppTheme.secondaryColor),
@@ -114,12 +120,36 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
       ),
       body: Column(
         children: [
-          // Search Bar
-          _buildSearchBar(),
-          
+          SizedBox(height: 12.h,),
+
+          // Product Count Here
+          Consumer<ProductListProvider>(
+            builder: (context, provider, child) {
+              return Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15.w),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    provider.productsResponse?.totalRecords != null
+                        ? "${provider.productsResponse!.totalRecords} ${provider.productsResponse!.totalRecords == '1' ? 'Product' : 'Products'} found"
+                        : "Products",
+                    style: TextStyle(
+                      color: AppTheme.primaryColor,
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+
           // Toggle Bar (Sort, Filter, Grid/List)
           _buildToggleBar(),
-          
+
+          // Search Bar
+          _buildSearchBar(),
+
           // Main List/Grid
           Expanded(
             child: Consumer<ProductListProvider>(
@@ -217,21 +247,12 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
     return Consumer<ProductListProvider>(
       builder: (context, provider, child) {
         return Container(
-          padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 8.h),
+          padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 2.h),
           color: Colors.white,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                provider.productsResponse?.totalRecords != null 
-                  ? "${provider.productsResponse!.totalRecords} ${provider.productsResponse!.totalRecords == '1' ? 'Product' : 'Products'} found" 
-                  : "Products",
-                style: TextStyle(
-                  color: AppTheme.primaryColor,
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+
               SizedBox(height: 10.h),
               Row(
                 children: [
@@ -257,7 +278,7 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
                               value: value,
                               child: Text(
                                 value,
-                                style: TextStyle(fontSize: 12.sp, color: AppTheme.primaryColor),
+                                style: TextStyle(fontSize: 12.sp, color: AppTheme.blackColor , fontWeight: FontWeight.w600),
                               ),
                             );
                           }).toList(),
@@ -278,7 +299,7 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         _buildIconButton(
-                          iconPath: "assets/images/sort_icon.png", 
+                          iconPath: "assets/images/sort_icon.png",
                           fallbackIcon: Icons.sort,
                           onTap: _showSortDialog,
                           isActive: provider.isSortApplied,
@@ -310,30 +331,46 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
   }
 
   Widget _buildIconButton({
-    String? iconPath, 
-    required IconData fallbackIcon, 
+    String? iconPath,
+    required IconData fallbackIcon,
     required VoidCallback onTap,
     bool isActive = false,
   }) {
     return InkWell(
       onTap: onTap,
+      borderRadius: BorderRadius.circular(4.r),
       child: Container(
         width: 38.w,
         height: 38.w,
         padding: EdgeInsets.all(8.w),
         decoration: BoxDecoration(
           color: isActive ? AppTheme.primaryColor : Colors.white,
-          border: Border.all(color: isActive ? AppTheme.primaryColor : Colors.grey[300]!),
+          border: Border.all(
+            color: isActive
+                ? AppTheme.primaryColor
+                : Colors.grey[300]!,
+          ),
           borderRadius: BorderRadius.circular(4.r),
         ),
-        child: Icon(
-          fallbackIcon, 
-          color: isActive ? Colors.white : AppTheme.primaryColor, 
-          size: 20.sp
+        child: iconPath != null
+            ? Image.asset(
+          iconPath,
+          fit: BoxFit.contain,
+          color: isActive
+              ? Colors.white
+              : AppTheme.primaryColor, // applies tint if png is single-color
+        )
+            : Icon(
+          fallbackIcon,
+          color: isActive
+              ? Colors.white
+              : AppTheme.primaryColor,
+          size: 20.sp,
         ),
       ),
     );
   }
+
 
   Widget _buildListView(ProductListProvider provider) {
     final dashboardProvider = context.read<DashboardProvider>();
@@ -370,7 +407,7 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        mainAxisExtent: 350.h, // Increased height for Quantity Row
+        mainAxisExtent: 300.h, // Increased height for Quantity Row
         crossAxisSpacing: 10.w,
         mainAxisSpacing: 10.h,
       ),

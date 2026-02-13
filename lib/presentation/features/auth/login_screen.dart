@@ -194,7 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     }
                                   },
                                   child: const Align(
-                                     alignment: AlignmentGeometry.centerLeft,
+                                     alignment: Alignment.centerLeft,
                                     child: Text(
                                       "Forgot Password?", 
                                       style: TextStyle(

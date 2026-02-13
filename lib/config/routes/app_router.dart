@@ -1,5 +1,5 @@
 import 'package:go_router/go_router.dart';
-
+import '../../presentation/features/cart/cart_screen.dart';
 import '../../presentation/features/auth/login_screen.dart';
 import '../../presentation/features/companies/companies_list_screen.dart';
 import '../../presentation/features/auth/signup_screen.dart';
@@ -58,15 +58,11 @@ class AppRouter {
 
       GoRoute(
         path: AppRoutes.cart,
-        builder: (context, state) => const CheckoutScreen(initialStep: 0),
+        builder: (context, state) => const CartScreen(),
       ),
       GoRoute(
         path: AppRoutes.checkout,
-        builder: (context, state) {
-           final extra = state.extra as Map<String, dynamic>?;
-           final int initialStep = extra?['initialStep'] ?? 0;
-           return CheckoutScreen(initialStep: initialStep);
-        },
+        builder: (context, state) => const CheckoutScreen(),
       ),
       GoRoute(
         path: AppRoutes.myOrders,

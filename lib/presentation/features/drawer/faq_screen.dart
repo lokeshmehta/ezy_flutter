@@ -32,10 +32,13 @@ class _FAQScreenState extends State<FAQScreen> {
       appBar: AppBar(
         title: Text(
           "FAQ",
-          style: TextStyle(color: Colors.white, fontSize: 18.sp),
+          style: TextStyle(color: Colors.black, fontSize: 18.sp ,),
         ),
-        backgroundColor: AppTheme.primaryColor,
-        iconTheme: IconThemeData(color: Colors.white),
+        backgroundColor: Colors.white,
+        elevation: 4, // 👈 controls shadow intensity
+        shadowColor: Colors.black.withOpacity(0.25),
+        surfaceTintColor: Colors.transparent,
+        iconTheme: IconThemeData(color: Colors.black),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {

@@ -19,7 +19,7 @@ class SectionHeaderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 15.0.w, vertical: 5.0.h),
+      padding: EdgeInsets.symmetric(horizontal: 15.0.w, vertical: 10.0.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -27,8 +27,8 @@ class SectionHeaderWidget extends StatelessWidget {
             child: Text(
               title,
               style: TextStyle(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.bold,
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w900,
                 color: AppTheme.textColor,
               ),
               overflow: TextOverflow.ellipsis,

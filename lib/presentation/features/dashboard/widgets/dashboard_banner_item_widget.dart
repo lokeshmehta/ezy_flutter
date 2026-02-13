@@ -19,7 +19,7 @@ class DashboardBannerItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(right: 15),
+      margin: const EdgeInsets.only(right: 0),
       width: MediaQuery.of(context).size.width - 30, 
       child: GestureDetector(
         onTap: () {

@@ -83,11 +83,13 @@ class _DashboardScreenState extends State<DashboardScreen>
         if (nextIndex >= provider.bannersResponse!.results!.length) {
           nextIndex = 0;
         }
-        _bannerController.animateToPage(
-          nextIndex,
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.easeInOut,
-        );
+        if (_bannerController.hasClients) {
+          _bannerController.animateToPage(
+            nextIndex,
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+          );
+        }
       }
     });
   }
@@ -165,10 +167,13 @@ class _DashboardScreenState extends State<DashboardScreen>
       key: _scaffoldKey,
       appBar: AppBar(
         backgroundColor: Colors.white,
+        elevation: 4, // 👈 controls shadow intensity
+        shadowColor: Colors.black.withOpacity(0.25),
+        surfaceTintColor: Colors.transparent,
         leading: IconButton(
           icon: Icon(
             Icons.menu_rounded,
-            size: 24.sp,
+            size: 30.sp,
             weight: 300,
             color: AppTheme.primaryColor,
           ), // Thinner menu icon
@@ -177,12 +182,12 @@ class _DashboardScreenState extends State<DashboardScreen>
         title: Image.asset(AppAssets.appLogo, height: 36.h),
         actions: [
           IconButton(
-            icon: Icon(
-              Icons.notifications_none_rounded,
-              size: 24.sp,
-              weight: 300,
-              color: AppTheme.primaryColor,
-            ), // Thinner notification icon
+                icon: Image.asset(
+                  AppAssets.bellIcon, // your asset path
+            width: 30.sp,
+            height: 30.sp,
+            color: AppTheme.primaryColor, // optional (works if icon is single color)
+          ), // Thinner notification icon
             onPressed: () {
               context.push(AppRoutes.notifications);
             },
@@ -208,7 +213,9 @@ class _DashboardScreenState extends State<DashboardScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  SizedBox(height: 30.h),
                   _buildMarquee(provider),
+                  SizedBox(height: 4.h),
                   _buildBanners(provider),
                   _buildTopSuppliers(provider),
                   SizedBox(height: 15.h),
@@ -403,22 +410,44 @@ class _DashboardScreenState extends State<DashboardScreen>
   }
 
   Widget _buildDrawerItem(String iconPath, String title, VoidCallback onTap) {
-    return ListTile(
-      leading: Image.asset(iconPath,
-          width: 20, height: 20, color: AppTheme.primaryColor),
-      // Blue tint
-      title: Text(
-        title,
-        style: const TextStyle(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ListTile(
+          leading: Image.asset(
+            iconPath,
+            width: 20,
+            height: 20,
             color: AppTheme.primaryColor,
-            fontSize: 15,
-            fontWeight: FontWeight.w500),
-      ),
-      onTap: onTap,
-      dense: true,
-      horizontalTitleGap: 0,
+          ),
+          title: Padding(
+            padding:  EdgeInsets.only(left: 12.w),
+            child: Text(
+              title,
+              style: const TextStyle(
+                color: AppTheme.primaryColor,
+                fontSize: 15,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+          onTap: onTap,
+          dense: true,
+          horizontalTitleGap: 0,
+        ),
+
+        // 👇 Divider Line
+        Divider(
+          height: 1,
+          thickness: 1,
+          color: Colors.grey.shade300,
+          indent: 16,
+          endIndent: 16,
+        ),
+      ],
     );
   }
+
 
   Widget _buildMarquee(DashboardProvider provider) {
     return Container(
@@ -443,8 +472,8 @@ class _DashboardScreenState extends State<DashboardScreen>
             "Welcome to the EZY Orders",
             style: TextStyle(
               color: Colors.red,
-              fontWeight: FontWeight.w800,
-              fontSize: 14.sp,
+              fontWeight: FontWeight.w900,
+              fontSize: 18.sp,
             ),
             maxLines: 1,
             softWrap: false,
@@ -637,6 +666,7 @@ class _DashboardScreenState extends State<DashboardScreen>
 
     return Column(
       children: [
+        SizedBox(height: 15.h,),
         SectionHeaderWidget(
           title: "", // No title for footer banners usually, but has arrows
           onPrevTap: () {
@@ -658,27 +688,27 @@ class _DashboardScreenState extends State<DashboardScreen>
             );
           },
         ),
-        Container(
-          height: 150.h,
-          margin: EdgeInsets.symmetric(vertical: 10.h),
+        SizedBox(
+          height: 120.h,
           child: PageView.builder(
             controller: _footerPageController,
+            itemCount: results.length,
             onPageChanged: (index) {
               setState(() {
                 _currentFooterIndex = index;
               });
             },
-            itemCount: results.length,
             itemBuilder: (context, index) {
               final banner = results[index];
               if (banner?.image == null) return const SizedBox.shrink();
 
               return Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10.w),
+                padding: EdgeInsets.symmetric(horizontal: 12.w),
                 child: InkWell(
                   onTap: () {
                     final b = banner;
-                    final productProvider = context.read<ProductListProvider>();
+                    final productProvider =
+                    context.read<ProductListProvider>();
                     productProvider.clearFilters();
 
                     if (b.groupId != null && b.groupId != "0") {
@@ -693,12 +723,19 @@ class _DashboardScreenState extends State<DashboardScreen>
 
                     context.read<DashboardProvider>().setIndex(1);
                   },
-                  child: _buildNetworkImage(banner!.image, fit: BoxFit.contain),
+                  child: SizedBox(
+                    width: double.infinity, // ✅ full width
+                    child: _buildNetworkImage(
+                      banner!.image,
+                      fit: BoxFit.cover, // better full-width fit
+                    ),
+                  ),
                 ),
               );
             },
           ),
         ),
+
       ],
     );
   }

@@ -14,8 +14,8 @@ class MyAccountScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("My Account", style: TextStyle(color: AppTheme.white)),
-        backgroundColor: AppTheme.orderSuccessTeal, // Teal color
+        title: const Text("Profile", style: TextStyle(color: AppTheme.white)),
+        backgroundColor: AppTheme.orangeColor, // Teal color
         iconTheme: const IconThemeData(color: AppTheme.white),
       ),
       body: Consumer<DashboardProvider>(
@@ -38,7 +38,7 @@ class MyAccountScreen extends StatelessWidget {
                     children: [
                         Container(
                             height: 80.h,
-                            color: AppTheme.orderSuccessTeal,
+                            color: AppTheme.orangeColor,
                         ),
                         // Card with User Info
                              Container(
@@ -57,27 +57,14 @@ class MyAccountScreen extends StatelessWidget {
                                ),
                                child: Column(
                                    children: [
-                                       Text(userName.isEmpty ? "Guest User" : userName, 
+                                       Text(userName.isEmpty ? "Guest User" : userName,
                                            style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold)),
                                        SizedBox(height: 4.h),
-                                       Text(userEmail, 
+                                       Text(userEmail,
                                            style: TextStyle(fontSize: 14.sp, color: AppTheme.darkGrayColor)),
                                        SizedBox(height: 16.h),
                                        // Edit Profile Button (Small)
-                                       InkWell(
-                                           onTap: () {
-                                             context.push(AppRoutes.myProfile);
-                                           },
-                                           child: Container(
-                                               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
-                                               decoration: BoxDecoration(
-                                                   color: AppTheme.orangeColor,
-                                                   borderRadius: BorderRadius.circular(20.r)
-                                               ),
-                                               child: Text("Edit Profile", 
-                                                   style: TextStyle(color: AppTheme.white, fontSize: 12.sp)),
-                                           ),
-                                       )
+
                                    ],
                                ),
                            ),
@@ -98,31 +85,55 @@ class MyAccountScreen extends StatelessWidget {
                                         )
                                         : null
                                 ),
-                                child: (userImage.isEmpty || userImage.contains("default")) 
+                                child: (userImage.isEmpty || userImage.contains("default"))
                                      ? Icon(Icons.person, size: 40.w, color: AppTheme.darkGrayColor)
                                      : null,
                             ),
-                        )
+                        ),
+
+                      Positioned(
+                        bottom: 80.w,
+                        right: 150.w,
+                        child: GestureDetector(
+                          onTap: () {
+                            context.push(AppRoutes.myProfile);
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(6.w),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: AppTheme.white,
+                              border: Border.all(color: AppTheme.white, width: 2),
+                            ),
+                            child: Icon(
+                              Icons.edit,
+                              size: 14.sp,
+                              color: AppTheme.primaryColor,
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                 ),
                 
                 SizedBox(height: 20.h),
                 
                 // Menu Items
-                _buildMenuItem(context, Icons.inventory_2_outlined, "My Orders", () {
+                _buildMenuItem(context, 'assets/images/my_fav.png', "My Favourites", () {
+                  context.push(AppRoutes.myWishlist);
+                }),
+                _buildMenuItem(context, 'assets/images/my_orders.png', "My Orders", () {
                    context.push(AppRoutes.myOrders);
                 }),
-                _buildMenuItem(context, Icons.favorite_border, "My Favourites", () {
-                   context.push(AppRoutes.myWishlist);
-                }),
-                _buildMenuItem(context, Icons.location_on_outlined, "Manage Addresses", () {
-                     // TODO: Navigate to Address Book
-                     context.push(AppRoutes.myAddresses);
-                }),
-                _buildMenuItem(context, Icons.lock_outline, "Change Password", () {
+
+                _buildMenuItem(context, 'assets/images/changepasswordicon.png', "Change Password", () {
                    context.push(AppRoutes.changePassword);
                 }),
-                _buildMenuItem(context, Icons.logout, "Logout", () {
+                _buildMenuItem(context, 'assets/images/addressesicon.png', "Address List", () {
+                  // TODO: Navigate to Address Book
+                  context.push(AppRoutes.myAddresses);
+                }),
+                _buildMenuItem(context, 'assets/images/my_logout.png', "Logout", () {
                     _showLogoutDialog(context, provider);
                 }),
                 
@@ -135,24 +146,38 @@ class MyAccountScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuItem(BuildContext context, IconData icon, String title, VoidCallback onTap) {
-      return Card(
-          elevation: 1, // Soft shadow as per audit
-          margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
-          child: ListTile(
+  Widget _buildMenuItem(BuildContext context, String assetPath, String title, VoidCallback onTap) {
+      return Column(
+        children: [
+          ListTile(
               leading: Container(
                   padding: EdgeInsets.all(8.w),
                   decoration: BoxDecoration(
-                      color: AppTheme.lightTealBg, // Light Teal
+                      color: AppTheme.white, // Light Teal
                       borderRadius: BorderRadius.circular(8.r)
                   ),
-                  child: Icon(icon, color: AppTheme.orderSuccessTeal, size: 24.sp),
+                  child: Image.asset(
+                    assetPath,
+                    height: 24.sp,
+                    width: 26.sp,
+                    fit: BoxFit.contain,
+                    color: AppTheme.primaryColor,
+                  ),
               ),
-              title: Text(title, style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.normal)),
-              trailing: Icon(Icons.arrow_forward_ios, size: 16.sp, color: AppTheme.darkGrayColor),
+              title: Text(title, style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold , color: AppTheme.primaryColor )),
+              trailing: Icon(Icons.arrow_forward_ios, size: 16.sp, color: AppTheme.primaryColor),
               onTap: onTap,
           ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            child: Divider(
+              height: 1,
+              thickness: 1,
+              color: AppTheme.lightGrayBg,
+            ),
+          ),
+
+        ],
       );
   }
   

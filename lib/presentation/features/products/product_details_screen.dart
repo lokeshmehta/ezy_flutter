@@ -76,7 +76,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> with Single
       appBar: AppBar(
         title: Text(
           "Product Details",
-          style: TextStyle(color: AppTheme.primaryColor, fontWeight: FontWeight.bold, fontSize: 18.sp),
+          style: TextStyle(color: AppTheme.primaryColor, fontWeight: FontWeight.w800, fontSize: 18.sp ,),
         ),
         centerTitle: true,
         backgroundColor: AppTheme.white,
@@ -216,8 +216,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> with Single
           SizedBox(height: 15.h),
           // Actions
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
+              SizedBox(
+                width: 160.w,
                 child: ElevatedButton(
                   onPressed: () => _onAddToCart(product),
                   style: ElevatedButton.styleFrom(
@@ -237,8 +239,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> with Single
                 onTap: () => _onFavorite(product),
                 child: Image.asset(
                   product.isFavourite == "Yes" ? "assets/images/favadded.png" : "assets/images/fav_new.png",
-                  width: 40.h,
-                  height: 40.h,
+                  width: 30.h,
+                  height: 30.h,
                 ),
               ),
             ],
@@ -271,7 +273,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> with Single
           ],
         ),
         SizedBox(
-          height: 300.h, // Fixed height for tab content or use Expanded if inside limited height container
+          height: 150.h, // Fixed height for tab content or use Expanded if inside limited height container
           child: TabBarView(
             controller: _tabController,
             children: [
@@ -293,10 +295,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> with Single
           _buildInfoRow("SKU", product.sku),
           _buildInfoRow("Sold As", product.soldAs),
           _buildInfoRow("Qty Per Carton", product.qtyPerOuter),
-          _buildInfoRow("Inner Barcode", product.innerBarcode),
+          /*_buildInfoRow("Inner Barcode", product.innerBarcode),
           _buildInfoRow("Outer Barcode", product.outerBarcode),
           _buildInfoRow("Shipper Barcode", product.shipperBarcode),
-          _buildInfoRow("Primary Barcode", product.primaryBarcode),
+          _buildInfoRow("Primary Barcode", product.primaryBarcode),*/
         ],
       ),
     );
@@ -339,7 +341,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> with Single
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(color: AppTheme.primaryColor, fontSize: 14.sp)),
+          Text(label, style: TextStyle(color: AppTheme.primaryColor, fontSize: 14.sp , fontWeight: FontWeight.w700)),
           Text(value ?? "-", style: TextStyle(color: Colors.grey[700], fontSize: 14.sp)),
         ],
       ),

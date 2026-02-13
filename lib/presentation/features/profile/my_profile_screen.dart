@@ -177,12 +177,12 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                      children: [
                        InkWell(
                          onTap: () => context.pop(),
-                         child: Icon(Icons.arrow_back_ios, color: Colors.grey, size: 20.sp), 
+                         child: Icon(Icons.arrow_back_ios, color: Colors.grey, size: 20.sp),
                        ),
                        Expanded(
                          child: Center(
                            child: Padding(
-                             padding: EdgeInsets.only(right: 20.w), 
+                             padding: EdgeInsets.only(right: 20.w),
                              child: Text(
                                "Edit Profile",
                                style: TextStyle(
@@ -238,11 +238,11 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                               child: ClipOval(
                                                 child: CachedNetworkImage(
                                                   imageUrl: imageUrl,
-                                                  width: 100.w,
-                                                  height: 100.w,
+                                                  width: 80.w,
+                                                  height: 80.w,
                                                   fit: BoxFit.cover,
-                                                  placeholder: (context, url) => Image.asset("assets/images/pf_profileicon.png", width: 100.w, height: 100.w), 
-                                                  errorWidget: (context, url, error) => Image.asset("assets/images/pf_profileicon.png", width: 100.w, height: 100.w),
+                                                  placeholder: (context, url) => Image.asset("assets/images/no_pic_user.png", width: 80.w, height: 80.w ,color: AppTheme.primaryColor,),
+                                                  errorWidget: (context, url, error) => Image.asset("assets/images/no_pic_user.png", width: 80.w, height: 80.w ,color:  AppTheme.primaryColor),
                                                 ),
                                               ),
                                             ),
@@ -255,7 +255,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                                   color: Colors.white,
                                                   shape: BoxShape.circle,
                                                 ),
-                                                child: Icon(Icons.camera_alt, color: Colors.grey, size: 20.sp), 
+                                                child: Icon(Icons.camera_alt, color: AppTheme.primaryColor, size: 20.sp),
                                               ),
                                             )
                                           ],
@@ -264,11 +264,11 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                       SizedBox(height: 10.h),
                                       
                                       // First Name
-                                      _buildLabel("First Name"),
+                                      _buildLabel("First Name *"),
                                       _buildTextField(_firstNameController, "Enter First Name", validator: (v) => v!.isEmpty ? AppMessages.enterValidFirstName : null),
                                       
                                       // Last Name
-                                      _buildLabel("Last Name"),
+                                      _buildLabel("Last Name *"),
                                       _buildTextField(_lastNameController, "Enter Last Name", validator: (v) => v!.isEmpty ? AppMessages.enterValidLastName : null),
                                       
                                       // Street Address
@@ -285,12 +285,12 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                       _buildTextField(_stateController, "Enter Your State / Country", validator: (v) => v!.isEmpty ? AppMessages.enterValidStateCountry : null),
                                       
                                       // Email
-                                      _buildLabel("Email"),
+                                      _buildLabel("Email *"),
                                       _buildTextField(_emailController, "", readOnly: false), // XML didn't explicitly say readonly but generic textview? No, CustomEditView. Assuming editable.
                                       
                                       // Mobile
-                                      _buildLabel("Mobile Number"),
-                                      _buildTextField(_mobileController, "", readOnly: true, textColor: Colors.grey), // XML: editable="false"
+                                      _buildLabel("Mobile Number *"),
+                                      _buildTextField(_mobileController, "", readOnly: false, textColor: Colors.grey), // XML: editable="false"
                                       
                                       SizedBox(height: 20.h),
                                     ],
@@ -305,10 +305,10 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                 child: ElevatedButton(
                                   onPressed: _submit,
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppTheme.tealColor,
+                                    backgroundColor: AppTheme.secondaryColor,
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.r)),
                                   ),
-                                  child: Text("Update Details", style: TextStyle(fontSize: 14.sp, color: Colors.white)),
+                                  child: Text("Update Details", style: TextStyle(fontSize: 14.sp, color: Colors.white , fontWeight: FontWeight.bold)),
                                 ),
                               )
                             ],

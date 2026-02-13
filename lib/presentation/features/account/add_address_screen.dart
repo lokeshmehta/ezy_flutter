@@ -100,7 +100,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
              defaultAddress: defaultVal
          );
      }
-     
+
      if (!mounted) return;
      
      if (success) {
@@ -119,9 +119,20 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.addressToEdit != null ? "Edit Address" : "Add Address", style: const TextStyle(color: Colors.white)),
-        backgroundColor: AppTheme.primaryColor,
+        elevation: 4, // 👈 controls shadow intensity
+        shadowColor: Colors.black.withOpacity(0.25),
+        surfaceTintColor: Colors.transparent,
+        title: Text(widget.addressToEdit != null ? "Edit Address" : "Add Address", style: const TextStyle(color: Colors.black)),
+        backgroundColor: AppTheme.white,
         iconTheme: const IconThemeData(color: Colors.white),
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_rounded,
+            color: AppTheme.blackColor,
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+
       ),
       body: Consumer<AddressProvider>(
           builder: (context, provider, child) {

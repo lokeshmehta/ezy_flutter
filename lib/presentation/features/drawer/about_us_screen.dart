@@ -87,12 +87,15 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
       appBar: AppBar(
         title: Text(
           "About Us",
-          style: TextStyle(color: Colors.white, fontSize: 18.sp),
+          style: TextStyle(color: Colors.black, fontSize: 18.sp),
         ),
-        backgroundColor: AppTheme.primaryColor,
+        backgroundColor: Colors.white,
+        elevation: 4, // 👈 controls shadow intensity
+        shadowColor: Colors.black.withOpacity(0.25),
+        surfaceTintColor: Colors.transparent,
         iconTheme: IconThemeData(color: Colors.white),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back , color: Colors.black,),
           onPressed: () {
              Navigator.pop(context);
           },
@@ -109,8 +112,8 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
           if (list == null || list.isEmpty) {
             return Center(
               child: Text(
-                "No Information Available",
-                style: TextStyle(fontSize: 16.sp, color: Colors.grey),
+                "No Data Found",
+                style: TextStyle(fontSize: 16.sp, color: Colors.black ,fontWeight: FontWeight.bold),
               ),
             );
           }

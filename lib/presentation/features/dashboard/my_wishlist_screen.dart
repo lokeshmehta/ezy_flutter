@@ -30,6 +30,9 @@ class _MyWishlistScreenState extends State<MyWishlistScreen> {
     return Scaffold(
       backgroundColor: AppTheme.white,
       appBar: AppBar(
+        elevation: 4, // 👈 controls shadow intensity
+        shadowColor: Colors.black.withOpacity(0.25),
+        surfaceTintColor: Colors.transparent,
         title: Text(
           "My Favourites", // Parity: Title Match
           style: TextStyle(
@@ -39,7 +42,6 @@ class _MyWishlistScreenState extends State<MyWishlistScreen> {
           ),
         ),
         backgroundColor: AppTheme.white,
-        elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: AppTheme.primaryColor),
           onPressed: () => context.pop(),
@@ -67,7 +69,7 @@ class _MyWishlistScreenState extends State<MyWishlistScreen> {
                if (provider.myWishlistCategories.isNotEmpty)
                 Container(
                   height: 40.h,
-                  margin: EdgeInsets.symmetric(vertical: 10.h),
+                  margin: EdgeInsets.symmetric(vertical: 20.h),
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     padding: EdgeInsets.symmetric(horizontal: 10.w),

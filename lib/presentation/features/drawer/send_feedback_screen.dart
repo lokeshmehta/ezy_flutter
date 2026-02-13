@@ -40,7 +40,7 @@ class _SendFeedbackScreenState extends State<SendFeedbackScreen> {
     if (profile != null) {
       String fullName = profile.firstName ?? "";
       if (profile.lastName != null) fullName += " ${profile.lastName}";
-      if (profile.lastName != null) fullName += " ${profile.lastName}";
+      //if (profile.lastName != null) fullName += " ${profile.lastName}";
       _nameController.text = fullName.trim();
       _emailController.text = profile.email ?? "";
       _mobileController.text = profile.mobile ?? "";
@@ -105,12 +105,15 @@ class _SendFeedbackScreenState extends State<SendFeedbackScreen> {
       appBar: AppBar(
         title: Text(
           "Send Feedback",
-          style: TextStyle(color: Colors.white, fontSize: 18.sp),
+          style: TextStyle(color: Colors.black, fontSize: 18.sp),
         ),
-        backgroundColor: AppTheme.primaryColor,
+        backgroundColor: Colors.white,
+        elevation: 4, // 👈 controls shadow intensity
+        shadowColor: Colors.black.withOpacity(0.25),
+        surfaceTintColor: Colors.transparent,
         iconTheme: IconThemeData(color: Colors.white),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back , color: Colors.black,),
           onPressed: () {
              Navigator.pop(context);
           },
