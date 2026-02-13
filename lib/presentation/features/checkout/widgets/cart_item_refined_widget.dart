@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../data/models/cart_models.dart';
 import '../../../../core/constants/app_theme.dart';
+import '../../../../core/utils/common_methods.dart';
 
 class CartItemRefinedWidget extends StatelessWidget {
   final CartProduct item;
@@ -38,32 +39,43 @@ class CartItemRefinedWidget extends StatelessWidget {
           child: Column(
             children: [
               Card(
-                elevation: 5,
+                elevation: 3,
                 color: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.r)),
                 margin: EdgeInsets.all(5.w),
                 child: Padding(
                   padding: EdgeInsets.all(10.w),
                   child: Column(
                      crossAxisAlignment: CrossAxisAlignment.start,
                      children: [
-                       // Supplier Title (Using brandName passed down)
-                       if(showHeader)
-                       Padding(
-                         padding: EdgeInsets.only(bottom: 5.h),
-                         child: Text(
-                           brandName,
-                           style: TextStyle(color: Color(0xFF0038FF), fontSize: 14.sp, fontWeight: FontWeight.bold),
-                         ),
+                       Row(
+                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                         children: [
+                           // Supplier Title
+                           Expanded(
+                             child: Text(
+                               brandName,
+                               style: TextStyle(color: Color(0xFF0038FF), fontSize: 13.sp, fontWeight: FontWeight.bold),
+                             ),
+                           ),
+                           // Delete Icon (Top Right)
+                           InkWell(
+                             onTap: onDelete,
+                             child: Icon(Icons.delete, color: AppTheme.redColor, size: 20.sp),
+                           ),
+                         ],
                        ),
+                       SizedBox(height: 10.h),
                        
                        Row(
                          crossAxisAlignment: CrossAxisAlignment.start,
                          children: [
                             // Image
                             Container(
-                              width: 78.w,
-                              height: 78.w,
-                              margin: EdgeInsets.only(right: 8.w),
+                              width: 70.w,
+                              height: 100.h,
+                              margin: EdgeInsets.only(right: 10.w),
+                              alignment: Alignment.center,
                               child: Image.network(
                                 item.image ?? "",
                                 fit: BoxFit.contain,
@@ -73,66 +85,63 @@ class CartItemRefinedWidget extends StatelessWidget {
                             
                             // Center Details
                             Expanded(
-                              flex: 48, // weight 0.48
+                              flex: 5, 
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                    Text(
                                      item.title?.toUpperCase() ?? "",
-                                     style: TextStyle(color: AppTheme.textColor, fontSize: 12.sp, fontWeight: FontWeight.bold),
+                                     style: TextStyle(color: Colors.black, fontSize: 13.sp, fontWeight: FontWeight.bold),
+                                     maxLines: 2,
+                                     overflow: TextOverflow.ellipsis,
                                    ),
-                                   SizedBox(height: 2.h),
-                                   Text(
-                                     "INR ${item.salePrice ?? "0.00"}",
-                                     style: TextStyle(color: AppTheme.darkGrayColor, fontSize: 13.sp),
-                                   ),
-                                   // Promo/Discount Logic
+                                   SizedBox(height: 5.h),
+                                   
+                                   // Price Section
                                    if((double.tryParse(item.discountAmount ?? "0") ?? 0) > 0) ...[
                                       Text(
-                                        "INR ${item.normalPrice ?? "0.00"}", // Original Price
-                                        style: TextStyle(color: AppTheme.darkGrayColor, fontSize: 13.sp, decoration: TextDecoration.lineThrough),
+                                        "AUD ${item.normalPrice ?? "0.00"}",
+                                        style: TextStyle(color: Colors.grey, fontSize: 13.sp, decoration: TextDecoration.lineThrough, fontWeight: FontWeight.bold),
                                       ),
+                                   ],
+                                   Text(
+                                     "AUD ${item.salePrice ?? "0.00"}",
+                                      style: TextStyle(color: AppTheme.darkGrayColor, fontSize: 14.sp, fontWeight: FontWeight.bold), // Dark Grey or Black based on screenshot? Looks Grey/Black.
+                                   ),
+                                   
+                                    if((double.tryParse(item.discountAmount ?? "0") ?? 0) > 0)
                                       Container(
-                                        padding: EdgeInsets.all(3.w),
+                                        margin: EdgeInsets.only(top: 5.h),
+                                        padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
                                         color: AppTheme.redColor,
                                         child: Text(
-                                          "Save ${item.discountAmount}",
-                                          style: TextStyle(color: Colors.white, fontSize: 12.sp),
+                                          "-${CommonMethods.checkNullempty(item.discountPercent)}%", // Using percent if available, screenshot shows %
+                                          style: TextStyle(color: Colors.white, fontSize: 12.sp, fontWeight: FontWeight.bold),
                                         ),
-                                      )
-                                   ]
+                                      ),
                                 ],
                               ),
                             ),
                             
-                            // Right Actions (Delete & Qty)
+                            // Right Actions (Qty)
                             Expanded(
-                              flex: 52, // weight 0.52
+                              flex: 4, 
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
+                                mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
-                                   // Delete Icon
-                                   InkWell(
-                                     onTap: onDelete,
-                                     child: Padding(
-                                       padding: EdgeInsets.all(2.w),
-                                       child: Icon(Icons.delete, color: AppTheme.redColor, size: 28.w),
-                                     ),
-                                   ),
-                                   SizedBox(height: 5.h), 
-                                   
+                                   SizedBox(height: 40.h), // Push to bottom roughly
                                    // Qty Control Box
                                    Container(
-                                     width: 110.w,
-                                     height: 32.h,
+                                     width: 100.w,
+                                     height: 35.h,
                                      decoration: BoxDecoration(
-                                        color: Colors.white, 
-                                        border: Border.all(color: AppTheme.darkGrayColor),
-                                        borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
+                                        color: Colors.white,
+                                        border: Border.all(color: Colors.grey.shade400),
+                                        borderRadius: BorderRadius.circular(5.r),
                                      ),
                                      child: Row(
                                        children: [
-                                         // Decrease
                                          Expanded(
                                            child: InkWell(
                                              onTap: () {
@@ -140,22 +149,20 @@ class CartItemRefinedWidget extends StatelessWidget {
                                                    onUpdateQty((qty-1).toString());
                                                 }
                                              },
-                                             child: Center(child: Text("-", style: TextStyle(fontSize: 22.sp, color: AppTheme.darkGrayColor))),
+                                             child: Center(child: Text("-", style: TextStyle(fontSize: 20.sp, color: Colors.grey))),
                                            ),
                                          ),
-                                         Container(width: 1.w, color: AppTheme.darkGrayColor),
-                                         // Qty Text
+                                         Container(width: 1.w, color: Colors.grey.shade400),
                                          Expanded(
-                                           child: Center(child: Text("$qty", style: TextStyle(fontSize: 13.sp, color: AppTheme.darkGrayColor))),
+                                           child: Center(child: Text("$qty", style: TextStyle(fontSize: 14.sp, color: Colors.black, fontWeight: FontWeight.bold))),
                                          ),
-                                         Container(width: 1.w, color: AppTheme.darkGrayColor),
-                                         // Increase
+                                         Container(width: 1.w, color: Colors.grey.shade400),
                                          Expanded(
                                            child: InkWell(
                                              onTap: () {
                                                  onUpdateQty((qty+1).toString());
                                              },
-                                             child: Center(child: Text("+", style: TextStyle(fontSize: 22.sp, color: AppTheme.darkGrayColor))),
+                                             child: Center(child: Text("+", style: TextStyle(fontSize: 20.sp, color: Colors.grey))),
                                            ),
                                          ),
                                        ],
@@ -170,21 +177,12 @@ class CartItemRefinedWidget extends StatelessWidget {
                        // Ordered As
                        if(item.orderedAs != null && item.orderedAs!.isNotEmpty)
                        Padding(
-                         padding: EdgeInsets.only(top: 3.h),
+                         padding: EdgeInsets.only(top: 10.h),
                          child: Row(
                            children: [
                              Text("Ordered As : ", style: TextStyle(color: Colors.black, fontSize: 13.sp, fontWeight: FontWeight.bold)),
-                             Text(item.orderedAs!, style: TextStyle(color: Color(0xFF0038FF), fontSize: 13.sp)),
+                             Text(item.orderedAs!, style: TextStyle(color: Color(0xFF0038FF), fontSize: 13.sp, fontWeight: FontWeight.bold)),
                            ],
-                         ),
-                       ),
-                       
-                       // Verification / Min Order (Simulated)
-                       Padding(
-                         padding: EdgeInsets.only(top: 5.h),
-                         child: Text(
-                           item.productAvailable ?? "In Stock",
-                           style: TextStyle(color: AppTheme.redColor, fontSize: 13.sp, fontWeight: FontWeight.bold),
                          ),
                        ),
                      ],

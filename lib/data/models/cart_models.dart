@@ -181,4 +181,16 @@ class CartProduct {
       orderedAs: json['ordered_as']?.toString(),
     );
   }
+  String? get discountPercent {
+      try {
+         double normal = double.tryParse(normalPrice ?? "0") ?? 0;
+         double discount = double.tryParse(discountAmount ?? "0") ?? 0;
+         if (normal > 0 && discount > 0) {
+             return ((discount / normal) * 100).toStringAsFixed(2);
+         }
+      } catch (e) {
+          return null;
+      }
+      return null;
+  }
 }

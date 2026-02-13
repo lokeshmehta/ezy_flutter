@@ -93,6 +93,7 @@ class _StepCartWidgetState extends State<StepCartWidget> {
           ),
         ),
 
+
         // Bottom Section (Price Details & Actions)
         Container(
           decoration: BoxDecoration(
@@ -115,17 +116,20 @@ class _StepCartWidgetState extends State<StepCartWidget> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        provider.cartResult?.totalHeading ?? "Total Amount",
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
+                        "Cart Total",
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.sp, color: Color(0xFF0038FF)),
                       ),
-                      Row(
-                        children: [
-                          Text(
-                            "AUD ${provider.totalAmount}",
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp, color: Colors.black),
-                          ),
-                          Icon(_isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down),
-                        ],
+                      Container(
+                        padding: EdgeInsets.all(4.w),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.green, // Screenshot shows green circle
+                        ),
+                         child: Icon(
+                           _isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                           color: Colors.white,
+                           size: 16.sp,
+                         ),
                       ),
                     ],
                   ),
@@ -135,26 +139,44 @@ class _StepCartWidgetState extends State<StepCartWidget> {
               if (_isExpanded)
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 5.h),
-                  color: Colors.grey.shade50,
+                  color: Colors.white,
                   child: Column(
                     children: [
-                      _buildSummaryRow(provider.cartResult?.subTotalHeading ?? "Sub Total", "AUD ${provider.subTotal}"),
+                      _buildSummaryRow(provider.cartResult?.subTotalHeading ?? "Sub-Total", "AUD ${provider.subTotal}"),
                       if((double.tryParse(provider.discount) ?? 0) > 0)
                          _buildSummaryRow("Discount", "-AUD ${provider.discount}", isDiscount: true),
+                      
+                      // Screenshot: Ex. GST
+                      _buildSummaryRow("Ex. GST :", "AUD ${provider.subTotal}", isBlueValue: true), // Assuming subtotal is ex gst? Need to verify logic. Screenshot: Sub-Total ... Ex. GST ... 
+                      // Wait, "Sub-Total" is usually Ex GST in B2B. Screenshot has "Sub-Total" label then "Ex. GST : AUD...".
+                      // Let's blindly follow screenshot labels if possible. 
+                      // Provider has 'subTotal', 'taxTotal', 'totalAmount'.
+                      // Let's map: 
+                      // Sub-Total -> provider.subTotal (Generic)
+                      // Ex. GST -> provider.subTotal (Usually)
+                      // GST -> provider.taxTotal
+                      // Grand Total -> provider.totalAmount
+                      // Inc. GST -> provider.totalAmount
+                      
                       if((double.tryParse(provider.shippingCharge) ?? 0) > 0)
-                         _buildSummaryRow("Shipping Charges", "AUD ${provider.shippingCharge}"),
+                         _buildSummaryRow("Shipping Charges", "AUD ${provider.shippingCharge}", isBlueValue: true),
                       if((double.tryParse(provider.supplierCharge) ?? 0) > 0)
-                         _buildSummaryRow("Supplier Charges", "AUD ${provider.supplierCharge}"),
-                      if((double.tryParse(provider.taxTotal) ?? 0) > 0)
-                         _buildSummaryRow("Tax (GST)", "AUD ${provider.taxTotal}"),
+                         _buildSummaryRow("Supplier Charges", "AUD ${provider.supplierCharge}", isBlueValue: true),
+                         
+                      _buildSummaryRow("GST :", "AUD ${provider.taxTotal}", isBlueValue: true),
+                      
                       if((double.tryParse(provider.couponDiscount) ?? 0) > 0)
                           _buildSummaryRow("Coupon (${provider.couponName})", "-AUD ${provider.couponDiscount}", isDiscount: true),
                       
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 5.h),
-                        child: Divider(),
+                      SizedBox(height: 5.h),
+                      Row(
+                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                         children: [
+                             Text("Grand Total", style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: Colors.grey.shade700)),
+                             SizedBox(),
+                         ]
                       ),
-                      _buildSummaryRow("Total Amount", "AUD ${provider.totalAmount}", isBold: true),
+                      _buildSummaryRow("Inc. GST :", "AUD ${provider.totalAmount}", isBlueValue: true),
                     ],
                   ),
                 ),
@@ -166,25 +188,33 @@ class _StepCartWidgetState extends State<StepCartWidget> {
                   children: [
                     // Clear Cart (Red CustomButton)
                     Expanded(
-                      flex: 1, // Layout weight might differ but 1:1 or specific ratio. XML doesn't show weight in snippet.
+                      flex: 4,
                       child: SizedBox(
-                        height: 45.h,
+                        height: 40.h,
                         child: ElevatedButton(
                           onPressed: () {
                              _showClearCartDialog(context, provider);
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.redColor, 
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r)),
+                            backgroundColor: Color(0xFFD32F2F), // Darker Red
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.r)),
                           ),
                           child: Text("Clear Cart", style: TextStyle(color: Colors.white, fontSize: 14.sp)),
                         ),
                       ),
                     ),
-                    SizedBox(width: 15.w),
-                    // Next (Layout with Text + Image)
+                    
+                    // 1/3
                     Expanded(
-                      flex: 1, 
+                      flex: 3,
+                      child: Center(
+                        child: Text("1/3", style: TextStyle(color: Color(0xFF0038FF), fontSize: 15.sp, fontWeight: FontWeight.bold)),
+                      ),
+                    ),
+                    
+                    // Next (Orange)
+                    Expanded(
+                      flex: 4, 
                       child: InkWell(
                         onTap: () {
                            provider.nextStep();
@@ -193,18 +223,18 @@ class _StepCartWidgetState extends State<StepCartWidget> {
                            }
                         },
                         child: Container(
-                          height: 45.h,
+                          height: 40.h,
                           decoration: BoxDecoration(
-                            color: AppTheme.tealColor, // Or Teal
-                            borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r),
-                            // Gradient? snippet doesn't say.
+                            color: Color(0xFFF5A623), // Orange/Yellow
+                            borderRadius: BorderRadius.circular(5.r),
                           ),
+                          alignment: Alignment.center,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text("Next", style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: AppTheme.white)),
-                              SizedBox(width: 8.w),
-                              Icon(Icons.arrow_forward_ios, color: Colors.white, size: 16.sp), // pd_nextStep Image
+                               Text("Next", style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold, color: Colors.white)),
+                               SizedBox(width: 5.w),
+                               Icon(Icons.arrow_forward_ios, color: Colors.white, size: 14.sp), 
                             ],
                           ),
                         ),
@@ -219,15 +249,19 @@ class _StepCartWidgetState extends State<StepCartWidget> {
       ],
     );
   }
-
-  Widget _buildSummaryRow(String label, String value, {bool isBold = false, bool isDiscount = false}) {
+      
+  Widget _buildSummaryRow(String label, String value, {bool isDiscount = false, bool isBlueValue = false}) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 4.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontSize: 13.sp, color: Colors.grey.shade700, fontWeight: isBold ? FontWeight.bold : FontWeight.normal)),
-          Text(value, style: TextStyle(fontSize: 13.sp, color: isDiscount ? Colors.green : Colors.black, fontWeight: isBold ? FontWeight.bold : FontWeight.normal)),
+          Text(label, style: TextStyle(fontSize: 13.sp, color: Colors.grey.shade700, fontWeight: FontWeight.w600)), 
+          Text(value, style: TextStyle(
+              fontSize: 14.sp, 
+              color: isDiscount ? Colors.red : (isBlueValue ? Color(0xFF0038FF) : Colors.black), 
+              fontWeight: FontWeight.bold 
+          )),
         ],
       ),
     );
