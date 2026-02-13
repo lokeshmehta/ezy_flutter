@@ -308,14 +308,21 @@ class CheckoutProvider extends ChangeNotifier {
   }
 
   Future<void> placeOrder(BuildContext context) async {
-       final result = await createOrder();
-       if(result != null && result['status'] == 200) {
-           if(context.mounted) {
-               context.go(AppRoutes.orderSuccess, extra: result);
+       if(_paymentMethod == "Cash on Delivery") {
+           final result = await createOrder();
+           if(result != null && result['status'] == 200) {
+               if(context.mounted) {
+                   context.go(AppRoutes.orderSuccess, extra: result);
+               }
+           } else {
+               if(context.mounted) {
+                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(_errorMessage)));
+               }
            }
        } else {
+           // Online Payment Flow (To be implemented - Parity with PaymentActivity)
            if(context.mounted) {
-               ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(_errorMessage)));
+               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Online Payment flow coming soon")));
            }
        }
   }

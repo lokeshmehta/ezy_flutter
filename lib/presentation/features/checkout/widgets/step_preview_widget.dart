@@ -228,7 +228,7 @@ class StepPreviewWidget extends StatelessWidget {
                       child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                     )
                   : Text(
-                      "Submit Order",
+                      provider.paymentMethod == "Cash on Delivery" ? "Submit Order" : "Proceed To Pay",
                       style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
                     ),
             ),
