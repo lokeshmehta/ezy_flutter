@@ -106,28 +106,71 @@ class _StepAddressWidgetState extends State<StepAddressWidget> {
             _buildTextField(provider.shipEmailController, "Email Address *", keyboardType: TextInputType.emailAddress),
           ],
           
+
           SizedBox(height: 30.h),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                  if(provider.validateAddressStep()) {
-                      provider.nextStep();
-                  } else {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppMessages.pleaseFillAllRequiredFields)));
-                  }
-              },
-              style: ElevatedButton.styleFrom(
-                 backgroundColor: AppTheme.tealColor,
-                 foregroundColor: Colors.white,
-                 minimumSize: Size(double.infinity, 45.h),
-                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r))
-              ),
-              child: Text("NEXT", style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold)),
-            ),
+          
+
+          SizedBox(height: 30.h),
+          
+          // Navigation Buttons (id_next_back_layout parity)
+          Row(
+            children: [
+               // Back Button
+               Expanded(
+                 child: InkWell(
+                   onTap: () {
+                      provider.previousStep();
+                   },
+                   child: Container(
+                     height: 45.h,
+                     decoration: BoxDecoration(
+                       color: AppTheme.tealColor, // Filled Teal
+                       borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r),
+                     ),
+                     child: Row(
+                       mainAxisAlignment: MainAxisAlignment.center,
+                       children: [
+                         Icon(Icons.arrow_back_ios, color: Colors.white, size: 16.sp),
+                         SizedBox(width: 8.w),
+                         Text("Back", style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: Colors.white)),
+                       ],
+                     ),
+                   ),
+                 ),
+               ),
+               SizedBox(width: 15.w),
+               
+               // Next Button
+               Expanded(
+                 child: InkWell(
+                   onTap: () {
+                      if(provider.validateAddressStep()) {
+                          provider.nextStep();
+                      } else {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppMessages.pleaseFillAllRequiredFields)));
+                      }
+                   },
+                   child: Container(
+                     height: 45.h,
+                     decoration: BoxDecoration(
+                       color: AppTheme.tealColor,
+                       borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r),
+                     ),
+                     child: Row(
+                       mainAxisAlignment: MainAxisAlignment.center,
+                       children: [
+                         Text("Next", style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: Colors.white)),
+                         SizedBox(width: 8.w),
+                         Icon(Icons.arrow_forward_ios, color: Colors.white, size: 16.sp),
+                       ],
+                     ),
+                   ),
+                 ),
+               ),
+            ],
           ),
           
-          SizedBox(height: 80.h), // Space for Bottom Bar
+          SizedBox(height: 30.h), 
         ],
       ),
     );

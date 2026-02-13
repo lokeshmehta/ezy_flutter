@@ -153,26 +153,41 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
           const Divider(thickness: 1),
           _buildPriceRow("Total Amount", provider.totalAmount, isBold: true, size: 16.sp),
           
+
           SizedBox(height: 30.h),
+          
+          // Navigation Buttons
           Row(
             children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () {
+               // Back Button
+               Expanded(
+                 child: InkWell(
+                   onTap: () {
                       provider.previousStep();
-                  },
-                  style: OutlinedButton.styleFrom(
-                     padding: EdgeInsets.symmetric(vertical: 16.h),
-                     side: const BorderSide(color: AppTheme.orderSuccessTeal),
-                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r))
-                  ),
-                  child: Text("BACK", style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold, color: AppTheme.orderSuccessTeal)),
-                ),
-              ),
-              SizedBox(width: 20.w),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {
+                   },
+                   child: Container(
+                     height: 45.h,
+                     decoration: BoxDecoration(
+                       color: AppTheme.tealColor, // Filled Teal as per plan
+                       borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r),
+                     ),
+                     child: Row(
+                       mainAxisAlignment: MainAxisAlignment.center,
+                       children: [
+                         Icon(Icons.arrow_back_ios, color: Colors.white, size: 16.sp),
+                         SizedBox(width: 8.w),
+                         Text("Back", style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: Colors.white)),
+                       ],
+                     ),
+                   ),
+                 ),
+               ),
+               SizedBox(width: 15.w),
+               
+               // Next / Place Order Button
+               Expanded(
+                 child: InkWell(
+                   onTap: () {
                       if(provider.validatePaymentStep()) {
                           if (provider.isLastStep) {
                               _submitOrder(context, provider);
@@ -182,22 +197,40 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
                       } else {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppMessages.pleaseSelectPaymentMethod)));
                       }
-                  },
-                  style: ElevatedButton.styleFrom(
-                     backgroundColor: AppTheme.orderSuccessTeal,
-                     foregroundColor: AppTheme.white,
-                     padding: EdgeInsets.symmetric(vertical: 16.h),
-                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r))
-                  ),
-                  child: provider.isLoading 
-                      ? SizedBox(width: 20.w, height: 20.w, child: const CircularProgressIndicator(color: AppTheme.white, strokeWidth: 2))
-                      : Text(provider.isLastStep ? "SUBMIT ORDER" : "NEXT", style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold)),
-                ),
-              ),
+                   },
+                   child: Container(
+                     height: 45.h,
+                     decoration: BoxDecoration(
+                       color: AppTheme.tealColor,
+                       borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r),
+                     ),
+                     child: Row(
+                       mainAxisAlignment: MainAxisAlignment.center,
+                       children: [
+                         if(provider.isLoading)
+                            SizedBox(width: 20.w, height: 20.w, child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                         else ...[
+                            Text(provider.isLastStep ? "Place Order" : "Next", style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: Colors.white)),
+                            if(!provider.isLastStep) ...[
+                               SizedBox(width: 8.w),
+                               Icon(Icons.arrow_forward_ios, color: Colors.white, size: 16.sp),
+                            ]
+                         ]
+                       ],
+                     ),
+                   ),
+                 ),
+               ),
             ],
           ),
-
-          SizedBox(height: 80.h),
+          
+          SizedBox(height: 30.h),
+          
+          if(provider.isLastStep)
+             Padding(
+               padding: EdgeInsets.only(bottom: 20.h),
+               child: Center(child: Text("By placing an order you agree to our Terms", style: TextStyle(color: Colors.grey, fontSize: 12.sp))),
+             ),
         ],
       ),
     );

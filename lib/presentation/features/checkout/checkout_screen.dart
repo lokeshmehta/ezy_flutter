@@ -10,6 +10,7 @@ import 'widgets/step_address_widget.dart';
 import 'widgets/step_payment_widget.dart';
 import 'widgets/step_preview_widget.dart';
 import 'widgets/icon_stepper_widget.dart';
+import '../../../../core/constants/app_theme.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -71,8 +72,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
          }
       },
       child: Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
-          title: Text(title, style: TextStyle(color: Color(0xFF0038FF), fontWeight: FontWeight.bold)), // Blue Title
+          title: Text(title, style: TextStyle(color: AppTheme.primaryColor, fontWeight: FontWeight.bold)), 
           backgroundColor: Colors.white,
           elevation: 1,
           leading: IconButton(
@@ -94,7 +96,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   currentStep: provider.currentStep,
                   totalSteps: provider.totalSteps,
                   onStepTapped: (step) {
-                     // provider.setStep(step); // Optional: Allow tapping steps
+                     // provider.setStep(step); // Strict flow - no jumping
                   },
                 ),
                 Expanded(
@@ -116,7 +118,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             if (provider.isLoading)
               Container(
                 color: Colors.black45,
-                child: Center(child: CircularProgressIndicator()),
+                child: Center(child: CircularProgressIndicator(color: AppTheme.tealColor)),
               ),
           ],
         ),

@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../core/constants/app_theme.dart';
+
 class IconStepperWidget extends StatelessWidget {
   final int currentStep;
   final int totalSteps;
@@ -18,7 +20,7 @@ class IconStepperWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 20.w),
-      color: Colors.white, // or step_bgcolor
+      color: Colors.white, 
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: List.generate(totalSteps * 2 - 1, (index) {
@@ -40,19 +42,18 @@ class IconStepperWidget extends StatelessWidget {
     bool isActive = currentStep == stepIndex;
     bool isCompleted = currentStep > stepIndex;
     
-    // Icons matching Android: Cart, Shipping, Payment, Preview
+    // Icons matching Android: Cart, Shipping(Address), Payment, Preview
     IconData icon;
     switch(stepIndex) {
       case 0: icon = Icons.shopping_cart; break;
       case 1: icon = Icons.local_shipping; break;
       case 2: icon = Icons.payment; break;
-      case 3: icon = Icons.visibility; break; // or list_alt
+      case 3: icon = Icons.list_alt; break; // Preview
       default: icon = Icons.circle;
     }
 
     return InkWell(
       onTap: () {
-         // Optional: Allow tapping to go back?
          // onStepTapped(stepIndex);
       },
       child: Container(
@@ -60,13 +61,13 @@ class IconStepperWidget extends StatelessWidget {
         height: 40.w,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: (isActive || isCompleted) ? Colors.teal : Colors.grey.shade300,
-          border: isActive ? Border.all(color: Colors.teal.shade800, width: 2.w) : null,
-          boxShadow: isActive ? [BoxShadow(color: Colors.teal.withValues(alpha: 0.4), blurRadius: 8, spreadRadius: 1)] : null,
+          color: (isActive || isCompleted) ? AppTheme.tealColor : AppTheme.lightGrayBg,
+          border: isActive ? Border.all(color: AppTheme.tealColor, width: 2.w) : null,
+          boxShadow: isActive ? [BoxShadow(color: AppTheme.tealColor.withValues(alpha: 0.4), blurRadius: 8, spreadRadius: 1)] : null,
         ),
         child: Icon(
           icon,
-          color: (isActive || isCompleted) ? Colors.white : Colors.grey.shade600,
+          color: (isActive || isCompleted) ? Colors.white : AppTheme.darkGrayColor,
           size: 20.sp,
         ),
       ),
@@ -77,7 +78,7 @@ class IconStepperWidget extends StatelessWidget {
     bool isCompleted = currentStep > stepIndex;
     return Container(
       height: 3.h,
-      color: isCompleted ? Colors.teal : Colors.grey.shade300,
+      color: isCompleted ? AppTheme.tealColor : AppTheme.lightGrayBg,
     );
   }
 }

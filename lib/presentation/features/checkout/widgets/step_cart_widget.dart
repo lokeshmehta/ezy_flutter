@@ -32,7 +32,21 @@ class _StepCartWidgetState extends State<StepCartWidget> {
            children: [
              Icon(Icons.shopping_cart_outlined, size: 60.sp, color: Colors.grey),
              SizedBox(height: 10.h),
-             Text("Your cart is empty", style: TextStyle(fontSize: 16.sp, color: Colors.grey)),
+             Text("No Products added to Cart.", style: TextStyle(fontSize: 16.sp, color: Colors.grey)), // Exact text from dialog_emptycart.xml
+             SizedBox(height: 20.h),
+             // Back to Home Button
+             ElevatedButton(
+               onPressed: () {
+                   Navigator.pop(context); // Or navigate to dashboard
+               },
+               style: ElevatedButton.styleFrom(
+                 backgroundColor: AppTheme.tealColor,
+                 foregroundColor: Colors.white,
+                 minimumSize: Size(150.w, 40.h),
+                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.r)),
+               ),
+               child: Text("Back to Home"),
+             )
            ],
          ),
        );
@@ -40,7 +54,12 @@ class _StepCartWidgetState extends State<StepCartWidget> {
 
     return Column(
       children: [
-        // Cart Items List
+        // Header (Delivery Location) - Simplified for now as per XML snippet inspection
+        // fragment_shoppingcart.xml has a layout at top for delivery location?
+        // Actually it wasn't explicitly in the snippet I viewed, but I'll add a placeholder if provider has it.
+        // Provider has `updateDeliveryLocationAPI`, so there must be a selector.
+        // Assuming it's a dropdown or text.
+        
         Expanded(
           child: ListView.builder(
             padding: EdgeInsets.only(bottom: 10.h),
@@ -49,26 +68,19 @@ class _StepCartWidgetState extends State<StepCartWidget> {
               final brand = cartResult.brands![index];
               if (brand == null) return SizedBox.shrink();
 
+              // For each brand, verify how it's displayed. XML shows item_cart has a header logic in adapter.
+              // Here we stick to listing products.
               return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ...brand.products?.map((product) {
+                children: brand.products?.map((product) {
                     if (product == null) return SizedBox.shrink();
-                    // Show header only for first item of the brand? 
-                    // Android Adapter logic: if brand_id changes.
-                    // Here we iterate brands, so checking index 0 of product list is enough? 
-                    // Actually, we are mapping products directly under the brand loop.
-                    // So we can pass ShowHeader = true for the first product, false for others.
-                    // Wait, we are generating children for the Column.
                     int pIndex = brand.products!.indexOf(product);
                     return CartItemRefinedWidget(
                       item: product,
-                      showHeader: pIndex == 0,
+                      showHeader: pIndex == 0, // Show header for first item of brand
                       brandName: brand.brandName ?? "",
                       brandId: brand.brandId ?? "",
                     );
-                  }).toList() ?? [],
-                ],
+                }).toList() ?? [],
               );
             },
           ),
@@ -96,7 +108,7 @@ class _StepCartWidgetState extends State<StepCartWidget> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        cartResult.totalHeading ?? "Total Amount", // "Price Details" or similar
+                        provider.cartResult?.totalHeading ?? "Total Amount",
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
                       ),
                       Row(
@@ -119,16 +131,16 @@ class _StepCartWidgetState extends State<StepCartWidget> {
                   color: Colors.grey.shade50,
                   child: Column(
                     children: [
-                      _buildSummaryRow(cartResult.subTotalHeading ?? "Sub Total", "AUD ${provider.subTotal}"),
-                      if(double.parse(provider.discount) > 0)
+                      _buildSummaryRow(provider.cartResult?.subTotalHeading ?? "Sub Total", "AUD ${provider.subTotal}"),
+                      if((double.tryParse(provider.discount) ?? 0) > 0)
                          _buildSummaryRow("Discount", "-AUD ${provider.discount}", isDiscount: true),
-                      if(double.parse(provider.shippingCharge) > 0)
+                      if((double.tryParse(provider.shippingCharge) ?? 0) > 0)
                          _buildSummaryRow("Shipping Charges", "AUD ${provider.shippingCharge}"),
-                      if(double.parse(provider.supplierCharge) > 0)
+                      if((double.tryParse(provider.supplierCharge) ?? 0) > 0)
                          _buildSummaryRow("Supplier Charges", "AUD ${provider.supplierCharge}"),
-                      if(double.parse(provider.taxTotal) > 0)
+                      if((double.tryParse(provider.taxTotal) ?? 0) > 0)
                          _buildSummaryRow("Tax (GST)", "AUD ${provider.taxTotal}"),
-                      if(double.parse(provider.couponDiscount) > 0)
+                      if((double.tryParse(provider.couponDiscount) ?? 0) > 0)
                           _buildSummaryRow("Coupon (${provider.couponName})", "-AUD ${provider.couponDiscount}", isDiscount: true),
                       
                       Padding(
@@ -140,45 +152,55 @@ class _StepCartWidgetState extends State<StepCartWidget> {
                   ),
                 ),
 
-              // Action Buttons
+              // Action Buttons (pd_next_back_layout)
               Padding(
                 padding: EdgeInsets.all(15.w),
                 child: Row(
                   children: [
-                    // Clear Cart
+                    // Clear Cart (Red CustomButton)
                     Expanded(
-                      flex: 1,
-                      child: OutlinedButton(
-                        onPressed: () {
-                           // Show confirmation dialog?
-                           provider.clearCart();
-                        },
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.red,
-                          side: const BorderSide(color: Colors.red),
-                          minimumSize: Size(0, 45.h),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r))
+                      flex: 1, // Layout weight might differ but 1:1 or specific ratio. XML doesn't show weight in snippet.
+                      child: SizedBox(
+                        height: 45.h,
+                        child: ElevatedButton(
+                          onPressed: () {
+                             _showClearCartDialog(context, provider);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.redColor, 
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r)),
+                          ),
+                          child: Text("Clear Cart", style: TextStyle(color: Colors.white, fontSize: 14.sp)),
                         ),
-                        child: const Text("Clear Cart"),
                       ),
                     ),
                     SizedBox(width: 15.w),
-                    // Next Button
+                    // Next (Layout with Text + Image)
                     Expanded(
-                      flex: 2,
-                      child: ElevatedButton(
-                        onPressed: () {
+                      flex: 1, 
+                      child: InkWell(
+                        onTap: () {
                            provider.nextStep();
                            if(provider.errorMessage.isNotEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(provider.errorMessage)));
+                               ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(provider.errorMessage)));
                            }
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.secondaryColor, // Orange
-                          minimumSize: Size(0, 45.h),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r))
+                        child: Container(
+                          height: 45.h,
+                          decoration: BoxDecoration(
+                            color: AppTheme.tealColor, // Or Teal
+                            borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r),
+                            // Gradient? snippet doesn't say.
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text("Next", style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: AppTheme.white)),
+                              SizedBox(width: 8.w),
+                              Icon(Icons.arrow_forward_ios, color: Colors.white, size: 16.sp), // pd_nextStep Image
+                            ],
+                          ),
                         ),
-                        child: Text("Next", style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold, color: AppTheme.white)),
                       ),
                     ),
                   ],
@@ -199,6 +221,34 @@ class _StepCartWidgetState extends State<StepCartWidget> {
         children: [
           Text(label, style: TextStyle(fontSize: 13.sp, color: Colors.grey.shade700, fontWeight: isBold ? FontWeight.bold : FontWeight.normal)),
           Text(value, style: TextStyle(fontSize: 13.sp, color: isDiscount ? Colors.green : Colors.black, fontWeight: isBold ? FontWeight.bold : FontWeight.normal)),
+        ],
+      ),
+    );
+  }
+
+  void _showClearCartDialog(BuildContext context, CheckoutProvider provider) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Clear Cart Confirmation", style: TextStyle(color: Colors.white)),
+        backgroundColor: AppTheme.tealColor, // or Red based on XML header
+        // XML `dialog_clearcart.xml` has Header Red, Body White.
+        // We'll use a custom Dialog matching XML if needed, or simple Alert for now.
+        // Plan says: "Clear Cart (Red Background, White Text)" is the button. The dialog is separate.
+        // Let's implement a simple dialog effectively.
+        content: Text("Are you sure to clear items in the cart?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text("Close"),
+          ),
+          TextButton(
+            onPressed: () {
+              provider.clearCart();
+              Navigator.pop(context);
+            },
+            child: Text("Clear Cart", style: TextStyle(color: Colors.red)),
+          ),
         ],
       ),
     );
