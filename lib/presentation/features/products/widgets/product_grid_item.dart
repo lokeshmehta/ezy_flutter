@@ -110,7 +110,7 @@ class _ProductGridItemState extends State<ProductGridItem> {
               Stack(
                 children: [
                    Container(
-                     height: 120.h,
+                     height: 110.h,
                      width: double.infinity,
                      alignment: Alignment.center,
                      child: CachedNetworkImage(
@@ -141,7 +141,7 @@ class _ProductGridItemState extends State<ProductGridItem> {
               ),
 
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 5.w),
+                padding: EdgeInsets.all(8.w),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

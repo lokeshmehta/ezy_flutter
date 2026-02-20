@@ -4,8 +4,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/checkout_provider.dart';
 import '../../../../core/constants/app_theme.dart';
+import '../../../../core/utils/common_methods.dart';
+import '../../../providers/dashboard_provider.dart';
 import '../../../widgets/custom_loader_widget.dart';
 import 'cart_item_refined_widget.dart';
+import 'clear_cart_dialog.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../config/routes/app_routes.dart';
 
 
 class StepCartWidget extends StatefulWidget {
@@ -82,11 +87,22 @@ class _StepCartWidgetState extends State<StepCartWidget> {
                       showHeader: pIndex == 0, // Show header for first item of brand
                       brandName: brand.brandName ?? "",
                       brandId: brand.brandId ?? "",
-                      onUpdateQty: (newQty) {
-                          provider.updateCartItem(product.productId!, newQty, brand.brandId!, product.salePrice ?? "0", product.orderedAs ?? "");
+                      onUpdateQty: (newQty) async {
+                          // Fix: Ensure we send valid price on update
+                          String priceOne = product.salePrice ?? "0";
+                          if((double.tryParse(priceOne) ?? 0) <= 0) {
+                             priceOne = product.normalPrice ?? "0";
+                          }
+                          await provider.updateCartItem(product.productId!, newQty, brand.brandId!, priceOne, product.orderedAs ?? "");
+                          if (context.mounted) {
+                             context.read<DashboardProvider>().setCartCount(CommonMethods.cartCount);
+                          }
                       },
-                      onDelete: () {
-                          provider.deleteCartItem(product.productId!, brand.brandId!);
+                      onDelete: () async {
+                          await provider.deleteCartItem(product.productId!, brand.brandId!);
+                          if (context.mounted) {
+                             context.read<DashboardProvider>().setCartCount(CommonMethods.cartCount);
+                          }
                       },
                     );
                 }).toList() ?? [],
@@ -100,7 +116,15 @@ class _StepCartWidgetState extends State<StepCartWidget> {
         Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.3), blurRadius: 4, offset: Offset(0, -2))],
+            // Match Native Shadow: distinct shadow lifting the footer
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withValues(alpha: 0.3),
+                blurRadius: 10,
+                spreadRadius: 2,
+                offset: Offset(0, -3),
+              )
+            ],
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -119,18 +143,18 @@ class _StepCartWidgetState extends State<StepCartWidget> {
                     children: [
                       Text(
                         "Cart Total",
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.sp, color: Color(0xFF0038FF)),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp, color: Color(0xFF0038FF)),
                       ),
                       Container(
                         padding: EdgeInsets.all(4.w),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.green, // Screenshot shows green circle
+                          color: Color(0xFF27AE60), // Green from screenshot
                         ),
                          child: Icon(
                            _isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
                            color: Colors.white,
-                           size: 16.sp,
+                           size: 18.sp,
                          ),
                       ),
                     ],
@@ -143,42 +167,39 @@ class _StepCartWidgetState extends State<StepCartWidget> {
                   padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 5.h),
                   color: Colors.white,
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildSummaryRow(provider.cartResult?.subTotalHeading ?? "Sub-Total", "AUD ${provider.subTotal}"),
-                      if((double.tryParse(provider.discount) ?? 0) > 0)
-                         _buildSummaryRow("Discount", "-AUD ${provider.discount}", isDiscount: true),
+                      // Sub-Total Section
+                      Text(
+                        provider.cartResult?.subTotalHeading ?? "Sub-Total",
+                        style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: Colors.black),
+                      ),
+                      SizedBox(height: 5.h),
+                      _buildSummaryRow("Ex. GST :", "AUD ${provider.subTotal}", isBlueValue: true),
                       
-                      // Screenshot: Ex. GST
-                      _buildSummaryRow("Ex. GST :", "AUD ${provider.subTotal}", isBlueValue: true), // Assuming subtotal is ex gst? Need to verify logic. Screenshot: Sub-Total ... Ex. GST ... 
-                      // Wait, "Sub-Total" is usually Ex GST in B2B. Screenshot has "Sub-Total" label then "Ex. GST : AUD...".
-                      // Let's blindly follow screenshot labels if possible. 
-                      // Provider has 'subTotal', 'taxTotal', 'totalAmount'.
-                      // Let's map: 
-                      // Sub-Total -> provider.subTotal (Generic)
-                      // Ex. GST -> provider.subTotal (Usually)
-                      // GST -> provider.taxTotal
-                      // Grand Total -> provider.totalAmount
-                      // Inc. GST -> provider.totalAmount
+                      // GST
+                      _buildSummaryRow("GST :", "AUD ${provider.taxTotal}", isBlueValue: true),
                       
+                      // Extra Charges if any
                       if((double.tryParse(provider.shippingCharge) ?? 0) > 0)
                          _buildSummaryRow("Shipping Charges", "AUD ${provider.shippingCharge}", isBlueValue: true),
                       if((double.tryParse(provider.supplierCharge) ?? 0) > 0)
                          _buildSummaryRow("Supplier Charges", "AUD ${provider.supplierCharge}", isBlueValue: true),
-                         
-                      _buildSummaryRow("GST :", "AUD ${provider.taxTotal}", isBlueValue: true),
-                      
+                      if((double.tryParse(provider.discount) ?? 0) > 0)
+                         _buildSummaryRow("Discount", "-AUD ${provider.discount}", isDiscount: true),
                       if((double.tryParse(provider.couponDiscount) ?? 0) > 0)
                           _buildSummaryRow("Coupon (${provider.couponName})", "-AUD ${provider.couponDiscount}", isDiscount: true),
+
+                      SizedBox(height: 10.h),
                       
-                      SizedBox(height: 5.h),
-                      Row(
-                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                         children: [
-                             Text("Grand Total", style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: Colors.grey.shade700)),
-                             SizedBox(),
-                         ]
+                      // Grand Total Section
+                      Text(
+                        provider.cartResult?.totalHeading ?? "Grand Total",
+                        style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: Colors.grey.shade700),
                       ),
+                       SizedBox(height: 5.h),
                       _buildSummaryRow("Inc. GST :", "AUD ${provider.totalAmount}", isBlueValue: true),
+                      SizedBox(height: 5.h),
                     ],
                   ),
                 ),
@@ -272,27 +293,33 @@ class _StepCartWidgetState extends State<StepCartWidget> {
   void _showClearCartDialog(BuildContext context, CheckoutProvider provider) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text("Clear Cart Confirmation", style: TextStyle(color: Colors.white)),
-        backgroundColor: AppTheme.tealColor, // or Red based on XML header
-        // XML `dialog_clearcart.xml` has Header Red, Body White.
-        // We'll use a custom Dialog matching XML if needed, or simple Alert for now.
-        // Plan says: "Clear Cart (Red Background, White Text)" is the button. The dialog is separate.
-        // Let's implement a simple dialog effectively.
-        content: Text("Are you sure to clear items in the cart?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text("Close"),
-          ),
-          TextButton(
-            onPressed: () {
-              provider.clearCart();
-              Navigator.pop(context);
-            },
-            child: Text("Clear Cart", style: TextStyle(color: Colors.red)),
-          ),
-        ],
+      barrierDismissible: false,
+      builder: (dialogContext) => ClearCartDialog(
+        onClose: () => Navigator.pop(dialogContext),
+        onClear: () async {
+            // 1. Close dialog FIRST
+            Navigator.pop(dialogContext);
+            
+            // 2. Perform Clear Action
+            await provider.clearCart();
+            
+            // 3. Force Update Dashboard Provider & Navigate
+            if (context.mounted) {
+               final dashboardProvider = context.read<DashboardProvider>();
+               
+               // Update global cart count to 0
+               dashboardProvider.setCartCount("0");
+
+               // Reset to Home Tab
+               dashboardProvider.setIndex(0);
+               
+               // Trigger Full Refresh
+               dashboardProvider.init();
+               
+               // Navigate to Dashboard (Home) to refresh state
+               context.go(AppRoutes.dashboard);
+            }
+        },
       ),
     );
   }

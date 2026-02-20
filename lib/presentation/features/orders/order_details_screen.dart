@@ -5,6 +5,7 @@ import '../../../core/constants/app_theme.dart';
 import '../../providers/dashboard_provider.dart';
 import '../../providers/orders_provider.dart';
 import '../../../data/models/order_models.dart';
+import '../../widgets/custom_loader_widget.dart';
 
 class OrderDetailsScreen extends StatefulWidget {
   final OrderHistoryResult order;
@@ -45,47 +46,82 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           ),
         ],
       ),
-      body: Consumer<OrdersProvider>(
-        builder: (context, provider, child) {
-          if (provider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (provider.orderDetails == null) {
-            return const Center(child: Text("Failed to load details"));
-          }
-
-          return SingleChildScrollView(
-            padding: EdgeInsets.all(16.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildSummarySection(),
-                const Divider(),
-                _buildSectionTitle("Supplier Details"),
-                SizedBox(height: 8.h),
-                _buildSupplierDetails(provider.orderDetails!.results),
-                const Divider(),
-                _buildSectionTitle("Address Details"),
-                SizedBox(height: 8.h),
-                _buildAddressDetails(),
-                const Divider(),
-                _buildSectionTitle("Payment Details"),
-                SizedBox(height: 8.h),
-                _buildPaymentDetails(),
-                const Divider(),
-                if (widget.order.remarks != null && widget.order.remarks!.isNotEmpty) ...[
-                  _buildSectionTitle("Order Notes"),
-                  SizedBox(height: 4.h),
-                  Text(widget.order.remarks!, style: TextStyle(fontSize: 14.sp)),
-                  const Divider(),
-                ],
-                SizedBox(height: 20.h),
-                _buildActionButtons(),
-                SizedBox(height: 30.h),
-              ],
-            ),
-          );
-        },
+      body: Stack(
+        children: [
+          Consumer<OrdersProvider>(
+            builder: (context, provider, child) {
+              if (provider.isLoading && provider.orderDetails == null) {
+                return const SizedBox.shrink(); // Overlay handles loading
+              }
+              if (provider.orderDetails == null) {
+                return const Center(child: Text("Failed to load details"));
+              }
+    
+              return SingleChildScrollView(
+                padding: EdgeInsets.all(16.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildSummarySection(),
+                    const Divider(),
+                    _buildSectionTitle("Supplier Details"),
+                    SizedBox(height: 8.h),
+                    _buildSupplierDetails(provider.orderDetails!.results),
+                    const Divider(),
+                    _buildSectionTitle("Address Details"),
+                    SizedBox(height: 8.h),
+                    _buildAddressDetails(),
+                    const Divider(),
+                    _buildSectionTitle("Payment Details"),
+                    SizedBox(height: 8.h),
+                    _buildPaymentDetails(),
+                    const Divider(),
+                    if (widget.order.remarks != null && widget.order.remarks!.isNotEmpty) ...[
+                      _buildSectionTitle("Order Notes"),
+                      SizedBox(height: 4.h),
+                      Text(widget.order.remarks!, style: TextStyle(fontSize: 14.sp)),
+                      const Divider(),
+                    ],
+                    SizedBox(height: 20.h),
+                    _buildActionButtons(),
+                    SizedBox(height: 30.h),
+                  ],
+                ),
+              );
+            },
+          ),
+          Consumer<OrdersProvider>(
+            builder: (context, provider, child) {
+              if (provider.isLoading) {
+                 return Container(
+                    color: Colors.black54,
+                    child: Center(
+                      child: SizedBox(
+                        width: 100.w,
+                        height: 100.w,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                             CustomLoaderWidget(size: 100.w),
+                             Text(
+                               "Please Wait",
+                               textAlign: TextAlign.center,
+                               style: TextStyle(
+                                 color: AppTheme.primaryColor,
+                                 fontSize: 13.sp,
+                                 fontWeight: FontWeight.bold,
+                               ),
+                             ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
+        ],
       ),
     );
   }

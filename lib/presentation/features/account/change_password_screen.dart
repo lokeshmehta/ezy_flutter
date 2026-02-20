@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../providers/dashboard_provider.dart';
 import '../../../core/constants/app_theme.dart';
 import '../../../core/constants/app_messages.dart';
+import '../../widgets/custom_loader_widget.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -156,9 +157,29 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 ),
                 if(provider.isLoading)
                    Container(
-                       color: Colors.black12,
-                       child: const Center(child: CircularProgressIndicator()),
-                   )
+                      color: Colors.black54,
+                      child: Center(
+                        child: SizedBox(
+                          width: 100.w,
+                          height: 100.w,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                               CustomLoaderWidget(size: 100.w),
+                               Text(
+                                 "Please Wait",
+                                 textAlign: TextAlign.center,
+                                 style: TextStyle(
+                                   color: AppTheme.primaryColor,
+                                   fontSize: 13.sp,
+                                   fontWeight: FontWeight.bold,
+                                 ),
+                               ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
             ],
           );
         },

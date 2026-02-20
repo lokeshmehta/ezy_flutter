@@ -6,6 +6,7 @@ import '../../providers/address_provider.dart';
 import '../../../data/models/profile_models.dart';
 import '../../../core/constants/app_theme.dart';
 import '../../../config/routes/app_routes.dart';
+import '../../widgets/custom_loader_widget.dart';
 
 class MyAddressesScreen extends StatefulWidget {
   const MyAddressesScreen({super.key});
@@ -91,41 +92,74 @@ class _MyAddressesScreenState extends State<MyAddressesScreen> {
         ],
 
       ),
-      body: Consumer<AddressProvider>(
-        builder: (context, provider, child) {
-          if (provider.isLoading) {
-             return const Center(child: CircularProgressIndicator());
-          }
-          
-          if (provider.addressList.isEmpty) {
-             return Center(
-                 child: Column(
-                     mainAxisAlignment: MainAxisAlignment.center,
-                     children: [
-                         Icon(Icons.location_off, size: 60.sp, color: AppTheme.primaryColor),
-                         SizedBox(height: 10.h),
-                         Text("No addresses found", style: TextStyle(fontSize: 16.sp, color: AppTheme.darkGrayColor)),
-                         SizedBox(height: 20.h),
-                         ElevatedButton.icon(
-                             onPressed: () => context.push(AppRoutes.addAddress),
-                             icon: const Icon(Icons.add, color: AppTheme.white),
-                             label: const Text("Add New Address", style: TextStyle(color: AppTheme.white)),
-                             style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryColor),
-                         )
-                     ],
-                 )
-             );
-          }
-          
-          return ListView.builder(
-              padding: EdgeInsets.all(12.w),
-              itemCount: provider.addressList.length,
-              itemBuilder: (ctx, index) {
-                  final address = provider.addressList[index];
-                  return _buildAddressItem(address);
+      body: Stack(
+        children: [
+          Consumer<AddressProvider>(
+            builder: (context, provider, child) {
+              // Moved isLoading check to Overlay
+              
+              if (provider.addressList.isEmpty && !provider.isLoading) {
+                 return Center(
+                     child: Column(
+                         mainAxisAlignment: MainAxisAlignment.center,
+                         children: [
+                             Icon(Icons.location_off, size: 60.sp, color: AppTheme.primaryColor),
+                             SizedBox(height: 10.h),
+                             Text("No addresses found", style: TextStyle(fontSize: 16.sp, color: AppTheme.darkGrayColor)),
+                             SizedBox(height: 20.h),
+                             ElevatedButton.icon(
+                                 onPressed: () => context.push(AppRoutes.addAddress),
+                                 icon: const Icon(Icons.add, color: AppTheme.white),
+                                 label: const Text("Add New Address", style: TextStyle(color: AppTheme.white)),
+                                 style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryColor),
+                             )
+                         ],
+                     )
+                 );
               }
-          );
-        },
+              
+              return ListView.builder(
+                  padding: EdgeInsets.all(12.w),
+                  itemCount: provider.addressList.length,
+                  itemBuilder: (ctx, index) {
+                      final address = provider.addressList[index];
+                      return _buildAddressItem(address);
+                  }
+              );
+            },
+          ),
+          Consumer<AddressProvider>(
+             builder: (context, provider, child) {
+                if (provider.isLoading) {
+                   return Container(
+                      color: Colors.black54,
+                      child: Center(
+                        child: SizedBox(
+                          width: 100.w,
+                          height: 100.w,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                               CustomLoaderWidget(size: 100.w),
+                               Text(
+                                 "Please Wait",
+                                 textAlign: TextAlign.center,
+                                 style: TextStyle(
+                                   color: AppTheme.primaryColor,
+                                   fontSize: 13.sp,
+                                   fontWeight: FontWeight.bold,
+                                 ),
+                               ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                }
+                return const SizedBox.shrink();
+             },
+          ),
+        ],
       ),
     );
   }

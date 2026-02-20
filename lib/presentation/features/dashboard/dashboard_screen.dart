@@ -12,6 +12,7 @@ import '../../../core/constants/app_theme.dart';
 import '../../../core/constants/assets.dart';
 import '../../../core/constants/url_api_key.dart';
 // import '../../../data/models/home_models.dart'; // Unused
+import '../../widgets/custom_loader_widget.dart';
 import '../../../core/network/image_cache_manager.dart';
 import '../../providers/dashboard_provider.dart';
 import '../../providers/product_list_provider.dart';
@@ -25,7 +26,6 @@ import 'widgets/home_blocks_section.dart';
 import 'widgets/logout_dialog.dart';
 import 'widgets/popular_ads_section.dart';
 import 'widgets/popular_categories_section.dart';
-import '../../widgets/custom_loader_widget.dart';
 import 'widgets/promotions_section.dart';
 import 'widgets/section_header_widget.dart';
 import 'widgets/standard_product_sections.dart';
@@ -181,53 +181,123 @@ class _DashboardScreenState extends State<DashboardScreen>
         ),
         title: Image.asset(AppAssets.appLogo, height: 36.h),
         actions: [
-          IconButton(
-                icon: Image.asset(
-                  AppAssets.bellIcon, // your asset path
-            width: 30.sp,
-            height: 30.sp,
-            color: AppTheme.primaryColor, // optional (works if icon is single color)
-          ), // Thinner notification icon
-            onPressed: () {
-              context.push(AppRoutes.notifications);
+          Consumer<DashboardProvider>(
+            builder: (context, provider, child) {
+              final unreadCount = provider.profileResponse?.results?.isNotEmpty == true
+                  ? provider.profileResponse!.results![0]?.unreadNotificationsCount
+                  : "0";
+              final hasUnread = unreadCount != null && unreadCount != "0" && unreadCount.isNotEmpty;
+
+              return IconButton(
+                icon: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Image.asset(
+                      AppAssets.bellIcon,
+                      width: 30.sp,
+                      height: 30.sp,
+                      color: AppTheme.primaryColor,
+                    ),
+                    if (hasUnread)
+                      Positioned(
+                        right: -2,
+                        top: -2,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          constraints: BoxConstraints(
+                            minWidth: 16.w,
+                            minHeight: 16.w,
+                          ),
+                          child: Text(
+                            unreadCount!,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                onPressed: () {
+                  context.push(AppRoutes.notifications);
+                },
+              );
             },
           ),
         ],
       ),
       drawer: _buildDrawer(),
-      body: Consumer<DashboardProvider>(
-        builder: (context, provider, child) {
-          if (provider.isLoading) {
-            return Center(child: CustomLoaderWidget(size: 40.w));
-          }
-          if (provider.errorMsg != null) {
-            // Android parity: Show toast/dialog but allow retry? For now simplified error screen
-            return Center(child: Text(provider.errorMsg!));
-          }
+      body: Stack(
+        children: [
+          Consumer<DashboardProvider>(
+            builder: (context, provider, child) {
+              if (provider.errorMsg != null && !provider.isLoading) {
+                 return Center(child: Text(provider.errorMsg!)); // Retry?
+              }
 
-          return RefreshIndicator(
-            onRefresh: () async {
-              provider.init();
+              return RefreshIndicator(
+                onRefresh: () async {
+                  provider.init();
+                },
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 30.h),
+                      _buildMarquee(provider),
+                      SizedBox(height: 4.h),
+                      _buildBanners(provider),
+                      _buildTopSuppliers(provider),
+                      SizedBox(height: 15.h),
+                      const HomeBlocksSection(),
+                      _buildProductSections(provider),
+                      _buildBottomSuppliers(provider),
+                      SizedBox(height: 100.h), // Bottom padding
+                    ],
+                  ),
+                ),
+              );
             },
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 30.h),
-                  _buildMarquee(provider),
-                  SizedBox(height: 4.h),
-                  _buildBanners(provider),
-                  _buildTopSuppliers(provider),
-                  SizedBox(height: 15.h),
-                  const HomeBlocksSection(),
-                  _buildProductSections(provider),
-                  _buildBottomSuppliers(provider),
-                  SizedBox(height: 100.h), // Bottom padding
-                ],
-              ),
-            ),
-          );
-        },
+          ),
+          Consumer<DashboardProvider>(
+             builder: (context, provider, child) {
+                if (provider.isLoading) {
+                   return Container(
+                      color: Colors.black54,
+                      child: Center(
+                        child: SizedBox(
+                          width: 100.w,
+                          height: 100.w,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                               CustomLoaderWidget(size: 100.w),
+                               Text(
+                                 "Please Wait",
+                                 textAlign: TextAlign.center,
+                                 style: TextStyle(
+                                   color: AppTheme.primaryColor,
+                                   fontSize: 13.sp,
+                                   fontWeight: FontWeight.bold,
+                                 ),
+                               ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                }
+                return const SizedBox.shrink();
+             },
+          ),
+        ],
       ),
     );
   }
@@ -305,7 +375,10 @@ class _DashboardScreenState extends State<DashboardScreen>
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  _buildDrawerItem(AppAssets.scanIcon, "Scan to Order", () {}),
+                  _buildDrawerItem(AppAssets.scanIcon, "Scan to Order", () {
+                    context.pop();
+                    context.push(AppRoutes.scan);
+                  }),
                   _buildDrawerItem(AppAssets.favIcon, "My Wishlist", () {
                     context.pop(); // Close drawer
                     context.push(AppRoutes.myWishlist);

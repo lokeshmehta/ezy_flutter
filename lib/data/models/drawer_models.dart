@@ -198,6 +198,7 @@ class PromotionsResponse {
 
 class PromotionsItem {
   String? promotionId;
+  String? name; // Added name field
   String? title;
   String? displayName;
   String? description;
@@ -222,6 +223,7 @@ class PromotionsItem {
       this.price,
       this.divisionId,
       this.groupId,
+      this.name, // Added name field
       this.products});
 
   PromotionsItem.fromJson(Map<String, dynamic> json) {
@@ -236,6 +238,7 @@ class PromotionsItem {
     price = json['price'];
     divisionId = json['division_id']?.toString();
     groupId = json['group_id']?.toString();
+    name = json['name']; // Map name field
     if (json['products'] != null) {
       products = <PromotionProduct>[];
       json['products'].forEach((v) {

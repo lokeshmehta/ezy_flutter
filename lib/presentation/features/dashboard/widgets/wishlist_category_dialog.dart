@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../../core/constants/app_theme.dart';
 import '../../../../data/models/home_models.dart';
 import '../../../providers/dashboard_provider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class WishlistCategoryDialog extends StatefulWidget {
   final ProductItem product;
@@ -243,6 +244,19 @@ class _WishlistCategoryDialogState extends State<WishlistCategoryDialog> {
     bool hasSelected = provider.wishlistCategories?.any((c) => c?.isSelected == true) ?? false;
     bool hasNew = _newCategoryController.text.trim().isNotEmpty;
     bool isFav = hasSelected || hasNew;
+
+    // Validation: Check native android condition
+    if (!isFav) {
+      Fluttertoast.showToast(
+        msg: "Please select the category or enter new category",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.black.withValues(alpha: 0.8),
+        textColor: Colors.white,
+        fontSize: 16.0
+      );
+      return;
+    }
 
     final success = await provider.submitWishlistUpdate(
       widget.product.productId!,

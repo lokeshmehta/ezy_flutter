@@ -16,6 +16,7 @@ import 'presentation/providers/cart_provider.dart';
 import 'presentation/providers/checkout_provider.dart';
 import 'presentation/providers/orders_provider.dart';
 import 'presentation/providers/address_provider.dart';
+import 'presentation/providers/scan_provider.dart';
 import 'data/datasources/auth_remote_data_source.dart';
 
 import 'dart:io';
@@ -48,34 +49,37 @@ class MyApp extends StatelessWidget {
         // Simple breakpoint for tablet detection
         final isTablet = constraints.maxWidth >= 600;
         
-        return ScreenUtilInit(
-          // Use distinct design sizes for Phone vs Tablet to ensure 12.sp looks like 12px on both
-          designSize: isTablet ? const Size(768, 1024) : const Size(375, 812),
-          minTextAdapt: true,
-          splitScreenMode: true,
-          builder: (_, child) {
-            return MultiProvider(
-              providers: [
-                ChangeNotifierProvider(create: (_) => AuthProvider(getIt<AuthRepository>())),
-                ChangeNotifierProvider(create: (_) => SplashProvider()),
-                ChangeNotifierProvider(create: (_) => CompaniesProvider()),
-                ChangeNotifierProvider(create: (_) => SignUpProvider()),
-                ChangeNotifierProvider(create: (_) => ForgotPasswordProvider()),
-                ChangeNotifierProvider(create: (_) => DashboardProvider(getIt<AuthRemoteDataSource>())),
-                ChangeNotifierProvider(create: (_) => ProductListProvider(getIt<AuthRemoteDataSource>())),
-                ChangeNotifierProvider(create: (_) => CartProvider(getIt<AuthRemoteDataSource>())),
-                ChangeNotifierProvider(create: (_) => CheckoutProvider(getIt<AuthRemoteDataSource>())),
-                ChangeNotifierProvider(create: (_) => OrdersProvider(getIt<AuthRemoteDataSource>())),
-                ChangeNotifierProvider(create: (_) => AddressProvider(getIt<AuthRemoteDataSource>())), 
-              ],
-              child: MaterialApp.router(
-                title: 'EzyOrders',
-                theme: AppTheme.lightTheme,
-                routerConfig: AppRouter.router,
-                debugShowCheckedModeBanner: false,
-              ),
-            );
-          },
+        return SafeArea(
+          child: ScreenUtilInit(
+            // Use distinct design sizes for Phone vs Tablet to ensure 12.sp looks like 12px on both
+            designSize: isTablet ? const Size(768, 1024) : const Size(375, 812),
+            minTextAdapt: true,
+            splitScreenMode: true,
+            builder: (_, child) {
+              return MultiProvider(
+                providers: [
+                  ChangeNotifierProvider(create: (_) => AuthProvider(getIt<AuthRepository>())),
+                  ChangeNotifierProvider(create: (_) => SplashProvider()),
+                  ChangeNotifierProvider(create: (_) => CompaniesProvider()),
+                  ChangeNotifierProvider(create: (_) => SignUpProvider()),
+                  ChangeNotifierProvider(create: (_) => ForgotPasswordProvider()),
+                  ChangeNotifierProvider(create: (_) => DashboardProvider(getIt<AuthRemoteDataSource>())),
+                  ChangeNotifierProvider(create: (_) => ProductListProvider(getIt<AuthRemoteDataSource>())),
+                  ChangeNotifierProvider(create: (_) => CartProvider(getIt<AuthRemoteDataSource>())),
+                  ChangeNotifierProvider(create: (_) => CheckoutProvider(getIt<AuthRemoteDataSource>())),
+                  ChangeNotifierProvider(create: (_) => OrdersProvider(getIt<AuthRemoteDataSource>())),
+                  ChangeNotifierProvider(create: (_) => AddressProvider(getIt<AuthRemoteDataSource>())),
+                  ChangeNotifierProvider(create: (_) => ScanProvider(getIt<AuthRemoteDataSource>())),
+                ],
+                child: MaterialApp.router(
+                  title: 'EzyOrders',
+                  theme: AppTheme.lightTheme,
+                  routerConfig: AppRouter.router,
+                  debugShowCheckedModeBanner: false,
+                ),
+              );
+            },
+          ),
         );
       },
     );

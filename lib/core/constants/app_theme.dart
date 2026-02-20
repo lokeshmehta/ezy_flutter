@@ -21,6 +21,7 @@ class AppTheme {
   static const Color redColorOpacity50 = Color(0x80E4134A); 
   static const Color redColorOpacity10 = Color(0x1AE4134A);
   static const Color shadowBlack = Color(0x2E000000);
+  static const Color lightGreen = Color(0x00F6FDFF);
   
   // Standard Dimensions
   static const double authButtonRadius = 5.0;

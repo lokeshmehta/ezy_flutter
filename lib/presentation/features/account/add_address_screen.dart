@@ -6,6 +6,7 @@ import '../../providers/address_provider.dart';
 import '../../../core/constants/app_theme.dart';
 import '../../../data/models/profile_models.dart';
 import '../../../core/constants/app_messages.dart';
+import '../../widgets/custom_loader_widget.dart';
 
 class AddAddressScreen extends StatefulWidget {
   final AddressItem? addressToEdit;
@@ -194,8 +195,28 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                       ),
                       if(provider.isLoading)
                           Container(
-                              color: Colors.black12,
-                              child: const Center(child: CircularProgressIndicator()),
+                              color: Colors.black54,
+                              child: Center(
+                                child: SizedBox(
+                                  width: 100.w,
+                                  height: 100.w,
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                       CustomLoaderWidget(size: 100.w),
+                                       Text(
+                                         "Please Wait",
+                                         textAlign: TextAlign.center,
+                                         style: TextStyle(
+                                           color: AppTheme.primaryColor,
+                                           fontSize: 13.sp,
+                                           fontWeight: FontWeight.bold,
+                                         ),
+                                       ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                           )
                   ],
               );

@@ -417,7 +417,8 @@ class DashboardProvider extends ChangeNotifier {
             .whereType<String>();
         
         if (selectedIds.isNotEmpty) {
-          categoryIds = selectedIds.join(',');
+          // Android Parity: Appends a trailing comma (e.g., "22,")
+          categoryIds = "${selectedIds.join(',')},";
         }
       }
 
@@ -483,6 +484,11 @@ class DashboardProvider extends ChangeNotifier {
         if (response['status'] == 200) {
              _updateProductCartState(productId, "Yes", qty);
              
+             // Update Cart Count
+             if (response['cart_quantity'] != null) {
+                setCartCount(response['cart_quantity'].toString());
+             }
+
              // Update Local Profile Suppliers State (Scenario requirement)
              // Update Local Profile Suppliers State (Scenario requirement)
              if (_profileResponse != null) {
@@ -532,6 +538,12 @@ class DashboardProvider extends ChangeNotifier {
         
         if (response['status'] == 200) {
              _updateProductCartState(productId, "Yes", qty);
+
+             // Update Cart Count
+             if (response['cart_quantity'] != null) {
+                setCartCount(response['cart_quantity'].toString());
+             }
+
              _isLoading = false;
              notifyListeners();
              return true;
@@ -564,6 +576,12 @@ class DashboardProvider extends ChangeNotifier {
         
         if (response['status'] == 200) {
              _updateProductCartState(productId, "No", "0");
+
+             // Update Cart Count
+             if (response['cart_quantity'] != null) {
+                setCartCount(response['cart_quantity'].toString());
+             }
+
              _isLoading = false;
              notifyListeners();
              return true;
@@ -892,6 +910,10 @@ class DashboardProvider extends ChangeNotifier {
   Future<void> logout() async {
     try {
       final prefs = await SharedPreferences.getInstance();
+      
+      // FIX: Reset Base URLs
+      UrlApiKey.companyMainUrl = "https://ezyorders.co.in/";
+      UrlApiKey.mainUrl = "https://ezyorders.co.in/";
       
       // Clear Crucial Auth Data
       await prefs.setString(StorageKeys.userId, "0");

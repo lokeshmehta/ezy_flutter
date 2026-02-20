@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/constants/app_theme.dart';
 import '../../../../core/constants/url_api_key.dart';
 import '../../../../core/network/image_cache_manager.dart';
+import '../../../../core/utils/common_methods.dart';
 
 class HomePromotionItemWidget extends StatelessWidget {
   final String? imageUrl;
@@ -11,6 +12,7 @@ class HomePromotionItemWidget extends StatelessWidget {
   final String subtitle;
   final VoidCallback onTap;
   final double width;
+  final bool showShopNow;
 
   const HomePromotionItemWidget({
     super.key,
@@ -19,20 +21,21 @@ class HomePromotionItemWidget extends StatelessWidget {
     required this.subtitle,
     required this.onTap,
     required this.width,
+    this.showShopNow = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: width,
-      margin: EdgeInsets.only(right: 10.w, bottom: 5.h),
+      margin: EdgeInsets.only(right: 5.w, bottom: 5.h),
       padding: EdgeInsets.only(bottom: 5.h), // Extra padding for shadow/elevation
       child: Card(
         elevation: 2,
         color: Colors.white,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(0.r), // 👈 decrease radius here
+          borderRadius: BorderRadius.circular(5.r),
         ),
         child: InkWell(
           onTap: onTap,
@@ -45,13 +48,36 @@ class HomePromotionItemWidget extends StatelessWidget {
                 SizedBox(
                   height: 120.h, // @dimen/dimen_120
                   width: double.infinity,
-                  child: _buildImage(imageUrl),
+                  child: Stack(
+                    children: [
+                      Positioned.fill(child: _buildImage(imageUrl)),
+                      Positioned(
+                        top: 8.h,
+                        left: 8.w,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                          decoration: BoxDecoration(
+                            color: Colors.orange,
+                            borderRadius: BorderRadius.circular(4.r),
+                          ),
+                          child: Text(
+                            "Promotion",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 8.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 SizedBox(height: 5.h),
                 
                 // Title
                 Text(
-                  title,
+                  CommonMethods.decodeHtmlEntities(title),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
@@ -75,24 +101,26 @@ class HomePromotionItemWidget extends StatelessWidget {
                 ),
 
                 // Shop Now Section
-                SizedBox(height: 8.h),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Shop Now",
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        color: const Color(0xFF1B4E9B),
-                        fontWeight: FontWeight.w800,
+                if (showShopNow) ...[
+                  SizedBox(height: 8.h),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Shop Now",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: const Color(0xFF1B4E9B),
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
-                    ),
-                    SizedBox(width: 2.w),
-                    Icon(Icons.arrow_forward_ios, color: const Color(0xFF1B4E9B), size: 12.sp),
-                  ],
-                ),
+                      SizedBox(width: 2.w),
+                      Icon(Icons.arrow_forward_ios, color: const Color(0xFF1B4E9B), size: 12.sp),
+                    ],
+                  ),
+                ],
                 SizedBox(height: 5.h),
               ],
             ),

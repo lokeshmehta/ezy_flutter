@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:intl/intl.dart';
+
 import '../../../providers/dashboard_provider.dart';
+import '../../../providers/product_list_provider.dart';
+import '../../../../core/utils/common_methods.dart';
+
+import '../../products/products_list_screen.dart';
+import '../../drawer/widgets/promotion_header.dart';
 import 'home_promotion_item_widget.dart';
 import 'section_header_widget.dart';
-import 'package:intl/intl.dart'; 
-import '../../../providers/product_list_provider.dart';
-
 
 class PromotionsSection extends StatefulWidget {
   const PromotionsSection({super.key});
@@ -63,10 +68,26 @@ class _PromotionsSectionState extends State<PromotionsSection> {
      if (dateStr == null || dateStr.isEmpty) return "";
      try {
        final DateTime date = DateTime.parse(dateStr);
-       return DateFormat("MMM dd, yyyy").format(date);
+       return DateFormat("dd MMM").format(date);
      } catch (e) {
        return dateStr;
      }
+  }
+  
+  String _getPromotionTitle(dynamic item) {
+    // Priority 1: Calculate Discount (Matches Native behavior)
+    String discount = CommonMethods.findDiscount(item.price, item.promotionPrice);
+    if (discount != "0") {
+      return "Get $discount% Off";
+    }
+
+    // Priority 2: API provided names
+    // Fix: Prioritize display_name ("Get 15% Off") over name ("V Can Deals")
+    if (item.displayName != null && item.displayName!.isNotEmpty) return item.displayName!;
+    if (item.name != null && item.name!.isNotEmpty) return item.name!;
+    if (item.title != null && item.title!.isNotEmpty) return item.title!;
+    
+    return "Promotion";
   }
 
   @override
@@ -89,7 +110,7 @@ class _PromotionsSectionState extends State<PromotionsSection> {
               onNextTap: _canScrollRight ? () => _scroll(true) : null,
             ),
             SizedBox(
-              height: 240.h, // Dynamic height
+              height: 190.h, // Dynamic height
               child: ListView.builder(
                 controller: _scrollController,
                 padding: EdgeInsets.symmetric(horizontal: 10.w),
@@ -97,12 +118,14 @@ class _PromotionsSectionState extends State<PromotionsSection> {
                 itemCount: promotions.length,
                 itemBuilder: (context, index) {
                    final item = promotions[index];
- 
-                   return HomePromotionItemWidget(
-                     imageUrl: item.image,
-                     title: item.title ?? "",
-                     subtitle: "Valid until ${_formatDate(item.toDate)}",
-                     width: cardWidth,
+                   final dateRange = "${_formatDate(item.fromDate)} - ${_formatDate(item.toDate)}";
+
+                     return HomePromotionItemWidget(
+                       imageUrl: item.image,
+                       title: _getPromotionTitle(item),
+                       subtitle: dateRange,
+                       width: cardWidth,
+                       showShopNow: false,
                      onTap: () {
                         final productProvider = context.read<ProductListProvider>();
                         productProvider.clearFilters();
@@ -121,7 +144,25 @@ class _PromotionsSectionState extends State<PromotionsSection> {
                           productProvider.setGroup(item.groupId!);
                         }
 
-                        context.read<DashboardProvider>().setIndex(1);
+                        // Navigate to ProductsListScreen with Header
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProductsListScreen(
+                              pageTitle: "Promotions", // Or item.title? Android uses "Promotions" in title bar? No, it uses item name.
+                              // Android header logic: binding.PromoTagTxt.text = "Promotion"
+                              // Heading text = item.name
+                              // Let's use item.title as pageTitle? 
+                              // Actually Android Activity title might just be "Promotions" or hidden if custom header.
+                              // Let's use "Promotions" for AppBar title and show specific title in header.
+                                headerWidget: PromotionHeader(
+                                  imageUrl: item.image,
+                                  title: _getPromotionTitle(item),
+                                  dateRange: dateRange,
+                                ),
+                            ),
+                          ),
+                        );
                      },
                    );
                 },
@@ -133,3 +174,5 @@ class _PromotionsSectionState extends State<PromotionsSection> {
     );
   }
 }
+
+

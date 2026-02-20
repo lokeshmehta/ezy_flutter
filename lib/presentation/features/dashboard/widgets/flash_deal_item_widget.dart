@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/constants/app_theme.dart';
 import '../../../../core/constants/url_api_key.dart';
 import '../../../../core/network/image_cache_manager.dart';
+import '../../../../core/utils/common_methods.dart';
 import '../../../../data/models/home_models.dart';
 import '../../products/product_details_screen.dart';
 
@@ -97,7 +98,7 @@ class _FlashDealItemWidgetState extends State<FlashDealItemWidget> {
       width: widget.width, // Usually wider than normal cards? Android uses match_parent in vertical list but inside dashboard it might be different.
       // FlashDealsProductsAdapter line 101 comment: width - 30. 
       // It seems mostly full width or large card.
-      margin: EdgeInsets.only(right: 10.w, bottom: 5.h),
+      margin: EdgeInsets.only(right: 6.w, bottom: 5.h),
       child: Card(
         elevation: 2,
         color: Colors.white,
@@ -125,11 +126,14 @@ class _FlashDealItemWidgetState extends State<FlashDealItemWidget> {
                            children: [
                               Center(child: _buildImage(item.image)),
                               Positioned(
-                                left: 5.w, top: 5.h,
+                                left: 0, top: 0,
                                 child: Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 3.h),
-                                  color: Colors.red,
-                                  child: Text("Flash Deals", style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold)),
+                                  padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.redColor,
+                                    borderRadius: BorderRadius.only(bottomRight: Radius.circular(8.r)),
+                                  ),
+                                  child: Text("Flash Deals", style: TextStyle(color: Colors.white, fontSize: 9.sp, fontWeight: FontWeight.bold)),
                                 ),
                               )
                            ],
@@ -142,8 +146,8 @@ class _FlashDealItemWidgetState extends State<FlashDealItemWidget> {
                          crossAxisAlignment: CrossAxisAlignment.start,
                          children: [
                             if (item.brandName != null)
-                             Text(item.brandName!, style: TextStyle(color: Colors.grey, fontSize: 11.sp)),
-                            Text(item.title ?? "", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13.sp), maxLines: 2),
+                             Text(CommonMethods.decodeHtmlEntities(item.brandName), style: TextStyle(color: Colors.grey, fontSize: 11.sp)),
+                            Text(CommonMethods.decodeHtmlEntities(item.title), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13.sp), maxLines: 2),
                             
                             // MOQ
                             if (item.minimumOrderQty != null && item.minimumOrderQty != "0")

@@ -97,7 +97,7 @@ class _FlashDealsSectionState extends State<FlashDealsSection> {
         }
 
         final products = response.results!;
-        final double itemWidth = 1.sw - 40.w; // Large card width
+        final double itemWidth = (1.sw / 2) - 14.w;
 
         return Column(
           children: [
@@ -110,7 +110,7 @@ class _FlashDealsSectionState extends State<FlashDealsSection> {
               height: 280.h, // Restored to 280.h to avoid overflow
               child: ListView.builder(
                 controller: _scrollController,
-                padding: EdgeInsets.symmetric(horizontal: 10.w),
+                padding: EdgeInsets.symmetric(horizontal: 8.w),
                 scrollDirection: Axis.horizontal,
                 itemCount: products.length,
                 itemBuilder: (context, index) {

@@ -20,7 +20,9 @@ class IconStepperWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 20.w),
-      color: Colors.white, 
+      decoration: BoxDecoration(
+        color: AppTheme.lightGreen,
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: List.generate(totalSteps * 2 - 1, (index) {
@@ -41,34 +43,57 @@ class IconStepperWidget extends StatelessWidget {
   Widget _buildStepIcon(int stepIndex) {
     bool isActive = currentStep == stepIndex;
     bool isCompleted = currentStep > stepIndex;
-    
+
     // Icons matching Android: Cart, Shipping(Address), Payment, Preview
-    IconData icon;
+    // Assets matching Android: orcarticon, shippingicon, paymenticon, previewicon
+    String assetPath;
+
     switch(stepIndex) {
-      case 0: icon = Icons.shopping_cart; break;
-      case 1: icon = Icons.local_shipping; break;
-      case 2: icon = Icons.payment; break;
-      case 3: icon = Icons.list_alt; break; // Preview
-      default: icon = Icons.circle;
+      case 0: assetPath = "assets/images/orcarticon.png"; break;
+      case 1: assetPath = "assets/images/shippingicon.png"; break;
+      case 2: assetPath = "assets/images/paymenticon.png"; break;
+      case 3: assetPath = "assets/images/previewicon.png"; break;
+      default: assetPath = "";
+    }
+
+    Color bgColor;
+    BoxBorder? border;
+    Color iconColor;
+
+    if (isCompleted) {
+      // Completed: Filled Orange, Black Icon
+      bgColor = AppTheme.secondaryColor; // Using secondaryColor (Yellow/Orange) directly
+      border = Border.all(color: AppTheme.secondaryColor, width: 2.w);
+      iconColor = Colors.black;
+    } else if (isActive) {
+      // Active: White Bg, Orange Border, Black Icon
+      bgColor = Colors.white;
+      border = Border.all(color: AppTheme.secondaryColor, width: 2.w);
+      iconColor = Colors.black;
+    } else {
+      // Inactive: White Bg, Grey Border, Grey Icon
+      bgColor = Colors.white;
+      border = Border.all(color: Colors.grey[300]!, width: 1.5.w);
+      iconColor = AppTheme.darkGrayColor;
     }
 
     return InkWell(
       onTap: () {
-         // onStepTapped(stepIndex);
+        // onStepTapped(stepIndex);
       },
       child: Container(
-        width: 40.w,
-        height: 40.w,
+        width: 25.w,
+        height: 25.w,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: (isActive || isCompleted) ? AppTheme.tealColor : AppTheme.lightGrayBg,
-          border: isActive ? Border.all(color: AppTheme.tealColor, width: 2.w) : null,
-          boxShadow: isActive ? [BoxShadow(color: AppTheme.tealColor.withValues(alpha: 0.4), blurRadius: 8, spreadRadius: 1)] : null,
+          color: bgColor,
+          border: border,
         ),
-        child: Icon(
-          icon,
-          color: (isActive || isCompleted) ? Colors.white : AppTheme.darkGrayColor,
-          size: 20.sp,
+        padding: EdgeInsets.all(3.w),
+        child: Image.asset(
+          assetPath,
+          color: iconColor,
+          fit: BoxFit.contain,
         ),
       ),
     );
@@ -77,7 +102,7 @@ class IconStepperWidget extends StatelessWidget {
   Widget _buildConnector(int stepIndex) {
     bool isCompleted = currentStep > stepIndex;
     return Container(
-      height: 3.h,
+      height: 2.h,
       color: isCompleted ? AppTheme.tealColor : AppTheme.lightGrayBg,
     );
   }

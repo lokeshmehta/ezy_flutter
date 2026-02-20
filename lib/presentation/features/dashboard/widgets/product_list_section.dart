@@ -66,7 +66,7 @@ class _ProductListSectionState extends State<ProductListSection> {
 
     final products = widget.products!;
     final totalPages = (products.length / 2).ceil();
-    final double itemWidth = (1.sw / 2) - 25.w;
+    final double itemWidth = (1.sw / 2) - 14.w;
 
     return Column(
       children: [
@@ -92,7 +92,7 @@ class _ProductListSectionState extends State<ProductListSection> {
               final secondIndex = firstIndex + 1;
 
               return Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10.w),
+                padding: EdgeInsets.symmetric(horizontal: 8.w),
                 child: Row(
                   children: [
                     Expanded(
@@ -102,7 +102,7 @@ class _ProductListSectionState extends State<ProductListSection> {
                         itemWidth,
                       ),
                     ),
-                    SizedBox(width: 15.w),
+
                     Expanded(
                       child: secondIndex < products.length
                           ? _buildProduct(
@@ -153,7 +153,10 @@ class _ProductListSectionState extends State<ProductListSection> {
           isScrollControlled: true,
           backgroundColor: Colors.transparent,
           builder: (context) =>
-              ProductDetailsBottomSheet(product: product),
+              ProductDetailsBottomSheet(
+                product: product,
+                badgeLabel: widget.badgeLabel,
+              ),
         );
       },
       badgeLabel: widget.badgeLabel,

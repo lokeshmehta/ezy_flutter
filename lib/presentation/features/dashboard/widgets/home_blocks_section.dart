@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../../core/utils/common_methods.dart';
 import '../../../providers/dashboard_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/constants/url_api_key.dart';
@@ -55,16 +56,17 @@ class HomeBlocksSection extends StatelessWidget {
                        crossAxisAlignment: CrossAxisAlignment.start,
                        children: [
                          Text(
-                           item.name ?? "",
+                           CommonMethods.decodeHtmlEntities(item.name),
                            style: const TextStyle(
                              color: Colors.blue, // @color/blue
                              fontSize: 15,
                            ),
                            maxLines: 1,
                            overflow: TextOverflow.ellipsis,
+                           softWrap: false,
                          ),
                          Text(
-                           item.description ?? "",
+                           CommonMethods.decodeHtmlEntities(item.description),
                            style: const TextStyle(
                              color: Colors.grey, // @color/darkgray_color
                              fontSize: 12, // @dimen/top_10 approx 10dp -> 12sp

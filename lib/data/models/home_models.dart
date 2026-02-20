@@ -437,6 +437,50 @@ class ProductItem {
             wishlistCategoryId: json['wishlist_category_id']?.toString(),
         );
     }
+
+    Map<String, dynamic> toJson() {
+        return {
+            'product_id': productId,
+            'name': name,
+            'title': title,
+            'description': description,
+            'short_description': shortDescription,
+            'image': image,
+            'brand_name': brandName,
+            'brand_id': brandId,
+            'price': price,
+            'promotion_price': promotionPrice,
+            'stock_unlimited': stockUnlimited,
+            'qty_status': qtyStatus,
+            'available_stock_qty': availableStockQty,
+            'minimum_order_qty': minimumOrderQty,
+            'sold_as': soldAs,
+            'is_favourite': isFavourite,
+            'product_available': productAvailable,
+            'supplier_available': supplierAvailable,
+            'not_available_days_message': notAvailableDaysMessage,
+            'added_to_cart': addedToCart,
+            'added_qty': addedQty,
+            'added_sub_total': addedSubTotal,
+            'ordered_as': orderedAs,
+            'qty_per_outer': qtyPerOuter,
+            'api_data': apiData,
+            'division_id': divisionId,
+            'group_id': groupId,
+            'sku': sku,
+            'gst': gst,
+            'gst_percentage': gstPercentage,
+            'from_date': fromDate,
+            'to_date': toDate,
+            'has_promotion': hasPromotion,
+            'label': label,
+            'discount_percentage': discountPercentage,
+            'discount_id': discountId,
+            'discount_name': discountName,
+            'wishlist_id': wishlistId,
+            'wishlist_category_id': wishlistCategoryId,
+        };
+    }
 }
 
 class DashboardProductsResponse {

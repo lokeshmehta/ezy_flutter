@@ -27,200 +27,235 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
   Widget build(BuildContext context) {
     final provider = context.watch<CheckoutProvider>();
 
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(16.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // "Order Summary" Header
-          Row(
-            children: [
-              Icon(Icons.description_outlined, color: Color(0xFF0038FF), size: 20.sp), // Document Icon
-              SizedBox(width: 8.w),
-              Text(
-                "Order Summary",
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF0038FF), // Blue
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 10.h),
-
-          // Main Card
-          Container(
-            padding: EdgeInsets.all(15.w),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(5.r),
-              boxShadow: [
-                BoxShadow(color: Colors.grey.withValues(alpha: 0.2), blurRadius: 5, spreadRadius: 1),
-              ],
-            ),
+    return Column(
+      children: [
+        // Scrollable Content
+        Expanded(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(16.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Additional Information
-                _buildSectionTitle("Additional Information"),
-                SizedBox(height: 5.h),
-                Text("Order Notes", style: TextStyle(fontSize: 14.sp, color: Colors.grey.shade700, fontWeight: FontWeight.bold)),
-                SizedBox(height: 5.h),
-                TextFormField(
-                  controller: provider.orderNotesController,
-                  maxLines: 4,
-                  decoration: InputDecoration(
-                    hintText: "Notes about your order, e.g special notes for delivery",
-                    hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13.sp),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.r),
-                      borderSide: BorderSide(color: Colors.grey.shade400),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.r),
-                      borderSide: BorderSide(color: Colors.grey.shade400),
-                    ),
-                    contentPadding: EdgeInsets.all(10.w),
-                  ),
-                ),
-
-                SizedBox(height: 15.h),
-
-                // Use Coupon Code
-                _buildSectionTitle("Use Coupon Code"),
-                SizedBox(height: 5.h),
-                Text("Enter your coupon code if you have one.", style: TextStyle(fontSize: 13.sp, color: Colors.grey.shade700)),
-                SizedBox(height: 10.h),
+                // "Order Summary" Header
                 Row(
                   children: [
-                    Expanded(
-                      flex: 2,
-                      child: SizedBox(
-                        height: 40.h,
-                        child: TextFormField(
-                          controller: provider.couponController,
-                          decoration: InputDecoration(
-                            hintText: "Enter Promo Code",
-                            hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13.sp),
-                            contentPadding: EdgeInsets.symmetric(horizontal: 10.w),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.r),
-                              borderSide: BorderSide(color: Colors.grey.shade400),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.r),
-                              borderSide: BorderSide(color: Colors.grey.shade400),
-                            ),
-                          ),
-                        ),
+                    Icon(Icons.description_outlined, color: Color(0xFF0038FF), size: 20.sp), // Document Icon
+                    SizedBox(width: 8.w),
+                    Text(
+                      "Order Summary",
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF0038FF), // Blue
                       ),
                     ),
-                    SizedBox(width: 10.w),
-                    Expanded(
-                      flex: 1,
-                      child: SizedBox(
-                        height: 40.h,
-                        child: ElevatedButton(
-                          onPressed: provider.isLoading 
-                             ? null 
-                             : () async {
-                                 bool success = await provider.applyCoupon();
-                                 if(!context.mounted) return;
-                                 if(success) {
-                                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppMessages.couponAppliedSuccessfully)));
-                                 }
-                           },
-                          style: ElevatedButton.styleFrom(
-                             backgroundColor: Color(0xFFF5A623), // Orange
-                             foregroundColor: Colors.white,
-                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.r)),
-                             padding: EdgeInsets.zero,
-                          ),
-                          child: provider.isLoading 
-                              ? SizedBox(width: 20.w, height: 20.w, child: const CustomLoaderWidget(size: 20)) 
-                              : Text("Apply", style: TextStyle(fontSize: 14.sp)),
-                        ),
-                      ),
-                    )
                   ],
                 ),
-                if(provider.errorMessage.isNotEmpty)
-                   Padding(
-                     padding: EdgeInsets.only(top: 5.h),
-                     child: Text(provider.errorMessage, style: TextStyle(color: Colors.red, fontSize: 12.sp)),
-                   ),
-
-                SizedBox(height: 15.h),
-
-                // Order Details
-                _buildSectionTitle("Order Details"),
                 SizedBox(height: 10.h),
-                // Price Breakdown logic (matching Step 1 refined)
-                _buildSummaryRow(provider.cartResult?.subTotalHeading ?? "Sub-Total", "AUD ${provider.subTotal}"),
-                
-                // Ex GST (Blue)
-                _buildSummaryRow("Ex. GST :", "AUD ${provider.subTotal}", isBlueValue: true), // Assuming logic same as step 1
 
-                if((double.tryParse(provider.shippingCharge) ?? 0) > 0)
-                   _buildSummaryRow("Shipping :", "AUD ${provider.shippingCharge}", isBlueValue: true),
-
-                if((double.tryParse(provider.supplierCharge) ?? 0) > 0)
-                   _buildSummaryRow("Supplier Charges :", "AUD ${provider.supplierCharge}", isBlueValue: true),
-                   
-                _buildSummaryRow("GST :", "AUD ${provider.taxTotal}", isBlueValue: true),
-                
-                if((double.tryParse(provider.couponDiscount) ?? 0) > 0)
-                    _buildSummaryRow("Coupon (${provider.couponName})", "-AUD ${provider.couponDiscount}", isDiscount: true),
-                
-                SizedBox(height: 5.h),
-                Text("Grand Total", style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: Colors.grey.shade700)),
-                _buildSummaryRow("Inc. GST :", "AUD ${provider.totalAmount}", isBlueValue: true),
-
-                SizedBox(height: 15.h),
-                
-                // Payment Method
-                _buildSectionTitle("Payment Method"),
-                SizedBox(height: 5.h),
-                Text("Choose Your Payment Method", style: TextStyle(fontSize: 13.sp, color: Colors.grey.shade700)),
-                SizedBox(height: 5.h),
+                // Main Card
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10.w),
+                  padding: EdgeInsets.all(15.w),
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black), // Screenshot looks like black border
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(5.r),
+                    boxShadow: [
+                      BoxShadow(color: Colors.grey.withOpacity(0.2), blurRadius: 5, spreadRadius: 1),
+                    ],
                   ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      isExpanded: true,
-                      value: provider.paymentMethod.isNotEmpty && provider.availablePaymentMethods.contains(provider.paymentMethod) 
-                          ? provider.paymentMethod 
-                          : (provider.availablePaymentMethods.isNotEmpty ? provider.availablePaymentMethods[0] : null), // Safe fallback
-                      icon: Icon(Icons.keyboard_arrow_down),
-                      style: TextStyle(color: Colors.black, fontSize: 14.sp, fontWeight: FontWeight.bold),
-                      items: provider.availablePaymentMethods.map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      onChanged: (val) {
-                        if (val != null) {
-                          provider.selectPaymentMethod(val);
-                        }
-                      },
-                      hint: Text("Select Payment Method", style: TextStyle(color: Colors.grey)), 
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Additional Information
+                      _buildSectionTitle("Additional Information"),
+                      SizedBox(height: 5.h),
+                      Text("Order Notes", style: TextStyle(fontSize: 14.sp, color: Colors.grey.shade700, fontWeight: FontWeight.bold)),
+                      SizedBox(height: 5.h),
+                      TextFormField(
+                        controller: provider.orderNotesController,
+                        maxLines: 4,
+                        decoration: InputDecoration(
+                          hintText: "Notes about your order, e.g special notes for delivery",
+                          hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13.sp),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.r),
+                            borderSide: BorderSide(color: Colors.grey.shade400),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.r),
+                            borderSide: BorderSide(color: Colors.grey.shade400),
+                          ),
+                          contentPadding: EdgeInsets.all(10.w),
+                        ),
+                      ),
+
+                      SizedBox(height: 15.h),
+
+                      // Use Coupon Code
+                      _buildSectionTitle("Use Coupon Code"),
+                      SizedBox(height: 5.h),
+                      Text("Enter your coupon code if you have one.", style: TextStyle(fontSize: 13.sp, color: Colors.grey.shade700)),
+                      SizedBox(height: 10.h),
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: SizedBox(
+                              height: 40.h,
+                              child: TextFormField(
+                                controller: provider.couponController,
+                                decoration: InputDecoration(
+                                  hintText: "Enter Promo Code",
+                                  hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13.sp),
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 10.w),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(5.r),
+                                    borderSide: BorderSide(color: Colors.grey.shade400),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(5.r),
+                                    borderSide: BorderSide(color: Colors.grey.shade400),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 10.w),
+                          Expanded(
+                            flex: 1,
+                            child: SizedBox(
+                              height: 40.h,
+                              child: ElevatedButton(
+                                onPressed: provider.isLoading 
+                                   ? null 
+                                   : () async {
+                                       bool success = await provider.applyCoupon();
+                                       if(!context.mounted) return;
+                                       if(success) {
+                                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppMessages.couponAppliedSuccessfully)));
+                                       } else {
+                                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(provider.errorMessage)));
+                                       }
+                                 },
+                                style: ElevatedButton.styleFrom(
+                                   backgroundColor: Color(0xFFF5A623), // Orange
+                                   foregroundColor: Colors.white,
+                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.r)),
+                                   padding: EdgeInsets.zero,
+                                ),
+                                child: provider.isLoading 
+                                    ? SizedBox(width: 20.w, height: 20.w, child: const CustomLoaderWidget(size: 20)) 
+                                    : Text("Apply", style: TextStyle(fontSize: 14.sp)),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                      // Error message handled via SnackBar in button callback now for better UX, removing inline if desired or keeping as backup.
+                      // Keeping inline as backup.
+                      if(provider.errorMessage.isNotEmpty)
+                         Padding(
+                           padding: EdgeInsets.only(top: 5.h),
+                           child: Text(provider.errorMessage, style: TextStyle(color: Colors.red, fontSize: 12.sp)),
+                         ),
+
+                      SizedBox(height: 15.h),
+
+                      // Order Details (Styled Match)
+                      _buildSectionTitle("Order Details"),
+                      SizedBox(height: 10.h),
+                      
+                      // Sub-Total Heading
+                      Text(
+                        provider.cartResult?.subTotalHeading ?? "Sub-Total",
+                        style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: Colors.black),
+                      ),
+                      SizedBox(height: 5.h),
+                      
+                      // Ex GST (Blue)
+                      _buildSummaryRow("Ex. GST :", "AUD ${provider.subTotal}", isBlueValue: true),
+
+                      if((double.tryParse(provider.shippingCharge) ?? 0) > 0)
+                         _buildSummaryRow("Shipping :", "AUD ${provider.shippingCharge}", isBlueValue: true),
+
+                      if((double.tryParse(provider.supplierCharge) ?? 0) > 0)
+                         _buildSummaryRow("Supplier Charges :", "AUD ${provider.supplierCharge}", isBlueValue: true),
+                         
+                      _buildSummaryRow("GST :", "AUD ${provider.taxTotal}", isBlueValue: true),
+                      
+                      if((double.tryParse(provider.couponDiscount) ?? 0) > 0)
+                          _buildSummaryRow("Coupon (${provider.couponName})", "-AUD ${provider.couponDiscount}", isDiscount: true),
+                      
+                      SizedBox(height: 10.h),
+                      
+                      // Grand Total Heading
+                      Text(
+                         provider.cartResult?.totalHeading ?? "Grand Total",
+                         style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: Colors.grey.shade700)
+                      ),
+                      SizedBox(height: 5.h),
+                      _buildSummaryRow("Inc. GST :", "AUD ${provider.totalAmount}", isBlueValue: true),
+
+                      SizedBox(height: 15.h),
+                      
+                      // Payment Method
+                      _buildSectionTitle("Payment Method"),
+                      SizedBox(height: 5.h),
+                      Text("Choose Your Payment Method", style: TextStyle(fontSize: 13.sp, color: Colors.grey.shade700)),
+                      SizedBox(height: 5.h),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 10.w),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black), // Screenshot looks like black border
+                          borderRadius: BorderRadius.circular(5.r),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            isExpanded: true,
+                            value: provider.paymentMethod.isNotEmpty && provider.availablePaymentMethods.contains(provider.paymentMethod) 
+                                ? provider.paymentMethod 
+                                : (provider.availablePaymentMethods.isNotEmpty ? provider.availablePaymentMethods[0] : null), // Safe fallback
+                            icon: Icon(Icons.keyboard_arrow_down),
+                            style: TextStyle(color: Colors.black, fontSize: 14.sp, fontWeight: FontWeight.bold),
+                            items: provider.availablePaymentMethods.map((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            onChanged: (val) {
+                              if (val != null) {
+                                provider.selectPaymentMethod(val);
+                              }
+                            },
+                            hint: Text("Select Payment Method", style: TextStyle(color: Colors.grey)), 
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+                
+                SizedBox(height: 20.h),
               ],
             ),
           ),
+        ),
 
-          SizedBox(height: 30.h),
-          
-          // Navigation Buttons (Back | 3/3 | Place Order)
-          Row(
+        // Sticky Bottom Navigation (Shadow + Buttons)
+        Container(
+          padding: EdgeInsets.all(16.w),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.3),
+                blurRadius: 10,
+                offset: Offset(0, -3),
+              ),
+            ],
+          ),
+          child: Row(
             children: [
                // Back Button (Orange)
                Expanded(
@@ -241,7 +276,7 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
                        mainAxisAlignment: MainAxisAlignment.center,
                        children: [
                          Icon(Icons.arrow_back_ios, size: 14.sp, color: Colors.white),
-                         Text(" Back", style: TextStyle(fontSize: 14.sp)),
+                         Text(" Back", style: TextStyle(fontSize: 14.sp),), // Fixed spacing in Text
                        ],
                      ),
                    ),
@@ -252,7 +287,7 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
                Expanded(
                  flex: 4,
                  child: Center(
-                   child: Text("3/3", style: TextStyle(color: Color(0xFF0038FF), fontSize: 15.sp, fontWeight: FontWeight.bold)),
+                   child: Text("3/3", style: TextStyle(color: Color(0xFF0038FF), fontSize: 16.sp, fontWeight: FontWeight.bold)),
                  ),
                ),
                
@@ -287,10 +322,8 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
                ),
             ],
           ),
-          
-          SizedBox(height: 20.h),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -298,7 +331,7 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
     return Text(
       title,
       style: TextStyle(
-        fontSize: 15.sp,
+        fontSize: 16.sp,
         fontWeight: FontWeight.bold,
         color: Color(0xFF0038FF), // Blue
       ),

@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../core/constants/storage_keys.dart';
+import '../../core/constants/url_api_key.dart';
 
 
 import '../../core/constants/app_messages.dart';
@@ -98,6 +99,10 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> clearSession() async {
       final prefs = await SharedPreferences.getInstance();
+
+      // FIX: Reset Base URLs
+      UrlApiKey.companyMainUrl = "https://ezyorders.co.in/";
+      UrlApiKey.mainUrl = "https://ezyorders.co.in/";
       
       await prefs.setString(StorageKeys.userId, "0");
       await prefs.setString(StorageKeys.accessToken, "");

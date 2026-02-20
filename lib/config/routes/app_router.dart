@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../presentation/features/cart/cart_screen.dart';
 import '../../presentation/features/auth/login_screen.dart';
@@ -20,6 +21,8 @@ import '../../data/models/profile_models.dart';
 import '../../presentation/features/checkout/order_success_screen.dart';
 import '../../presentation/features/products/product_details_screen.dart';
 import '../../presentation/features/drawer/notifications_screen.dart';
+import '../../presentation/features/scan/scan_screen.dart';
+import '../../presentation/features/products/products_list_screen.dart';
 
 import 'app_routes.dart';
 
@@ -101,17 +104,31 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.productDetails,
         builder: (context, state) {
-           final productId = state.extra as String; // Expecting ID string or object? 
-           // ProductItemWidget passes productId. Let's check ProductDetailsScreen constructor.
-           // It takes productId String.
-           // If we pass object, we need to extract ID. 
-           // Let's standardise to passing String ID for now or check usage.
+           final productId = state.extra as String?;
+           if (productId == null) {
+              return const Scaffold(body: Center(child: Text("Error: Product ID missing")));
+           }
            return ProductDetailsScreen(productId: productId);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.productsList,
+        builder: (context, state) {
+           final extra = state.extra as Map<String, dynamic>? ?? {};
+           return ProductsListScreen(
+             supplierId: extra['supplierId'],
+             backNav: extra['backNav'],
+             pageTitle: extra['pageTitle'],
+           );
         },
       ),
       GoRoute(
         path: AppRoutes.notifications,
         builder: (context, state) => const NotificationsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.scan,
+        builder: (context, state) => const ScanScreen(),
       ),
     ],
   );

@@ -19,6 +19,10 @@ class CompaniesProvider extends ChangeNotifier {
   final AuthRepository _repository = getIt<AuthRepository>();
 
   Future<void> fetchCompanies() async {
+    // FIX: Reset Base URLs to default to ensure we hit the main server, not a specific store's domain
+    UrlApiKey.companyMainUrl = "https://ezyorders.co.in/";
+    UrlApiKey.mainUrl = "https://ezyorders.co.in/";
+    
     _isLoading = true;
     _errorMsg = null;
     notifyListeners();

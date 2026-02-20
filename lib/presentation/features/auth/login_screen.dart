@@ -10,6 +10,7 @@ import '../../../core/constants/assets.dart';
 import '../../../core/constants/url_api_key.dart';
 import 'package:go_router/go_router.dart';
 import '../../../config/routes/app_routes.dart';
+import '../../widgets/custom_loader_widget.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -232,9 +233,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         borderRadius: BorderRadius.circular(AppTheme.authButtonRadius),
                                       ),
                                     ),
-                                    child: provider.isLoading
-                                        ? const CircularProgressIndicator(color: AppTheme.white)
-                                        : const Text(
+                                    child: const Text(
                                             "Login",
                                             style: TextStyle(
                                               color: AppTheme.white,
@@ -295,7 +294,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     Container(
                       width: double.infinity,
                       color: AppTheme.white, // Parent background
-                      padding: const EdgeInsets.only(bottom: 30 , left: 90 , right: 90),
+                      padding: const EdgeInsets.only(bottom: 30 , left: 70 , right: 70),
                       child: InkWell(
                         borderRadius: BorderRadius.circular(8),
                         onTap: () async {
@@ -305,7 +304,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           }
                         },
                         child: Container(
-                          height: 44,
+                          height: 50,
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           decoration: BoxDecoration(
                             color: AppTheme.white,
@@ -321,7 +320,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             children: const [
                               Icon(
                                 Icons.list,
-                                size: 20,
+                                size: 24,
                                 color: AppTheme.textColor,
                               ),
                               SizedBox(width: 8),
@@ -329,7 +328,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 "Access Other Stores",
                                 style: TextStyle(
                                   color: AppTheme.primaryColor, // Blue text
-                                  fontSize: 14,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -343,11 +342,32 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 
                 // Loading Overlay (Global)
+                // Loading Overlay (Global)
                 if (provider.isLoading)
                   Container(
-                    color: AppTheme.shadowBlack,
-                    child: const Center(
-                      child: CircularProgressIndicator(),
+                    color: Colors.black54, // Semi-transparent black 54%
+                    child: Center(
+                      child: SizedBox(
+                        width: 100.w,
+                        height: 100.w,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                             // Rotating Loader
+                             CustomLoaderWidget(size: 100.w),
+                             // Text
+                             Text(
+                               "Please Wait",
+                               textAlign: TextAlign.center,
+                               style: TextStyle(
+                                 color: AppTheme.primaryColor,
+                                 fontSize: 13.sp,
+                                 fontWeight: FontWeight.bold,
+                               ),
+                             ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
               ],

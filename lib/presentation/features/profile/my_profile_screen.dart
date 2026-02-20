@@ -11,6 +11,7 @@ import '../../../config/theme/app_theme.dart';
 import '../../../core/constants/app_messages.dart';
 import '../../../core/constants/url_api_key.dart';
 import '../../providers/dashboard_provider.dart';
+import '../../widgets/custom_loader_widget.dart';
 
 class MyProfileScreen extends StatefulWidget {
   const MyProfileScreen({super.key});
@@ -211,110 +212,143 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                   surfaceTintColor: Colors.white,
                   child: Padding(
                     padding: EdgeInsets.all(15.w),
-                    child: Consumer<DashboardProvider>(
-                      builder: (context, provider, child) {
-                        if (provider.isLoading) {
-                           return const Center(child: CircularProgressIndicator());
-                        }
-                        
-                        final profile = provider.profileResponse?.results?[0];
-                        final imageUrl = "${UrlApiKey.companyMainUrl}uploads/customers/${profile?.image ?? ""}";
+                    child: Stack(
+                      children: [
+                        Consumer<DashboardProvider>(
+                          builder: (context, provider, child) {
+                            // Moved isLoading check to Overlay
+                            
+                            final profile = provider.profileResponse?.results?[0];
+                            final imageUrl = "${UrlApiKey.companyMainUrl}uploads/customers/${profile?.image ?? ""}";
 
-                        return Form(
-                          key: _formKey,
-                          child: Column(
-                            children: [
-                              Expanded(
-                                child: SingleChildScrollView(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      // Profile Image
-                                      Center(
-                                        child: Stack(
-                                          children: [
-                                            GestureDetector(
-                                              onTap: _pickImage,
-                                              child: ClipOval(
-                                                child: CachedNetworkImage(
-                                                  imageUrl: imageUrl,
-                                                  width: 80.w,
-                                                  height: 80.w,
-                                                  fit: BoxFit.cover,
-                                                  placeholder: (context, url) => Image.asset("assets/images/no_pic_user.png", width: 80.w, height: 80.w ,color: AppTheme.primaryColor,),
-                                                  errorWidget: (context, url, error) => Image.asset("assets/images/no_pic_user.png", width: 80.w, height: 80.w ,color:  AppTheme.primaryColor),
+                            return Form(
+                              key: _formKey,
+                              child: Column(
+                                children: [
+                                  Expanded(
+                                    child: SingleChildScrollView(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          // Profile Image
+                                          Center(
+                                            child: Stack(
+                                              children: [
+                                                GestureDetector(
+                                                  onTap: _pickImage,
+                                                  child: ClipOval(
+                                                    child: CachedNetworkImage(
+                                                      imageUrl: imageUrl,
+                                                      width: 80.w,
+                                                      height: 80.w,
+                                                      fit: BoxFit.cover,
+                                                      placeholder: (context, url) => Image.asset("assets/images/no_pic_user.png", width: 80.w, height: 80.w ,color: AppTheme.primaryColor,),
+                                                      errorWidget: (context, url, error) => Image.asset("assets/images/no_pic_user.png", width: 80.w, height: 80.w ,color:  AppTheme.primaryColor),
+                                                    ),
+                                                  ),
                                                 ),
-                                              ),
+                                                Positioned(
+                                                  bottom: 0,
+                                                  right: 0,
+                                                  child: Container(
+                                                    padding: EdgeInsets.all(4.w),
+                                                    decoration: const BoxDecoration(
+                                                      color: Colors.white,
+                                                      shape: BoxShape.circle,
+                                                    ),
+                                                    child: Icon(Icons.camera_alt, color: AppTheme.primaryColor, size: 20.sp),
+                                                  ),
+                                                )
+                                              ],
                                             ),
-                                            Positioned(
-                                              bottom: 0,
-                                              right: 0,
-                                              child: Container(
-                                                padding: EdgeInsets.all(4.w),
-                                                decoration: const BoxDecoration(
-                                                  color: Colors.white,
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                child: Icon(Icons.camera_alt, color: AppTheme.primaryColor, size: 20.sp),
-                                              ),
-                                            )
+                                          ),
+                                          SizedBox(height: 10.h),
+                                          
+                                          // First Name
+                                          _buildLabel("First Name *"),
+                                          _buildTextField(_firstNameController, "Enter First Name", validator: (v) => v!.isEmpty ? AppMessages.enterValidFirstName : null),
+                                          
+                                          // Last Name
+                                          _buildLabel("Last Name *"),
+                                          _buildTextField(_lastNameController, "Enter Last Name", validator: (v) => v!.isEmpty ? AppMessages.enterValidLastName : null),
+                                          
+                                          // Street Address
+                                          _buildLabel("Street Address *"),
+                                          _buildTextField(_streetController, "Enter Your House number and street name", validator: (v) => v!.isEmpty ? AppMessages.enterValidStreetAddress : null),
+                                          _buildTextField(_street2Controller, "Enter Your Apartment, suite, unit etc.."), 
+                                          
+                                          // Town / City
+                                          _buildLabel("Town / City *"),
+                                          _buildTextField(_cityController, "Enter Your Town / City", validator: (v) => v!.isEmpty ? AppMessages.enterValidTownCity : null),
+                                          
+                                          // State / Country
+                                          _buildLabel("State / Country *"),
+                                          _buildTextField(_stateController, "Enter Your State / Country", validator: (v) => v!.isEmpty ? AppMessages.enterValidStateCountry : null),
+                                          
+                                          // Email
+                                          _buildLabel("Email *"),
+                                          _buildTextField(_emailController, "", readOnly: false), 
+                                          
+                                          // Mobile
+                                          _buildLabel("Mobile Number *"),
+                                          _buildTextField(_mobileController, "", readOnly: false, textColor: Colors.grey), 
+                                          
+                                          SizedBox(height: 20.h),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  
+                                  // Update Button
+                                  SizedBox(
+                                    width: double.infinity,
+                                    height: 45.h,
+                                    child: ElevatedButton(
+                                      onPressed: _submit,
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppTheme.secondaryColor,
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.r)),
+                                      ),
+                                      child: Text("Update Details", style: TextStyle(fontSize: 14.sp, color: Colors.white , fontWeight: FontWeight.bold)),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                        Consumer<DashboardProvider>(
+                           builder: (context, provider, child) {
+                              if (provider.isLoading) {
+                                 return Container(
+                                    color: Colors.black54,
+                                    child: Center(
+                                      child: SizedBox(
+                                        width: 100.w,
+                                        height: 100.w,
+                                        child: Stack(
+                                          alignment: Alignment.center,
+                                          children: [
+                                             CustomLoaderWidget(size: 100.w),
+                                             Text(
+                                               "Please Wait",
+                                               textAlign: TextAlign.center,
+                                               style: TextStyle(
+                                                 color: AppTheme.primaryColor,
+                                                 fontSize: 13.sp,
+                                                 fontWeight: FontWeight.bold,
+                                               ),
+                                             ),
                                           ],
                                         ),
                                       ),
-                                      SizedBox(height: 10.h),
-                                      
-                                      // First Name
-                                      _buildLabel("First Name *"),
-                                      _buildTextField(_firstNameController, "Enter First Name", validator: (v) => v!.isEmpty ? AppMessages.enterValidFirstName : null),
-                                      
-                                      // Last Name
-                                      _buildLabel("Last Name *"),
-                                      _buildTextField(_lastNameController, "Enter Last Name", validator: (v) => v!.isEmpty ? AppMessages.enterValidLastName : null),
-                                      
-                                      // Street Address
-                                      _buildLabel("Street Address *"),
-                                      _buildTextField(_streetController, "Enter Your House number and street name", validator: (v) => v!.isEmpty ? AppMessages.enterValidStreetAddress : null),
-                                      _buildTextField(_street2Controller, "Enter Your Apartment, suite, unit etc.."), 
-                                      
-                                      // Town / City
-                                      _buildLabel("Town / City *"),
-                                      _buildTextField(_cityController, "Enter Your Town / City", validator: (v) => v!.isEmpty ? AppMessages.enterValidTownCity : null),
-                                      
-                                      // State / Country
-                                      _buildLabel("State / Country *"),
-                                      _buildTextField(_stateController, "Enter Your State / Country", validator: (v) => v!.isEmpty ? AppMessages.enterValidStateCountry : null),
-                                      
-                                      // Email
-                                      _buildLabel("Email *"),
-                                      _buildTextField(_emailController, "", readOnly: false), // XML didn't explicitly say readonly but generic textview? No, CustomEditView. Assuming editable.
-                                      
-                                      // Mobile
-                                      _buildLabel("Mobile Number *"),
-                                      _buildTextField(_mobileController, "", readOnly: false, textColor: Colors.grey), // XML: editable="false"
-                                      
-                                      SizedBox(height: 20.h),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              
-                              // Update Button
-                              SizedBox(
-                                width: double.infinity,
-                                height: 45.h,
-                                child: ElevatedButton(
-                                  onPressed: _submit,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppTheme.secondaryColor,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.r)),
-                                  ),
-                                  child: Text("Update Details", style: TextStyle(fontSize: 14.sp, color: Colors.white , fontWeight: FontWeight.bold)),
-                                ),
-                              )
-                            ],
-                          ),
-                        );
-                      },
+                                    ),
+                                  );
+                              }
+                              return const SizedBox.shrink();
+                           },
+                        ),
+                      ],
                     ),
                   ),
                 ),

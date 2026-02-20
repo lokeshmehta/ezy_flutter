@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:html/parser.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:provider/provider.dart';
 
 // If flutter_html is not available, I will use simple text parsing or a WebView for About Us content 
@@ -10,8 +10,10 @@ import 'package:provider/provider.dart';
 
 
 import '../../../../data/models/drawer_models.dart';
-import '../../../config/theme/app_theme.dart';
 import '../../providers/dashboard_provider.dart';
+import '../../widgets/custom_loader_widget.dart';
+import '../../../../core/utils/common_methods.dart';
+import '../../../../config/theme/app_theme.dart';
 
 
 class AboutUsItemWidget extends StatelessWidget {
@@ -19,11 +21,7 @@ class AboutUsItemWidget extends StatelessWidget {
 
   const AboutUsItemWidget({super.key, required this.item});
 
-  String _parseHtml(String htmlString) {
-      if (htmlString.isEmpty) return "";
-      final document = parse(htmlString);
-      return document.body?.text ?? htmlString;
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -47,13 +45,17 @@ class AboutUsItemWidget extends StatelessWidget {
               ),
              if (item.description != null && item.description!.isNotEmpty) ...[
                 SizedBox(height: 10.h),
-                Text(
-                  _parseHtml(item.description!),
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    color: Colors.grey[700],
-                    height: 1.5,
-                  ),
+                Html(
+                  data: CommonMethods.decodeHtmlEntities(item.description),
+                  style: {
+                    "body": Style(
+                      fontSize: FontSize(14.sp),
+                      color: Colors.grey[700],
+                      lineHeight: LineHeight(1.5),
+                      margin: Margins.zero,
+                      padding: HtmlPaddings.zero,
+                    ),
+                  },
                 ),
              ]
           ],
@@ -101,31 +103,66 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
           },
         ),
       ),
-      body: Consumer<DashboardProvider>(
-        builder: (context, provider, child) {
-          if (provider.isFetchingDrawerData && provider.aboutUsResponse == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: Stack(
+        children: [
+          Consumer<DashboardProvider>(
+            builder: (context, provider, child) {
+              if (provider.isFetchingDrawerData && provider.aboutUsResponse == null) {
+                return const SizedBox.shrink(); // Overlay handles it
+              }
 
-          final list = provider.aboutUsResponse?.results;
+              final list = provider.aboutUsResponse?.results;
 
-          if (list == null || list.isEmpty) {
-            return Center(
-              child: Text(
-                "No Data Found",
-                style: TextStyle(fontSize: 16.sp, color: Colors.black ,fontWeight: FontWeight.bold),
-              ),
-            );
-          }
+              if (list == null || list.isEmpty) {
+                return Center(
+                  child: Text(
+                    "No Data Found",
+                    style: TextStyle(fontSize: 16.sp, color: Colors.black ,fontWeight: FontWeight.bold),
+                  ),
+                );
+              }
 
-          return ListView.builder(
-            padding: EdgeInsets.symmetric(vertical: 10.h),
-            itemCount: list.length,
-            itemBuilder: (context, index) {
-              return AboutUsItemWidget(item: list[index]);
+              return ListView.builder(
+                padding: EdgeInsets.symmetric(vertical: 10.h),
+                itemCount: list.length,
+                itemBuilder: (context, index) {
+                  return AboutUsItemWidget(item: list[index]);
+                },
+              );
             },
-          );
-        },
+          ),
+          Consumer<DashboardProvider>(
+             builder: (context, provider, child) {
+                if (provider.isFetchingDrawerData && provider.aboutUsResponse == null) {
+                   return Container(
+                      color: Colors.black54,
+                      child: Center(
+                        child: SizedBox(
+                          width: 100.w,
+                          height: 100.w,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                               CustomLoaderWidget(size: 100.w),
+                               Text(
+                                 "Please Wait",
+                                 textAlign: TextAlign.center,
+                                 style: TextStyle(
+                                   color: AppTheme.primaryColor,
+                                   fontSize: 13.sp,
+                                   fontWeight: FontWeight.bold,
+                                 ),
+                               ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                }
+                return const SizedBox.shrink();
+             },
+          ),
+        ],
       ),
     );
   }

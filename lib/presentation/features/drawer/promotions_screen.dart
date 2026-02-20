@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../config/theme/app_theme.dart';
 import '../../providers/dashboard_provider.dart';
 import '../dashboard/dashboard_screen.dart';
+import '../../widgets/custom_loader_widget.dart';
 import 'widgets/promotion_item_widget.dart';
 
 class PromotionsScreen extends StatefulWidget {
@@ -68,7 +69,7 @@ class _PromotionsScreenState extends State<PromotionsScreen> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-             Navigator.pushReplacement(context, MaterialPageRoute(builder: (c) => const DashboardScreen()));
+             Navigator.pop(context);
           },
         ),
         actions: [
@@ -87,43 +88,85 @@ class _PromotionsScreenState extends State<PromotionsScreen> {
           )
         ],
       ),
-      body: Consumer<DashboardProvider>(
-        builder: (context, provider, child) {
-          if (provider.isLoading && provider.promotionsResponse == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          final promotions = provider.promotionsResponse?.results;
-          
-          if (promotions == null || promotions.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                   Text(
-                    "No Promotions Available",
-                    style: TextStyle(fontSize: 16.sp, color: Colors.grey),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          return ListView.builder(
-            controller: _scrollController,
-            padding: EdgeInsets.all(10.w),
-            itemCount: promotions.length + (provider.isLoading ? 1 : 0), // Loader at bottom
-            itemBuilder: (context, index) {
-              if (index == promotions.length) {
-                return const Center(child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: CircularProgressIndicator(),
-                ));
+      body: Stack(
+        children: [
+          Consumer<DashboardProvider>(
+            builder: (context, provider, child) {
+              final promotions = provider.promotionsResponse?.results;
+              
+              if (provider.isLoading && promotions == null) {
+                return const SizedBox.shrink(); // Overlay handles it
               }
-              return PromotionItemWidget(item: promotions[index], index: index);
+
+              if (promotions == null || promotions.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                       Text(
+                        "No Promotions Available",
+                        style: TextStyle(fontSize: 16.sp, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              return ListView.builder(
+                controller: _scrollController,
+                padding: EdgeInsets.all(10.w),
+                itemCount: promotions.length + (provider.isLoading ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (index == promotions.length) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Center(child: CustomLoaderWidget(size: 30.w)),
+                    );
+                  }
+                  return PromotionItemWidget(item: promotions[index], index: index);
+                },
+              );
             },
-          );
-        },
+          ),
+          Consumer<DashboardProvider>(
+             builder: (context, provider, child) {
+                // Show overlay only if initial load (no data yet)
+                // If data exists, we show pagination loader at bottom (handled above)
+                // BUT if we want blocking overlay for refresh? 
+                // Android typically blocks on initial load. Pagination is non-blocking.
+                // Logic: if isLoading && promotions == null => Blocking Overlay
+                // if isLoading && promotions != null => Pagination Loader (in list)
+                
+                if (provider.isLoading && provider.promotionsResponse?.results == null) {
+                   return Container(
+                      color: Colors.black54,
+                      child: Center(
+                        child: SizedBox(
+                          width: 100.w,
+                          height: 100.w,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                               CustomLoaderWidget(size: 100.w),
+                               Text(
+                                 "Please Wait",
+                                 textAlign: TextAlign.center,
+                                 style: TextStyle(
+                                   color: AppTheme.primaryColor,
+                                   fontSize: 13.sp,
+                                   fontWeight: FontWeight.bold,
+                                 ),
+                               ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                }
+                return const SizedBox.shrink();
+             },
+          ),
+        ],
       ),
     );
   }

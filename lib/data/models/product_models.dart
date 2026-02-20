@@ -305,6 +305,7 @@ class ProductDetailItem extends ProductItem {
     super.addedSubTotal,
     super.productId,
     super.name, // Mapping 'title' to 'name' for consistency with ProductItem
+    super.title, // Added to ensure title is populated
     super.description,
     super.shortDescription,
     super.image,
@@ -353,6 +354,7 @@ class ProductDetailItem extends ProductItem {
       addedSubTotal: base.addedSubTotal,
       productId: base.productId,
       name: json['title']?.toString() ?? base.name,
+      title: json['title']?.toString() ?? base.title, // Ensure title is set
       description: base.description,
       shortDescription: base.shortDescription,
       image: base.image,

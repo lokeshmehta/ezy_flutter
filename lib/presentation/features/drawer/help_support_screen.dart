@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../widgets/custom_loader_widget.dart';
 
 import '../../../config/theme/app_theme.dart';
 import '../../providers/dashboard_provider.dart';
@@ -52,50 +53,89 @@ class HelpSupportScreen extends StatelessWidget {
           },
         ),
       ),
-      body: Consumer<DashboardProvider>(
-        builder: (context, provider, child) {
-          final profile = provider.profileResponse?.results?.isNotEmpty == true
-              ? provider.profileResponse!.results![0]
-              : null;
-          
-          if (profile == null) {
-            return Center(child: CircularProgressIndicator());
-          }
+      body: Stack(
+        children: [
+          Consumer<DashboardProvider>(
+            builder: (context, provider, child) {
+              final profile = provider.profileResponse?.results?.isNotEmpty == true
+                  ? provider.profileResponse!.results![0]
+                  : null;
+              
+              if (profile == null) {
+                return const SizedBox.shrink(); // Overlay handles it
+              }
 
-          final mobile = profile.companyMobile ?? "N/A";
-          final email = profile.companyEmail ?? "N/A";
-          final address = "${profile.companyStreet}, ${profile.companySuburb}, ${profile.companyState}, ${profile.companyPostcode}";
-            // Construct address matching Android logic
+              final mobile = profile.companyMobile ?? "N/A";
+              final email = profile.companyEmail ?? "N/A";
+              final address = "${profile.companyStreet}, ${profile.companySuburb}, ${profile.companyState}, ${profile.companyPostcode}";
+                // Construct address matching Android logic
 
-          return Padding(
-            padding: EdgeInsets.all(20.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildContactItem(
-                  icon: Icons.phone,
-                  title: "Mobile Number",
-                  value: mobile,
-                  onTap: () => _makePhoneCall(mobile),
+              return Padding(
+                padding: EdgeInsets.all(20.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildContactItem(
+                      icon: Icons.phone,
+                      title: "Mobile Number",
+                      value: mobile,
+                      onTap: () => _makePhoneCall(mobile),
+                    ),
+                    _buildDivider(),
+                    _buildContactItem(
+                      icon: Icons.email,
+                      title: "Email Address",
+                      value: email,
+                      onTap: () => _sendEmail(email),
+                    ),
+                    _buildDivider(),
+                    _buildContactItem(
+                      icon: Icons.location_on,
+                      title: "Address",
+                      value: address,
+                      onTap: () => _openMap(address),
+                    ),
+                  ],
                 ),
-                _buildDivider(),
-                _buildContactItem(
-                  icon: Icons.email,
-                  title: "Email Address",
-                  value: email,
-                  onTap: () => _sendEmail(email),
-                ),
-                _buildDivider(),
-                _buildContactItem(
-                  icon: Icons.location_on,
-                  title: "Address",
-                  value: address,
-                  onTap: () => _openMap(address),
-                ),
-              ],
-            ),
-          );
-        },
+              );
+            },
+          ),
+          Consumer<DashboardProvider>(
+             builder: (context, provider, child) {
+                final profile = provider.profileResponse?.results?.isNotEmpty == true
+                  ? provider.profileResponse!.results![0]
+                  : null;
+
+                if (profile == null) {
+                   return Container(
+                      color: Colors.black54,
+                      child: Center(
+                        child: SizedBox(
+                          width: 100.w,
+                          height: 100.w,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                               CustomLoaderWidget(size: 100.w),
+                               Text(
+                                 "Please Wait",
+                                 textAlign: TextAlign.center,
+                                 style: TextStyle(
+                                   color: AppTheme.primaryColor,
+                                   fontSize: 13.sp,
+                                   fontWeight: FontWeight.bold,
+                                 ),
+                               ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                }
+                return const SizedBox.shrink();
+             },
+          ),
+        ],
       ),
     );
   }

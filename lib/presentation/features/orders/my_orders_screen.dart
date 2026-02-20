@@ -7,6 +7,7 @@ import '../../providers/dashboard_provider.dart';
 import '../../../config/theme/app_theme.dart';
 import 'widgets/order_list_item_widget.dart';
 import 'order_details_screen.dart';
+import '../../widgets/custom_loader_widget.dart';
 import 'package:intl/intl.dart';
 import '../../../data/models/order_models.dart';
 
@@ -109,10 +110,49 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Column(
+      body: Stack(
         children: [
-          _buildFilterSection(),
-          Expanded(child: _buildOrdersList()),
+          Column(
+            children: [
+              _buildFilterSection(),
+              Expanded(child: _buildOrdersList()),
+            ],
+          ),
+          Consumer<OrdersProvider>(
+            builder: (context, provider, child) {
+              // Show overlay if loading (Initial fetch or Actions)
+              // But not for pagination (handled by list footer)
+              // We need to distinguish pagination loading. OrdersProvider usually has isMoreLoading.
+              // If isLoading is true, it's a blocking load (or initial).
+              if (provider.isLoading) {
+                 return Container(
+                    color: Colors.black54,
+                    child: Center(
+                      child: SizedBox(
+                        width: 100.w,
+                        height: 100.w,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                             CustomLoaderWidget(size: 100.w),
+                             Text(
+                               "Please Wait",
+                               textAlign: TextAlign.center,
+                               style: TextStyle(
+                                 color: AppTheme.primaryColor,
+                                 fontSize: 13.sp,
+                                 fontWeight: FontWeight.bold,
+                               ),
+                             ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
         ],
       ),
     );
@@ -208,8 +248,8 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
   Widget _buildOrdersList() {
     return Consumer<OrdersProvider>(
       builder: (context, provider, child) {
-        if (provider.isLoading) {
-          return const Center(child: CircularProgressIndicator());
+        if (provider.isLoading && provider.orders.isEmpty) {
+          return const SizedBox.shrink(); // Overlay handles it
         }
 
         if (provider.orders.isEmpty) {
@@ -227,7 +267,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
             if (index == provider.orders.length) {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: const Center(child: CircularProgressIndicator()),
+                child: CustomLoaderWidget(size: 30.w),
               );
             }
 

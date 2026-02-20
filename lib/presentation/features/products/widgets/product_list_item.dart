@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/app_theme.dart';
 import '../../../../core/constants/url_api_key.dart';
 import '../../../../core/network/image_cache_manager.dart';
+import '../../../../core/utils/common_methods.dart';
 import '../../../../data/models/home_models.dart';
 import '../product_details_screen.dart';
 
@@ -156,20 +157,18 @@ class _ProductListItemState extends State<ProductListItem> {
                           
                           // Vendor
                           Text(
-                            widget.item.brandName ?? "",
-                            style: TextStyle(color: Colors.black, fontSize: 11.sp),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          
-                          // Product Name
-                          SizedBox(height: 2.h),
-                          Text(
-                            widget.item.title ?? "",
-                            style: TextStyle(color: AppTheme.blackColor, fontSize: 13.sp, fontWeight: FontWeight.w700),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                        CommonMethods.decodeHtmlEntities(widget.item.brandName ?? ""),
+                        style: TextStyle(color: Colors.grey, fontSize: 12.sp),
+                      ),
+                      Text(
+                        CommonMethods.decodeHtmlEntities(widget.item.title ?? ""),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.primaryColor),
+                      ),
                           
                           // MOQ
                           if (widget.item.minimumOrderQty != null && widget.item.minimumOrderQty != "0" && widget.item.minimumOrderQty != "1")

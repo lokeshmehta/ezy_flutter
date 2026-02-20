@@ -10,6 +10,7 @@ import '../../../config/theme/app_theme.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../config/routes/app_routes.dart';
 import '../../providers/dashboard_provider.dart';
+import '../../widgets/custom_loader_widget.dart';
 import 'widgets/notification_item_widget.dart';
 
 
@@ -167,47 +168,89 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           },
         ),
       ),
-      body: Consumer<DashboardProvider>(
-        builder: (context, provider, child) {
-           if (provider.isFetchingDrawerData && provider.notificationsResponse == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          
-          final notifications = provider.notificationsResponse?.results;
-
-          if (notifications == null || notifications.isEmpty) {
-            return Center(
-              child: Text(
-                "No Notifications Available",
-                style: TextStyle(fontSize: 16.sp, color: AppTheme.secondaryColor , fontWeight: FontWeight.bold),
-              ),
-            );
-          }
-
-          return ListView.builder(
-            controller: _scrollController,
-            padding: EdgeInsets.all(10.w),
-            itemCount: notifications.length + (provider.isFetchingDrawerData ? 1 : 0),
-            itemBuilder: (context, index) {
-              if (index == notifications.length) {
-                return const Center(child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: CircularProgressIndicator(),
-                ));
+      body: Stack(
+        children: [
+          Consumer<DashboardProvider>(
+            builder: (context, provider, child) {
+               if (provider.isFetchingDrawerData && provider.notificationsResponse == null) {
+                return const SizedBox.shrink(); // Overlay handles it
               }
-              final item = notifications[index];
-              return NotificationItemWidget(
-                item: item,
-                onTap: () => _showNotificationDetails(item),
-                onDelete: () {
-                   if (item.notificationId != null) {
-                      provider.deleteNotification(item.notificationId!);
-                   }
+              
+              final notifications = provider.notificationsResponse?.results;
+
+              if (notifications == null || notifications.isEmpty) {
+                return Center(
+                  child: Text(
+                    "No Notifications Available",
+                    style: TextStyle(fontSize: 16.sp, color: AppTheme.secondaryColor , fontWeight: FontWeight.bold),
+                  ),
+                );
+              }
+
+              return ListView.builder(
+                controller: _scrollController,
+                padding: EdgeInsets.all(10.w),
+                itemCount: notifications.length + (provider.isFetchingDrawerData ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (index == notifications.length) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Center(child: CustomLoaderWidget(size: 30.w)),
+                    );
+                  }
+                  final item = notifications[index];
+                  return NotificationItemWidget(
+                    item: item,
+                        onTap: () {
+                       _showNotificationDetails(item);
+                    },
+                    onDelete: () {
+                       if (item.notificationId != null) {
+                          provider.deleteNotification(item.notificationId!);
+                       }
+                    },
+                  );
                 },
               );
             },
-          );
-        },
+          ),
+          Consumer<DashboardProvider>(
+             builder: (context, provider, child) {
+                // Overlay for:
+                // 1. Initial Load (fetching && no data)
+                // 2. Generic Loading (e.g. Delete action)
+                final noData = provider.notificationsResponse?.results == null || provider.notificationsResponse!.results!.isEmpty;
+                
+                if (provider.isLoading || (provider.isFetchingDrawerData && noData)) {
+                   return Container(
+                      color: Colors.black54,
+                      child: Center(
+                        child: SizedBox(
+                          width: 100.w,
+                          height: 100.w,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                               CustomLoaderWidget(size: 100.w),
+                               Text(
+                                 "Please Wait",
+                                 textAlign: TextAlign.center,
+                                 style: TextStyle(
+                                   color: AppTheme.primaryColor,
+                                   fontSize: 13.sp,
+                                   fontWeight: FontWeight.bold,
+                                 ),
+                               ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                }
+                return const SizedBox.shrink();
+             },
+          ),
+        ],
       ),
     );
   }

@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../widgets/custom_loader_widget.dart';
 
 import '../../../core/constants/storage_keys.dart';
 import '../../providers/checkout_provider.dart';
@@ -118,8 +120,28 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             
             if (provider.isLoading)
               Container(
-                color: Colors.black45,
-                child: Center(child: CircularProgressIndicator(color: AppTheme.tealColor)),
+                color: Colors.black54,
+                child: Center(
+                  child: SizedBox(
+                    width: 100.w,
+                    height: 100.w,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                         CustomLoaderWidget(size: 100.w),
+                         Text(
+                           "Please Wait",
+                           textAlign: TextAlign.center,
+                           style: TextStyle(
+                             color: AppTheme.primaryColor,
+                             fontSize: 13.sp,
+                             fontWeight: FontWeight.bold,
+                           ),
+                         ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
           ],
         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/utils/common_methods.dart';
 import '../../data/datasources/auth_remote_data_source.dart';
 import '../../data/models/cart_models.dart';
 import '../../data/models/profile_models.dart';
@@ -55,13 +56,56 @@ class CheckoutProvider extends ChangeNotifier {
   bool get isCartEmpty => _cartItems.isEmpty;
 
   // Financial Getters for Summary Widgets
-  String get subTotal => _cartResult?.subTotal ?? "0.00";
-  String get totalAmount => _cartResult?.orderAmount ?? "0.00";
-  String get discount => _cartResult?.discount ?? "0.00";
-  String get shippingCharge => _cartResult?.deliveryCharge ?? "0.00";
-  String get supplierCharge => _cartResult?.suppliersExceededShippingCharge ?? "0.00";
-  String get taxTotal => _cartResult?.gst ?? "0.00";
-  String get couponDiscount => _cartResult?.couponDiscount ?? "0.00";
+  // Financial Getters for Summary Widgets
+  String get subTotal {
+    double apiSubTotal = double.tryParse(_cartResult?.subTotal ?? "0") ?? 0;
+    if (apiSubTotal > 0) return apiSubTotal.toStringAsFixed(2);
+    return _calculateLocalSubTotal().toStringAsFixed(2);
+  }
+
+  String get totalAmount {
+    double apiTotal = double.tryParse(_cartResult?.orderAmount ?? "0") ?? 0;
+    if (apiTotal > 0) return apiTotal.toStringAsFixed(2);
+
+    // Fallback calculation
+    double localSub = _calculateLocalSubTotal();
+    double delivery = double.tryParse(_cartResult?.deliveryCharge ?? "0") ?? 0;
+    double locDelivery = double.tryParse(_cartResult?.deliveryLocationCharge ?? "0") ?? 0;
+    double tax = double.tryParse(_cartResult?.gst ?? "0") ?? 0;
+    double delTax = double.tryParse(_cartResult?.deliveryChargeGst ?? "0") ?? 0;
+    double disc = double.tryParse(_cartResult?.discount ?? "0") ?? 0;
+    double supplierCharge = double.tryParse(_cartResult?.suppliersExceededShippingCharge ?? "0") ?? 0;
+    double couponDisc = double.tryParse(_cartResult?.couponDiscount ?? "0") ?? 0;
+
+    double calculatedTotal = localSub + delivery + locDelivery + tax + delTax + supplierCharge - disc - couponDisc;
+    return calculatedTotal.toStringAsFixed(2);
+  }
+
+  double _calculateLocalSubTotal() {
+    double total = 0.0;
+    for (var item in _cartItems) {
+      double price = double.tryParse(item.salePrice ?? "0") ?? 0;
+      if (price <= 0) {
+        price = double.tryParse(item.normalPrice ?? "0") ?? 0;
+      }
+      int quantity = item.qty ?? 0;
+      total += price * quantity;
+    }
+    return total;
+  }
+  
+  String get discount => (double.tryParse(_cartResult?.discount ?? "0") ?? 0).toStringAsFixed(2);
+  String get shippingCharge => (double.tryParse(_cartResult?.deliveryCharge ?? "0") ?? 0).toStringAsFixed(2);
+  String get supplierCharge => (double.tryParse(_cartResult?.suppliersExceededShippingCharge ?? "0") ?? 0).toStringAsFixed(2);
+  
+  // Adjusted to include Delivery GST match Native App logic
+  String get taxTotal {
+      double gst = double.tryParse(_cartResult?.gst ?? "0") ?? 0;
+      double delGst = double.tryParse(_cartResult?.deliveryChargeGst ?? "0") ?? 0;
+      return (gst + delGst).toStringAsFixed(2);
+  }
+  
+  String get couponDiscount => (double.tryParse(_cartResult?.couponDiscount ?? "0") ?? 0).toStringAsFixed(2);
   String get couponName => _cartResult?.couponName ?? "";
 
   // Address Form Controllers (Billing)
@@ -152,6 +196,22 @@ class CheckoutProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+  
+  Future<void> _fetchProfileCount() async {
+      try {
+          final response = await authRemoteDataSource.getProfile(_accessToken, _customerId);
+          final profile = ProfileResponse.fromJson(response);
+          if (profile.results != null && profile.results!.isNotEmpty) {
+             String qty = response['cart_quantity']?.toString() ?? "0";
+             CommonMethods.cartCount = qty;
+             final prefs = await SharedPreferences.getInstance();
+             await prefs.setString(StorageKeys.cartCount, qty);
+          }
+      } catch (e) {
+         debugPrint("Error syncing cart count: $e");
+      }
+  }
+
 
   Future<void> _loadPaymentMethods() async {
       final prefs = await SharedPreferences.getInstance();
@@ -187,6 +247,9 @@ class CheckoutProvider extends ChangeNotifier {
         if(cartResponse.status == 200 && cartResponse.results != null && cartResponse.results!.isNotEmpty) {
             _cartResult = cartResponse.results![0];
             _flattenCartItems(_cartResult!);
+            
+            // ALWAYS calculate from the items we just fetched to ensure sync
+            await _calculateAndSyncCartCount();
         } else {
             _cartResult = null;
             _cartItems = [];
@@ -197,6 +260,18 @@ class CheckoutProvider extends ChangeNotifier {
          _cartItems = [];
       }
       notifyListeners();
+  }
+  
+  Future<void> _calculateAndSyncCartCount() async {
+      int totalQty = 0;
+      for (var item in _cartItems) {
+          totalQty += (item.qty ?? 0);
+      }
+      
+      // Update Global State
+      CommonMethods.cartCount = totalQty.toString();
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(StorageKeys.cartCount, CommonMethods.cartCount);
   }
   
   void _flattenCartItems(CartResult result) {
@@ -239,7 +314,7 @@ class CheckoutProvider extends ChangeNotifier {
       _isLoading = true;
       notifyListeners();
       try {
-          await authRemoteDataSource.updateCartItem(
+          final response = await authRemoteDataSource.updateCartItem(
               accessToken: _accessToken,
               customerId: _customerId,
               productId: productId,
@@ -249,7 +324,17 @@ class CheckoutProvider extends ChangeNotifier {
               orderedAs: soldAs, // Assuming 'orderedAs' matches 'soldAs' or passed param
               accNum: "" // Optional
           );
+          
+          if (response['status'] == 200) {
+             if (response['cart_quantity'] != null) {
+                CommonMethods.cartCount = response['cart_quantity'].toString();
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.setString(StorageKeys.cartCount, CommonMethods.cartCount);
+             }
+          }
+
           await refreshCartSummary(_customerId, _accessToken);
+          await _fetchProfileCount(); // Force sync
       } catch (e) {
           _errorMessage = AppMessages.failureMsg;
       } finally {
@@ -262,13 +347,23 @@ class CheckoutProvider extends ChangeNotifier {
       _isLoading = true;
       notifyListeners();
       try {
-          await authRemoteDataSource.deleteCartItem(
+          final response = await authRemoteDataSource.deleteCartItem(
               accessToken: _accessToken,
               customerId: _customerId,
               productId: productId,
               brandId: brandId
           );
+          
+          if (response['status'] == 200) {
+             if (response['cart_quantity'] != null) {
+                CommonMethods.cartCount = response['cart_quantity'].toString();
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.setString(StorageKeys.cartCount, CommonMethods.cartCount);
+             }
+          }
+
           await refreshCartSummary(_customerId, _accessToken);
+          await _fetchProfileCount(); // Force sync
       } catch (e) {
           _errorMessage = AppMessages.failureMsg;
       } finally {
@@ -281,11 +376,19 @@ class CheckoutProvider extends ChangeNotifier {
       _isLoading = true;
       notifyListeners();
       try {
-          await authRemoteDataSource.clearCart(
+          final response = await authRemoteDataSource.clearCart(
               accessToken: _accessToken,
               customerId: _customerId,
           );
+          
+          if (response['status'] == 200) {
+              CommonMethods.cartCount = "0";
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.setString(StorageKeys.cartCount, "0");
+          }
+
           await refreshCartSummary(_customerId, _accessToken);
+          await _fetchProfileCount(); // Force sync
           // Redirection handled by UI observing empty cart or specific flag
           setStep(0); // Ensure on first step
       } catch (e) {
@@ -417,7 +520,6 @@ class CheckoutProvider extends ChangeNotifier {
       notifyListeners();
       try {
           final response = await authRemoteDataSource.checkCouponCode(_accessToken, _customerId, code);
-          // Note: checkCouponCode returns 200 even if invalid sometimes, need to check inner status
           // Assuming AuthRemoteDataSource returns Map
           if(response['status'] == 200) {
               await refreshCartSummary(_customerId, _accessToken);
@@ -426,7 +528,8 @@ class CheckoutProvider extends ChangeNotifier {
                notifyListeners();
               return true;
           } else {
-              _errorMessage = response['message'] ?? "Invalid Coupon";
+              // Prioritize 'error' field for specific message like "Invalid Coupon Code"
+              _errorMessage = response['error'] ?? response['message'] ?? "Invalid Coupon";
               _isLoading = false;
               notifyListeners();
               return false;
@@ -503,17 +606,31 @@ class CheckoutProvider extends ChangeNotifier {
   }
 
   bool validateAddressStep() {
-      if(isNewAddressChecked) {
-          return shipFirstNameController.text.isNotEmpty && 
-                 shipLastNameController.text.isNotEmpty &&
-                 shipStreetController.text.isNotEmpty &&
-                 shipCityController.text.isNotEmpty &&
-                 shipStateController.text.isNotEmpty &&
-                 shipPostCodeController.text.isNotEmpty &&
-                 shipPhoneController.text.isNotEmpty;
-      } else {
-          return billFirstNameController.text.isNotEmpty && billPhoneController.text.isNotEmpty; 
-      }
+    // Validate Billing Address (Always Required)
+    bool isBillingValid = billFirstNameController.text.isNotEmpty &&
+                          billLastNameController.text.isNotEmpty &&
+                          billStreetController.text.isNotEmpty &&
+                          billCityController.text.isNotEmpty &&
+                          billStateController.text.isNotEmpty &&
+                          billPostCodeController.text.isNotEmpty &&
+                          billPhoneController.text.isNotEmpty &&
+                          billEmailController.text.isNotEmpty;
+
+    if (!isBillingValid) return false;
+
+    // Validate Shipping Address (Only if "Different Address" is checked)
+    if(isNewAddressChecked) {
+        return shipFirstNameController.text.isNotEmpty &&
+               shipLastNameController.text.isNotEmpty &&
+               shipStreetController.text.isNotEmpty &&
+               shipCityController.text.isNotEmpty &&
+               shipStateController.text.isNotEmpty &&
+               shipPostCodeController.text.isNotEmpty &&
+               shipPhoneController.text.isNotEmpty &&
+               shipEmailController.text.isNotEmpty;
+    }
+    
+    return true;
   }
 
   bool validatePaymentStep() {

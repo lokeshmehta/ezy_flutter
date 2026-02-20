@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../data/models/cart_models.dart';
 import '../../../../core/constants/app_theme.dart';
-import '../../../../core/utils/common_methods.dart';
+import 'package:ezy_orders_flutter/core/utils/common_methods.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import '../../../../core/constants/url_api_key.dart';
+import '../../../widgets/custom_loader_widget.dart';
 
 class CartItemRefinedWidget extends StatelessWidget {
   final CartProduct item;
@@ -76,11 +79,7 @@ class CartItemRefinedWidget extends StatelessWidget {
                               height: 100.h,
                               margin: EdgeInsets.only(right: 10.w),
                               alignment: Alignment.center,
-                              child: Image.network(
-                                item.image ?? "",
-                                fit: BoxFit.contain,
-                                errorBuilder: (context, error, stackTrace) => Icon(Icons.image_not_supported, color: Colors.grey),
-                              ),
+                              child: _buildImage(item.image),
                             ),
                             
                             // Center Details
@@ -105,7 +104,7 @@ class CartItemRefinedWidget extends StatelessWidget {
                                       ),
                                    ],
                                    Text(
-                                     "AUD ${item.salePrice ?? "0.00"}",
+                                     "AUD ${(double.tryParse(item.salePrice ?? "0") ?? 0) > 0 ? item.salePrice : (item.normalPrice ?? "0.00")}",
                                       style: TextStyle(color: AppTheme.darkGrayColor, fontSize: 14.sp, fontWeight: FontWeight.bold), // Dark Grey or Black based on screenshot? Looks Grey/Black.
                                    ),
                                    
@@ -181,7 +180,7 @@ class CartItemRefinedWidget extends StatelessWidget {
                          child: Row(
                            children: [
                              Text("Ordered As : ", style: TextStyle(color: Colors.black, fontSize: 13.sp, fontWeight: FontWeight.bold)),
-                             Text(item.orderedAs!, style: TextStyle(color: Color(0xFF0038FF), fontSize: 13.sp, fontWeight: FontWeight.bold)),
+                             Text(item.orderedAs ?? item.soldAs ?? "Each", style: TextStyle(color: Color(0xFF0038FF), fontSize: 13.sp, fontWeight: FontWeight.bold)),
                            ],
                          ),
                        ),
@@ -198,5 +197,22 @@ class CartItemRefinedWidget extends StatelessWidget {
 
   Widget _buildHeader(BuildContext context) {
     return SizedBox.shrink(); 
+  }
+
+  Widget _buildImage(String? path) {
+    if (path == null || path.isEmpty) {
+      return Icon(Icons.image_not_supported, color: Colors.grey);
+    }
+    String finalUrl = path;
+    if (!path.startsWith("http")) {
+      finalUrl = "${UrlApiKey.mainUrl}$path";
+    }
+
+    return CachedNetworkImage(
+      imageUrl: finalUrl,
+      fit: BoxFit.contain,
+      placeholder: (context, url) => Center(child: CustomLoaderWidget(size: 30.w)),
+      errorWidget: (context, url, error) => Icon(Icons.broken_image, color: Colors.grey),
+    );
   }
 }

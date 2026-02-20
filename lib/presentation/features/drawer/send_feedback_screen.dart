@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 
 import '../../../core/constants/app_theme.dart';
 import '../../providers/dashboard_provider.dart';
-import '../dashboard/dashboard_screen.dart';
+import '../../widgets/custom_loader_widget.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../config/routes/app_routes.dart';
 
 
 class SendFeedbackScreen extends StatefulWidget {
@@ -83,11 +85,9 @@ class _SendFeedbackScreenState extends State<SendFeedbackScreen> {
              SnackBar(content: Text("Your feedback has been sent successfully")),
            );
            // Navigate back to Dashboard
-           Navigator.pushAndRemoveUntil(
-             context,
-             MaterialPageRoute(builder: (c) => const DashboardScreen()),
-             (route) => false
-           );
+           // Navigate back to Dashboard (MainScreen) to keep Bottom Nav
+           context.read<DashboardProvider>().setIndex(0);
+           context.go(AppRoutes.dashboard);
         }
       } else {
          if (mounted) {
@@ -119,40 +119,67 @@ class _SendFeedbackScreenState extends State<SendFeedbackScreen> {
           },
         ),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(20.w),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              _buildTextField("Name", _nameController, "Please enter name"),
-              SizedBox(height: 15.h),
-              _buildTextField("Email", _emailController, "Please enter email key", keyboardType: TextInputType.emailAddress),
-              SizedBox(height: 15.h),
-              _buildTextField("Mobile Number", _mobileController, "Please enter mobile number", keyboardType: TextInputType.phone),
-              SizedBox(height: 15.h),
-              _buildTextField("Subject", _subjectController, "Please enter subject"),
-              SizedBox(height: 15.h),
-              _buildTextField("Message", _messageController, "Please enter message", maxLines: 5),
-              SizedBox(height: 30.h),
-              SizedBox(
-                width: double.infinity,
-                height: 45.h,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.tealColor,
-                    minimumSize: Size(double.infinity, 45.h),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r)),
-                  ),
-                  onPressed: _isLoading ? null : _submit,
-                  child: _isLoading 
-                    ? SizedBox(width: 20.w, height: 20.w, child: CircularProgressIndicator(color: Colors.white))
-                    : Text("Submit", style: TextStyle(color: Colors.white, fontSize: 16.sp, fontWeight: FontWeight.bold)),
-                ),
-              )
-            ],
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            padding: EdgeInsets.all(20.w),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  _buildTextField("Name", _nameController, "Please enter name"),
+                  SizedBox(height: 15.h),
+                  _buildTextField("Email", _emailController, "Please enter email key", keyboardType: TextInputType.emailAddress),
+                  SizedBox(height: 15.h),
+                  _buildTextField("Mobile Number", _mobileController, "Please enter mobile number", keyboardType: TextInputType.phone),
+                  SizedBox(height: 15.h),
+                  _buildTextField("Subject", _subjectController, "Please enter subject"),
+                  SizedBox(height: 15.h),
+                  _buildTextField("Message", _messageController, "Please enter message", maxLines: 5),
+                  SizedBox(height: 30.h),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 45.h,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.tealColor,
+                        minimumSize: Size(double.infinity, 45.h),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r)),
+                      ),
+                      onPressed: _isLoading ? null : _submit,
+                      child: Text("Submit", style: TextStyle(color: Colors.white, fontSize: 16.sp, fontWeight: FontWeight.bold)),
+                    ),
+                  )
+                ],
+              ),
+            ),
           ),
-        ),
+          if (_isLoading)
+            Container(
+              color: Colors.black54,
+              child: Center(
+                child: SizedBox(
+                  width: 100.w,
+                  height: 100.w,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                       CustomLoaderWidget(size: 100.w),
+                       Text(
+                         "Please Wait",
+                         textAlign: TextAlign.center,
+                         style: TextStyle(
+                           color: AppTheme.primaryColor,
+                           fontSize: 13.sp,
+                           fontWeight: FontWeight.bold,
+                         ),
+                       ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

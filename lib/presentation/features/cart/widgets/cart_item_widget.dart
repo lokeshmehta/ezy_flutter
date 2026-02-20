@@ -8,6 +8,7 @@ import '../../../../core/utils/common_methods.dart';
 import '../../../../data/models/cart_models.dart';
 import '../../../providers/cart_provider.dart';
 import '../../../providers/dashboard_provider.dart';
+import '../../../widgets/custom_loader_widget.dart';
 
 class CartItemWidget extends StatelessWidget {
   final CartProduct item;
@@ -35,7 +36,7 @@ class CartItemWidget extends StatelessWidget {
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Container(
                   color: Colors.grey[200],
-                  child: const Center(child: CircularProgressIndicator()),
+                  child: Center(child: CustomLoaderWidget(size: 30.w)),
                 ),
                 errorWidget: (context, url, error) => const Icon(Icons.error),
               ),
@@ -48,11 +49,11 @@ class CartItemWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    item.title ?? "",
+                    CommonMethods.decodeHtmlEntities(item.title),
                     style: TextStyle(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.bold,
-                      color: AppTheme.textColor,
+                      color: AppTheme.primaryColor,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -70,7 +71,7 @@ class CartItemWidget extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        "\$${CommonMethods.checkNullempty(item.salePrice)}",
+                        "\$${(double.tryParse(item.salePrice ?? "0") ?? 0) > 0 ? item.salePrice : (item.normalPrice ?? "0.00")}",
                         style: TextStyle(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.bold,
@@ -79,7 +80,7 @@ class CartItemWidget extends StatelessWidget {
                       ),
                       SizedBox(width: 5.w),
                       Text(
-                        "/ ${item.orderedAs ?? 'Each'}",
+                        "/ ${item.orderedAs ?? item.soldAs ?? 'Each'}",
                         style: TextStyle(fontSize: 12.sp, color: Colors.grey),
                       ),
                     ],

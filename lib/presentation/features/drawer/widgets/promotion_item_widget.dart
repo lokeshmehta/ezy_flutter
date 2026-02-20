@@ -8,6 +8,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/product_list_provider.dart';
 import '../../products/products_list_screen.dart';
+import 'promotion_header.dart';
+import '../../../widgets/custom_loader_widget.dart';
 
 class PromotionItemWidget extends StatelessWidget {
   final PromotionsItem item;
@@ -61,7 +63,16 @@ class PromotionItemWidget extends StatelessWidget {
 
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const ProductsListScreen()),
+          MaterialPageRoute(
+            builder: (context) => ProductsListScreen(
+              pageTitle: "Promotions",
+              headerWidget: PromotionHeader(
+                imageUrl: item.image,
+                title: item.displayName ?? "",
+                dateRange: "${_formatDate(item.fromDate)} - ${_formatDate(item.toDate)}",
+              ),
+            ),
+          ),
         );
       },
       child: Card(
@@ -71,30 +82,30 @@ class PromotionItemWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(5.r)),
-              child: CachedNetworkImage(
-                imageUrl: imageUrl,
-                height: 180.h,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-                errorWidget: (context, url, error) => Container(
-                  height: 180.h,
-                  color: Colors.grey[200],
-                  child: Icon(Icons.image_not_supported, color: Colors.grey),
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(5.r)),
+                  child: CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    height: 180.h,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Center(child: CustomLoaderWidget(size: 30.w)),
+                    errorWidget: (context, url, error) => Container(
+                      height: 180.h,
+                      color: Colors.grey[200],
+                      child: Icon(Icons.image_not_supported, color: Colors.grey),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(10.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
+                Positioned(
+                  top: 10.h,
+                  left: 10.w,
+                  child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                     decoration: BoxDecoration(
-                      color: AppTheme.primaryColor, // Blue color commonly used
+                      color: Colors.orange,
                       borderRadius: BorderRadius.circular(4.r),
                     ),
                     child: Text(
@@ -106,16 +117,27 @@ class PromotionItemWidget extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(height: 8.h),
-                  Text(
-                    item.displayName ?? "",
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                ),
+              ],
+            ),
+            Padding(
+              padding: EdgeInsets.all(10.w),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      item.displayName ?? "",
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  SizedBox(height: 5.h),
+                  SizedBox(width: 8.w),
                   if (item.fromDate != null && item.toDate != null)
                     Text(
                       "${_formatDate(item.fromDate)} - ${_formatDate(item.toDate)}",

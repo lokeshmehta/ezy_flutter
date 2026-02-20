@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/app_theme.dart';
 import '../../../../core/constants/url_api_key.dart';
 import '../../../../core/network/image_cache_manager.dart';
+import '../../../../core/utils/common_methods.dart';
 import '../../../../data/models/home_models.dart';
 import '../../products/product_details_screen.dart';
 
@@ -45,7 +46,7 @@ class ProductItemWidget extends StatelessWidget {
     
     return Container(
       width: width,
-      margin: EdgeInsets.only(right: 10.w, bottom: 5.h),
+      margin: EdgeInsets.only(right: 6.w, bottom: 5.h),
       child: Card(
         elevation: 1,
         color: Colors.white,
@@ -107,13 +108,13 @@ class ProductItemWidget extends StatelessWidget {
                      // Status Badge (Top Left)
                      if (badgeLabel != null && badgeLabel!.isNotEmpty)
                        Positioned(
-                         top: 0,
-                         left: 0,
+                         top: 6.h,
+                         left: 2.w,
                          child: Container(
                            padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
                            decoration: BoxDecoration(
                              color: AppTheme.redColor,
-                             borderRadius: BorderRadius.only(bottomRight: Radius.circular(8.r)),
+                             borderRadius: BorderRadius.circular(4.r),
                            ),
                            child: Text(
                              badgeLabel!,
@@ -141,7 +142,7 @@ class ProductItemWidget extends StatelessWidget {
                 // Product Name
                 SizedBox(height: 2.h),
                 Text(
-                  item.title ?? item.brandName ?? "",
+                  CommonMethods.decodeHtmlEntities(item.title ?? item.brandName ?? ""),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(

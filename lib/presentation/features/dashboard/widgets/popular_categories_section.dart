@@ -42,7 +42,9 @@ class _PopularCategoriesSectionState
 
           if (response == null ||
               response.results == null ||
-              response.results!.isEmpty) return;
+              response.results!.isEmpty) {
+            return;
+          }
 
           final categories = response.results!
               .where((item) =>
@@ -104,7 +106,7 @@ class _PopularCategoriesSectionState
         if (categories.isEmpty) return const SizedBox.shrink();
 
         final totalPages = (categories.length / 2).ceil();
-        final double cardWidth = (1.sw / 2) - 25.w;
+        final double cardWidth = (1.sw / 2) - 14.w;
 
         return Column(
           children: [
@@ -132,7 +134,7 @@ class _PopularCategoriesSectionState
                   final secondIndex = firstIndex + 1;
 
                   return Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10.w),
+                    padding: EdgeInsets.symmetric(horizontal: 8.w),
                     child: Row(
                       children: [
                         Expanded(
@@ -163,7 +165,7 @@ class _PopularCategoriesSectionState
                             },
                           ),
                         ),
-                        SizedBox(width: 15.w),
+                        // Removed SizedBox(width: 15.w) to match Best Sellers spacing
                         Expanded(
                           child: secondIndex < categories.length
                               ? HomePromotionItemWidget(

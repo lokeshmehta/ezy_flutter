@@ -344,7 +344,7 @@ class AuthRemoteDataSource {
         'customer_id': customerId,
         'product_id': productId,
         'category_name': categoryName,
-        'category_ids': categoryIds,
+        'category_id': categoryIds,
       },
     );
     return response;
@@ -968,6 +968,21 @@ class AuthRemoteDataSource {
         'customer_id': customerId,
         'order_id': orderId,
         'email_id': emails, // "enterEmailsIdsTxt" in Android maps to email parameter usually
+      },
+    );
+    return response;
+  }
+  Future<Map<String, dynamic>> scanProduct({
+    required String accessToken,
+    required String customerId,
+    required String barcode,
+  }) async {
+    final response = await apiClient.post(
+      "${UrlApiKey.baseUrl}scan-product",
+      body: {
+        'access_token': accessToken,
+        'customer_id': customerId,
+        'barcode': barcode,
       },
     );
     return response;

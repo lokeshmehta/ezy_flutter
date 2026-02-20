@@ -9,6 +9,7 @@ import '../../../../data/models/home_models.dart';
 
 import '../../../providers/product_list_provider.dart';
 import '../../../providers/dashboard_provider.dart';
+import '../../../widgets/custom_loader_widget.dart';
 
 class ProductDetailsBottomSheet extends StatefulWidget {
   final ProductItem product;
@@ -152,7 +153,11 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
   Widget _buildProductImage() {
     // Simplified tag logic matching Android pdTagTxt
     String tagText = "";
-    if (widget.product.hasPromotion == "Yes") {
+    
+    // Priority: Label (Best Seller/Hot Selling) -> Promotion -> New Arrival
+    if (widget.product.label != null && widget.product.label!.isNotEmpty) {
+      tagText = widget.product.label!;
+    } else if (widget.product.hasPromotion == "Yes") {
       tagText = "Promotion";
     } else if (widget.product.qtyStatus == "New Arrival") {
       tagText = "New Arrival";
@@ -173,7 +178,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                 ? widget.product.image! 
                 : "${UrlApiKey.mainUrl}${widget.product.image}",
             fit: BoxFit.contain,
-            placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+            placeholder: (context, url) => Center(child: CustomLoaderWidget(size: 30.w)),
             errorWidget: (context, url, error) => const Icon(Icons.error),
           ),
         ),
@@ -184,7 +189,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 3.h),
               decoration: BoxDecoration(
-                color: Colors.red,
+                color: AppTheme.redColor, // Red stripe
                 borderRadius: BorderRadius.circular(3.r),
               ),
               child: Text(
@@ -198,13 +203,13 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
   }
 
   Widget _buildProductDetails(bool showSoldAs) {
+    // Match Dashboard Logic: Always show Unit Price
     double basePrice = double.tryParse(widget.product.price ?? "0.0") ?? 0.0;
     double basePromoPrice = double.tryParse(widget.product.promotionPrice ?? "0.0") ?? 0.0;
     
-    int qtyPerOuter = int.tryParse(widget.product.qtyPerOuter?.toString() ?? "1") ?? 1;
-    
-    double currentPrice = _selectedSoldAs == "Each" ? basePrice : (basePrice * qtyPerOuter);
-    double currentPromoPrice = _selectedSoldAs == "Each" ? basePromoPrice : (basePromoPrice * qtyPerOuter);
+    // In Dashboard, price is NOT multiplied by qtyPerOuter. It shows unit price.
+    double currentPrice = basePrice;
+    double currentPromoPrice = basePromoPrice;
     
     bool hasPromo = widget.product.hasPromotion == "Yes" && currentPromoPrice > 0;
 
@@ -213,25 +218,24 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
       children: [
         if (showSoldAs)
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.h),
+            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h), // Match Dashboard padding
             margin: EdgeInsets.only(bottom: 5.h),
-            width: double.infinity,
             decoration: BoxDecoration(
-              color: AppTheme.tealColor.withValues(alpha: 0.8), // Synchronized with tealcolor (Orange)
-              borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
+              color: AppTheme.secondaryColor, // Orange, matching Dashboard
+              borderRadius: BorderRadius.circular(0.r), // Match Dashboard (Square/small radius) - Dashboard uses 0.r or small
             ),
             child: Text(
               widget.product.soldAs == "Each" 
-                ? "Sold As: Each" 
-                : "Sold As: ${widget.product.soldAs} (${widget.product.qtyPerOuter} Units)",
-              textAlign: TextAlign.center,
+                ? "Each" // Dashboard shows "Each" or "Carton (X Units)"
+                : "${widget.product.soldAs} (${widget.product.qtyPerOuter} Units)",
+              textAlign: TextAlign.left,
               style: TextStyle(color: Colors.white, fontSize: 12.sp, fontWeight: FontWeight.bold),
             ),
           ),
         
         Text(
           widget.product.brandName ?? "",
-          style: TextStyle(color: Colors.grey[700], fontSize: 14.sp, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.grey[700], fontSize: 14.sp, fontWeight: FontWeight.w800),
         ),
         SizedBox(height: 2.h),
         Text(
@@ -245,38 +249,38 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
         
         // Pricing
         if (hasPromo) ...[
+          Text(
+            "AUD ${currentPrice.toStringAsFixed(2)}",
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: 13.sp,
+              decoration: TextDecoration.lineThrough,
+            ),
+          ),
           Row(
             children: [
-              Text(
-                "AUD ${currentPrice.toStringAsFixed(2)}",
-                style: TextStyle(
-                  color: AppTheme.primaryColor,
-                  fontSize: 15.sp,
-                  decoration: TextDecoration.lineThrough,
-                ),
+               Text(
+                "AUD ${currentPromoPrice.toStringAsFixed(2)}",
+                style: TextStyle(color: Colors.grey, fontSize: 15.sp, fontWeight: FontWeight.bold),
               ),
               SizedBox(width: 5.w),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 3.h),
+                padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
                 decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(3.r),
+                  color: AppTheme.redColor,
+                  borderRadius: BorderRadius.circular(2.r),
                 ),
                 child: Text(
-                  "${CommonMethods.findDiscount(currentPrice.toString(), currentPromoPrice.toString())}% Off",
-                  style: TextStyle(color: Colors.white, fontSize: 11.sp),
+                  "-${CommonMethods.findDiscount(currentPrice.toString(), currentPromoPrice.toString())}%",
+                  style: TextStyle(color: Colors.white, fontSize: 10.sp),
                 ),
               ),
             ],
           ),
-          Text(
-            "AUD ${currentPromoPrice.toStringAsFixed(2)}",
-            style: TextStyle(color: Colors.grey[700], fontSize: 15.sp),
-          ),
         ] else
           Text(
             "AUD ${currentPrice.toStringAsFixed(2)}",
-            style: TextStyle(color: AppTheme.primaryColor, fontSize: 15.sp),
+            style: TextStyle(color: AppTheme.primaryColor, fontSize: 15.sp, fontWeight: FontWeight.bold),
           ),
         
         SizedBox(height: 5.h),

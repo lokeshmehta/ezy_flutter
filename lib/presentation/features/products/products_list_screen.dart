@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_theme.dart';
-import '../../../core/constants/assets.dart';
 import '../../../core/utils/common_methods.dart';
-import '../../widgets/custom_loader_widget.dart';
 import '../../providers/product_list_provider.dart';
 import '../../providers/dashboard_provider.dart';
 import '../dashboard/widgets/wishlist_category_dialog.dart';
@@ -13,15 +11,20 @@ import './widgets/product_grid_item.dart';
 import './widgets/sort_dialog.dart';
 import './widgets/filter_dialog.dart';
 import './widgets/product_details_bottom_sheet.dart';
+import '../../widgets/custom_loader_widget.dart';
 
 class ProductsListScreen extends StatefulWidget {
   final String? supplierId;
   final String? backNav;
+  final String? pageTitle;
+  final Widget? headerWidget;
 
   const ProductsListScreen({
     super.key,
     this.supplierId,
     this.backNav,
+    this.pageTitle,
+    this.headerWidget,
   });
 
   @override
@@ -100,7 +103,7 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("Products",
+        title: Text(widget.pageTitle ?? "Products",
           style: TextStyle(
             color: AppTheme.primaryColor,
             fontWeight: FontWeight.bold
@@ -120,6 +123,7 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
       ),
       body: Column(
         children: [
+          if (widget.headerWidget != null) widget.headerWidget!,
           SizedBox(height: 12.h,),
 
           // Product Count Here
@@ -155,7 +159,7 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
             child: Consumer<ProductListProvider>(
               builder: (context, provider, child) {
                 if (provider.isLoading && provider.products.isEmpty) {
-                  return Center(child: CustomLoaderWidget(size: 40.w));
+                  return Center(child: CustomLoaderWidget(size: 50.w));
                 }
                 
                 if (provider.products.isEmpty && !provider.isLoading) {
@@ -383,7 +387,7 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
       itemBuilder: (context, index) {
         if (index == provider.products.length) {
           return Center(child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(8.0),
             child: CustomLoaderWidget(size: 30.w),
           ));
         }

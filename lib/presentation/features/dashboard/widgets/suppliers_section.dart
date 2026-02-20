@@ -116,7 +116,7 @@ class _SuppliersSectionState extends State<SuppliersSection> {
                   final secondIndex = firstIndex + 1;
 
                   return Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10.w),
+                    padding: EdgeInsets.symmetric(horizontal: 8.w),
                     child: Row(
                       children: [
                         Expanded(
@@ -129,7 +129,7 @@ class _SuppliersSectionState extends State<SuppliersSection> {
                                     ?.toString(),
                           ),
                         ),
-                        SizedBox(width: 15.w),
+
                         Expanded(
                           child: secondIndex < suppliers.length
                               ? SupplierItemWidget(

@@ -365,14 +365,27 @@ class ProductListProvider extends ChangeNotifier {
 
   void onFilterClear() {
     CommonMethods.supplierIDs = CommonMethods.firstSuppliers;
+    
+    // FIX: Preserve Category ID if we are in Popular Category mode
+    // FIX: Preserve Category ID (Always restore from firstCatIds)
     CommonMethods.categoryIDs = CommonMethods.firstCatIds;
+    
     CommonMethods.tagIDs = CommonMethods.firstTags;
-    CommonMethods.groupIDs = CommonMethods.firstGroupids;
-    CommonMethods.selecetedProducts = CommonMethods.firstSelProds;
+    
+    // FIX: Preserve Group/SelectedProducts if we are in Banners/Promotion mode
+    if (CommonMethods.productsBack != "Banners") {
+        CommonMethods.groupIDs = CommonMethods.firstGroupids;
+        CommonMethods.selecetedProducts = CommonMethods.firstSelProds;
+    }
 
     _searchText = "";
     _pageCount = 1;
-    fetchAllFilterOptions("1");
+    
+    if(CommonMethods.productsBack == "dashboard_popcat") {
+       fetchAllFilterOptionsPopular();
+    } else {
+       fetchAllFilterOptions("1");
+    }
   }
 
   void onProductAvaSelected(String selection) {
@@ -382,14 +395,28 @@ class ProductListProvider extends ChangeNotifier {
     } else {
       CommonMethods.filterSelected = selection;
       CommonMethods.supplierIDs = CommonMethods.firstSuppliers;
+      
+      // FIX: Preserve Category ID if we are in Popular Category mode
+      // FIX: Preserve Category ID (Always restore from firstCatIds)
       CommonMethods.categoryIDs = CommonMethods.firstCatIds;
+      
       CommonMethods.tagIDs = CommonMethods.firstTags;
-      CommonMethods.groupIDs = CommonMethods.firstGroupids;
-      CommonMethods.selecetedProducts = CommonMethods.firstSelProds;
+      
+      // FIX: Preserve Group/SelectedProducts if we are in Banners/Promotion mode
+      if (CommonMethods.productsBack != "Banners") {
+          CommonMethods.groupIDs = CommonMethods.firstGroupids;
+          CommonMethods.selecetedProducts = CommonMethods.firstSelProds;
+      }
 
       _searchText = "";
       _pageCount = 1;
-      fetchAllFilterOptions("show");
+      
+      // Route to correct fetch method based on mode
+      if (CommonMethods.productsBack == "dashboard_popcat") {
+        fetchAllFilterOptionsPopular();
+      } else {
+        fetchAllFilterOptions("show");
+      }
     }
     notifyListeners();
   }
@@ -611,25 +638,33 @@ class ProductListProvider extends ChangeNotifier {
 
   void setCategory(String categoryId) {
     CommonMethods.categoryIDs = categoryId;
+    CommonMethods.firstCatIds = categoryId; // FIX: Set initial state for this mode
     CommonMethods.productsBack = "dashboard_popcat";
+    fetchAllFilterOptionsPopular();
     notifyListeners();
   }
 
   void setSupplier(String supplierId) {
     CommonMethods.supplierIDs = supplierId;
+    CommonMethods.firstSuppliers = supplierId; // FIX: Set initial state for this mode
     CommonMethods.productsBack = "suppliers";
+    CommonMethods.groupIDs = "";
+    CommonMethods.selecetedProducts = "";
+    fetchAllFilterOptions("1");
     notifyListeners();
   }
 
   void setGroup(String groupId) {
     CommonMethods.groupIDs = groupId;
     CommonMethods.productsBack = "Banners";
+    fetchAllFilterOptions("1");
     notifyListeners();
   }
 
   void setSelectedProducts(String productIds) {
     CommonMethods.selecetedProducts = productIds;
     CommonMethods.productsBack = "Banners";
+    fetchAllFilterOptions("1");
     notifyListeners();
   }
 }

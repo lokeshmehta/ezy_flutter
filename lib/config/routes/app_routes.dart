@@ -17,4 +17,6 @@ class AppRoutes {
   static const String orderSuccess = '/order-success';
   static const String productDetails = '/product-details';
   static const String notifications = '/notifications';
+  static const String scan = '/scan';
+  static const String productsList = '/products-list';
 }

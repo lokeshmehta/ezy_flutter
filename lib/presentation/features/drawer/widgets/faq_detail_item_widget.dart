@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:html/parser.dart';
+import 'package:flutter_html/flutter_html.dart';
+import '../../../../core/utils/common_methods.dart';
 
 // Note: flutter_html is good for parsing HTML links in answers. 
 // If not available, use simple parsing or text. 
@@ -24,11 +25,7 @@ class FAQDetailItemWidget extends StatelessWidget {
     required this.onTap,
   });
 
-  String _parseHtmlString(String htmlString) {
-    if (htmlString.isEmpty) return "";
-    final document = parse(htmlString);
-    return document.body?.text ?? htmlString;
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -47,13 +44,17 @@ class FAQDetailItemWidget extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: Text(
-                      _parseHtmlString(question),
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87,
-                      ),
+                    child: Html(
+                      data: CommonMethods.decodeHtmlEntities(question),
+                      style: {
+                        "body": Style(
+                          fontSize: FontSize(14.sp),
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                          margin: Margins.zero,
+                          padding: HtmlPaddings.zero,
+                        ),
+                      },
                     ),
                   ),
                   Icon(
@@ -68,13 +69,17 @@ class FAQDetailItemWidget extends StatelessWidget {
                 SizedBox(height: 10.h),
                 // Using selection area/text span logic if needed
                 // For now just text.
-                Text(
-                  _parseHtmlString(answer),
-                  style: TextStyle(
-                    fontSize: 13.sp,
-                    color: Colors.grey[700],
-                    height: 1.4,
-                  ),
+                Html(
+                  data: CommonMethods.decodeHtmlEntities(answer),
+                  style: {
+                    "body": Style(
+                      fontSize: FontSize(13.sp),
+                      color: Colors.grey[700],
+                      lineHeight: LineHeight(1.4),
+                      margin: Margins.zero,
+                      padding: HtmlPaddings.zero,
+                    ),
+                  },
                 ),
               ]
             ],

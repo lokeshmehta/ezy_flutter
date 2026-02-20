@@ -38,8 +38,14 @@ class CommonMethods {
 
   static String findDiscount(String? price, String? promoPrice) {
     if (price == null || promoPrice == null) return "0";
-    final priceVal = double.tryParse(price) ?? 0.0;
-    final promoVal = double.tryParse(promoPrice) ?? 0.0;
+    
+    // Strip everything except digits and dots
+    String cleanPrice = price.replaceAll(RegExp(r'[^0-9.]'), '');
+    String cleanPromo = promoPrice.replaceAll(RegExp(r'[^0-9.]'), '');
+
+    final priceVal = double.tryParse(cleanPrice) ?? 0.0;
+    final promoVal = double.tryParse(cleanPromo) ?? 0.0;
+    
     if (priceVal <= 0 || promoVal <= 0 || promoVal >= priceVal) return "0";
     final discount = ((priceVal - promoVal) / priceVal) * 100;
     return discount.toStringAsFixed(0);
@@ -49,5 +55,16 @@ class CommonMethods {
       return "";
     }
     return value;
+  }
+
+  static String decodeHtmlEntities(String? text) {
+    if (text == null) return "";
+    return text
+      .replaceAll("&amp;", "&")
+      .replaceAll("&lt;", "<")
+      .replaceAll("&gt;", ">")
+      .replaceAll("&quot;", "\"")
+      .replaceAll("&apos;", "'")
+      .replaceAll("&#39;", "'");
   }
 }

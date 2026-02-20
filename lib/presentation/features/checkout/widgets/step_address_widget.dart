@@ -18,102 +18,123 @@ class _StepAddressWidgetState extends State<StepAddressWidget> {
   Widget build(BuildContext context) {
     final provider = context.watch<CheckoutProvider>();
 
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(16.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildSectionTitle("Billing Address"),
-          SizedBox(height: 10.h),
-          _buildTextField(provider.billFirstNameController, "First Name *"),
-          _buildTextField(provider.billLastNameController, "Last Name *"),
-          _buildTextField(provider.billStreetController, "Address 1 *"),
-          _buildTextField(provider.billStreet2Controller, "Address 2"),
-          _buildTextField(provider.billCityController, "City / Suburb *"),
-          _buildTextField(provider.billStateController, "State / Province *"),
-          _buildTextField(provider.billPostCodeController, "Zip / Postal Code *"),
-          _buildTextField(provider.billPhoneController, "Phone Number *"),
-          _buildTextField(provider.billEmailController, "Email Address *", keyboardType: TextInputType.emailAddress),
+    return Column(
+      children: [
+        // Scrollable Form Content
+        Expanded(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(16.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSectionTitle("Billing Details"),
+                SizedBox(height: 15.h),
+                _buildLabelAndField(provider.billFirstNameController, "First Name *", "Kamlesh"),
+                _buildLabelAndField(provider.billLastNameController, "Last Name *", "jangid"),
+                _buildLabelAndField(provider.billStreetController, "Street Address *", "Enter Your House number and street name"),
+                _buildLabelAndField(provider.billStreet2Controller, "", "Enter Your Apartment, suite, unit etc.."), // No label for 2nd line in screenshot usually? Or maybe hidden. Assuming screenshot shows blank label or just box. Actually 2nd box has hint. I'll pass empty label or manage spacing.
+                // Screenshot shows "Street Address *" then two boxes. 
+                // Let's handle this: The first call handles the label. The second just the box.
+                // But my helper does label + box. 
+                // Let's make label optional.
+                
+                _buildLabelAndField(provider.billCityController, "Town / City *", "Enter Your Town / City"),
+                _buildLabelAndField(provider.billStateController, "State / Country *", "Enter Your State / Country"),
+                _buildLabelAndField(provider.billPostCodeController, "Postcode / ZIP *", "Enter Your Postcode / ZIP"),
+                _buildLabelAndField(provider.billPhoneController, "Phone *", "9012345678", keyboardType: TextInputType.phone),
+                _buildLabelAndField(provider.billEmailController, "Email Address *", "Enter Your Email", keyboardType: TextInputType.emailAddress),
 
-          SizedBox(height: 20.h),
-          Row(
-            children: [
-              Checkbox(
-                value: provider.isNewAddressChecked,
-                onChanged: (val) {
-                  provider.toggleNewAddress(val ?? false);
-                },
-                activeColor: Colors.teal,
-              ),
-              Text(
-                "Ship to a different address?",
-                style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.normal),
+                SizedBox(height: 10.h),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: provider.isNewAddressChecked,
+                      onChanged: (val) {
+                        provider.toggleNewAddress(val ?? false);
+                      },
+                      activeColor: Colors.teal,
+                    ),
+                    Text(
+                      "Ship to a different address?",
+                      style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.normal),
+                    ),
+                  ],
+                ),
+
+                if (provider.isNewAddressChecked) ...[
+                  SizedBox(height: 15.h),
+                  _buildSectionTitle("Shipping Details"),
+                  SizedBox(height: 15.h),
+                  
+                  // Saved Addresses Dropdown
+                  if (provider.addressList.isNotEmpty)
+                    Container(
+                      margin: EdgeInsets.only(bottom: 15.h),
+                      padding: EdgeInsets.symmetric(horizontal: 10.w),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(5.r),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<int>(
+                          isExpanded: true,
+                          value: provider.selectedAddressIndex,
+                          items: [
+                            DropdownMenuItem(
+                              value: 0,
+                              child: Text("Choose Shipping Address *"),
+                            ),
+                            ...List.generate(provider.addressList.length, (index) {
+                              final addr = provider.addressList[index];
+                              return DropdownMenuItem(
+                                value: index + 1,
+                                child: Text(
+                                  "${addr.firstName} ${addr.lastName}, ${addr.street}...",
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              );
+                            }),
+                          ],
+                          onChanged: (val) {
+                            if (val != null) {
+                              provider.onAddressSelected(val);
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+
+                  _buildLabelAndField(provider.shipFirstNameController, "First Name *", "First Name"),
+                  _buildLabelAndField(provider.shipLastNameController, "Last Name *", "Last Name"),
+                  _buildLabelAndField(provider.shipStreetController, "Street Address *", "Enter Your House number and street name"),
+                  _buildLabelAndField(provider.shipStreet2Controller, "", "Enter Your Apartment, suite, unit etc.."),
+                  _buildLabelAndField(provider.shipCityController, "Town / City *", "Enter Your Town / City"),
+                  _buildLabelAndField(provider.shipStateController, "State / Country *", "Enter Your State / Country"),
+                  _buildLabelAndField(provider.shipPostCodeController, "Postcode / ZIP *", "Enter Your Postcode / ZIP"),
+                  _buildLabelAndField(provider.shipPhoneController, "Phone *", "Phone"),
+                  _buildLabelAndField(provider.shipEmailController, "Email Address *", "Email Address", keyboardType: TextInputType.emailAddress),
+                ],
+                
+                SizedBox(height: 30.h),
+              ],
+            ),
+          ),
+        ),
+
+        // Sticky Bottom Navigation (Shadow + Buttons)
+        Container(
+          padding: EdgeInsets.all(16.w),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.3),
+                blurRadius: 10,
+                offset: Offset(0, -3),
               ),
             ],
           ),
-
-          if (provider.isNewAddressChecked) ...[
-            SizedBox(height: 10.h),
-            _buildSectionTitle("Shipping Address"),
-            SizedBox(height: 10.h),
-            
-            // Saved Addresses Dropdown
-            if (provider.addressList.isNotEmpty)
-              Container(
-                margin: EdgeInsets.only(bottom: 15.h),
-                padding: EdgeInsets.symmetric(horizontal: 10.w),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(5.r),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<int>(
-                    isExpanded: true,
-                    value: provider.selectedAddressIndex,
-                    items: [
-                      DropdownMenuItem(
-                        value: 0,
-                        child: Text("Choose Shipping Address *"),
-                      ),
-                      ...List.generate(provider.addressList.length, (index) {
-                        final addr = provider.addressList[index];
-                        return DropdownMenuItem(
-                          value: index + 1,
-                          child: Text(
-                            "${addr.firstName} ${addr.lastName}, ${addr.street}...",
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        );
-                      }),
-                    ],
-                    onChanged: (val) {
-                      if (val != null) {
-                        provider.onAddressSelected(val);
-                      }
-                    },
-                  ),
-                ),
-              ),
-
-            _buildTextField(provider.shipFirstNameController, "First Name *"),
-            _buildTextField(provider.shipLastNameController, "Last Name *"),
-            _buildTextField(provider.shipStreetController, "Address 1 *"),
-            _buildTextField(provider.shipStreet2Controller, "Address 2"),
-            _buildTextField(provider.shipCityController, "City / Suburb *"),
-            _buildTextField(provider.shipStateController, "State / Province *"),
-            _buildTextField(provider.shipPostCodeController, "Zip / Postal Code *"),
-            _buildTextField(provider.shipPhoneController, "Phone Number *"),
-            _buildTextField(provider.shipEmailController, "Email Address *", keyboardType: TextInputType.emailAddress),
-          ],
-          
-
-          SizedBox(height: 30.h),
-          
-
-          SizedBox(height: 30.h),
-          
-          // Navigation Buttons (id_next_back_layout parity)
-          Row(
+          child: Row(
             children: [
                // Back Button
                Expanded(
@@ -124,21 +145,27 @@ class _StepAddressWidgetState extends State<StepAddressWidget> {
                    child: Container(
                      height: 45.h,
                      decoration: BoxDecoration(
-                       color: AppTheme.tealColor, // Filled Teal
-                       borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r),
+                       color: Color(0xFFF5A623), // Orange/Yellow from screenshot
+                       borderRadius: BorderRadius.circular(5.r),
                      ),
                      child: Row(
                        mainAxisAlignment: MainAxisAlignment.center,
                        children: [
                          Icon(Icons.arrow_back_ios, color: Colors.white, size: 16.sp),
-                         SizedBox(width: 8.w),
-                         Text("Back", style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: Colors.white)),
+                         SizedBox(width: 5.w),
+                         Text("Back", style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold, color: Colors.white)),
                        ],
                      ),
                    ),
                  ),
                ),
-               SizedBox(width: 15.w),
+               
+               // 2/3 Indicator
+               Expanded(
+                 child: Center(
+                   child: Text("2/3", style: TextStyle(color: Color(0xFF0038FF), fontSize: 16.sp, fontWeight: FontWeight.bold)),
+                 ),
+               ),
                
                // Next Button
                Expanded(
@@ -153,14 +180,14 @@ class _StepAddressWidgetState extends State<StepAddressWidget> {
                    child: Container(
                      height: 45.h,
                      decoration: BoxDecoration(
-                       color: AppTheme.tealColor,
-                       borderRadius: BorderRadius.circular(AppTheme.authButtonRadius.r),
+                       color: Color(0xFFF5A623), // Orange/Yellow
+                       borderRadius: BorderRadius.circular(5.r),
                      ),
                      child: Row(
                        mainAxisAlignment: MainAxisAlignment.center,
                        children: [
-                         Text("Next", style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: Colors.white)),
-                         SizedBox(width: 8.w),
+                         Text("Next", style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold, color: Colors.white)),
+                         SizedBox(width: 5.w),
                          Icon(Icons.arrow_forward_ios, color: Colors.white, size: 16.sp),
                        ],
                      ),
@@ -169,10 +196,8 @@ class _StepAddressWidgetState extends State<StepAddressWidget> {
                ),
             ],
           ),
-          
-          SizedBox(height: 30.h), 
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -180,33 +205,54 @@ class _StepAddressWidgetState extends State<StepAddressWidget> {
     return Text(
       title,
       style: TextStyle(
-        fontSize: 18.sp,
+        fontSize: 16.sp,
         fontWeight: FontWeight.bold,
-        color: Colors.black87,
+        color: Color(0xFF0038FF), // Blue color from screenshot
       ),
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String hint, {TextInputType keyboardType = TextInputType.text}) {
+  Widget _buildLabelAndField(TextEditingController controller, String label, String hint, {TextInputType keyboardType = TextInputType.text}) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 12.h),
-      child: TextFormField(
-        controller: controller,
-        keyboardType: keyboardType,
-        style: TextStyle(fontSize: 14.sp),
-        decoration: InputDecoration(
-          labelText: hint,
-          floatingLabelBehavior: FloatingLabelBehavior.auto,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
-            borderSide: BorderSide(color: Colors.grey.shade300),
+      padding: EdgeInsets.only(bottom: 15.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (label.isNotEmpty) ...[
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF0038FF), // Blueish Label
+              ),
+            ),
+            SizedBox(height: 8.h),
+          ],
+          TextFormField(
+            controller: controller,
+            keyboardType: keyboardType,
+            style: TextStyle(fontSize: 14.sp, color: Colors.black),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13.sp),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(5.r),
+                borderSide: BorderSide(color: Colors.grey.shade400),
+              ),
+              enabledBorder: OutlineInputBorder(
+                 borderRadius: BorderRadius.circular(5.r),
+                 borderSide: BorderSide(color: Colors.grey.shade400),
+              ),
+              focusedBorder: OutlineInputBorder(
+                 borderRadius: BorderRadius.circular(5.r),
+                 borderSide: BorderSide(color: Color(0xFF0038FF), width: 1.5),
+              ),
+              contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+              isDense: true,
+            ),
           ),
-          enabledBorder: OutlineInputBorder(
-             borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
-             borderSide: BorderSide(color: Colors.grey.shade300),
-          ),
-          contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-        ),
+        ],
       ),
     );
   }

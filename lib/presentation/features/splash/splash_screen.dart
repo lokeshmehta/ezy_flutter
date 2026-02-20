@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../core/constants/assets.dart';
 import '../../providers/splash_provider.dart';
+import '../../widgets/custom_loader_widget.dart';
 
 
 class SplashScreen extends StatefulWidget {
@@ -41,7 +42,7 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
             ),
             SizedBox(height: 20.h),
-            const CircularProgressIndicator(),
+            CustomLoaderWidget(size: 50.w),
           ],
         ),
       ),

@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/app_theme.dart';
 import '../../../../core/constants/url_api_key.dart';
 import '../../../../core/network/image_cache_manager.dart';
+import '../../../../core/utils/common_methods.dart';
 import '../../../../data/models/home_models.dart';
 import '../../products/product_details_screen.dart';
 
@@ -101,7 +102,7 @@ class WishlistItemWidget extends StatelessWidget {
                          crossAxisAlignment: CrossAxisAlignment.start,
                          children: [
                             Text(
-                              item.brandName ?? "",
+                              CommonMethods.decodeHtmlEntities(item.brandName),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(color: Colors.grey, fontSize: 12.sp,
@@ -110,7 +111,7 @@ class WishlistItemWidget extends StatelessWidget {
                             ),
                             SizedBox(height: 2.h),
                             Text(
-                              item.title ?? "",
+                              CommonMethods.decodeHtmlEntities(item.title),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(

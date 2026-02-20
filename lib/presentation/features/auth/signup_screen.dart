@@ -6,6 +6,7 @@ import '../../providers/signup_provider.dart';
 import '../../../core/constants/app_theme.dart';
 import '../../../config/routes/app_routes.dart';
 import '../../../core/constants/app_messages.dart';
+import '../../widgets/custom_loader_widget.dart';
 
 
 class SignUpScreen extends StatelessWidget {
@@ -16,8 +17,10 @@ class SignUpScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppTheme.primaryColor, // @color/blue
       body: SafeArea(
-        child: Column(
+        child: Stack(
           children: [
+            Column(
+              children: [
             Expanded(
               child: Container(
                 width: double.infinity,
@@ -183,9 +186,7 @@ class SignUpScreen extends StatelessWidget {
                                                   minimumSize: Size(double.infinity, 45.h),
                                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.authButtonRadius)),
                                                 ),
-                                                child: provider.isLoading
-                                                    ? const CircularProgressIndicator(color: Colors.white)
-                                                    : Text(
+                                                child: Text(
                                                         "Submit", // @string/submit
                                                         style: TextStyle(
                                                           color: Colors.white,
@@ -243,6 +244,41 @@ class SignUpScreen extends StatelessWidget {
                    ],
                 ),
               ),
+            ),
+            ],
+        ),
+            // Loading Overlay
+            // Loading Overlay
+            Consumer<SignUpProvider>(
+              builder: (context, provider, child) {
+                if (provider.isLoading) {
+                  return Container(
+                    color: Colors.black54,
+                    child: Center(
+                      child: SizedBox(
+                        width: 100.w,
+                        height: 100.w,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                             CustomLoaderWidget(size: 100.w),
+                             Text(
+                               "Please Wait",
+                               textAlign: TextAlign.center,
+                               style: TextStyle(
+                                 color: AppTheme.primaryColor,
+                                 fontSize: 13.sp,
+                                 fontWeight: FontWeight.bold,
+                               ),
+                             ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }
+                return const SizedBox.shrink();
+              },
             ),
           ],
         ),

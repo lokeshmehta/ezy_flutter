@@ -1,13 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ezy_orders_flutter/core/constants/app_theme.dart';
 import 'package:ezy_orders_flutter/core/constants/url_api_key.dart';
+import '../../../widgets/custom_loader_widget.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../config/routes/app_routes.dart';
+import '../../../../core/utils/common_methods.dart';
 import '../../../providers/product_list_provider.dart';
-import '../../../providers/dashboard_provider.dart';
-import '../../../widgets/custom_loader_widget.dart';
+
 
 class SupplierItemWidget extends StatelessWidget {
   final String? image;
@@ -26,7 +29,7 @@ class SupplierItemWidget extends StatelessWidget {
     // Width calculation logic from Android:
     // double buttonWidth = width / 2;
     // LayoutParams(buttonWidth - 40, wrap_content)
-    double itemWidth = (1.sw / 2) - 25.w;
+    double itemWidth = (1.sw / 2) - 14.w;
 
     return GestureDetector(
       onTap: () {
@@ -36,12 +39,18 @@ class SupplierItemWidget extends StatelessWidget {
           productProvider.clearFilters();
           productProvider.setSupplier(brandId!);
           
-          context.read<DashboardProvider>().setIndex(1);
+          // context.read<DashboardProvider>().setIndex(1);
+          
+          context.push(AppRoutes.productsList, extra: {
+             'supplierId': brandId,
+             'backNav': 'suppliers',
+             'pageTitle': brandName ?? "Products"
+          });
         }
       },
         child: Container(
         width: itemWidth,
-        margin: EdgeInsets.only(right: 10.w ,
+        margin: EdgeInsets.only(right: 6.w,
           bottom: 6.h,
         ),
         decoration: BoxDecoration(
@@ -75,7 +84,7 @@ class SupplierItemWidget extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 6.h),
               child: Text(
-                brandName ?? "",
+                CommonMethods.decodeHtmlEntities(brandName),
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -112,7 +121,7 @@ class SupplierItemWidget extends StatelessWidget {
         child: SizedBox(
           width: 20.w,
           height: 20.w,
-          child: CustomLoaderWidget(size: 20.w),
+          child: Center(child: CustomLoaderWidget(size: 30.w)),
         ),
       ),
       errorWidget: (context, url, error) => Icon(Icons.error, size: 24.sp),

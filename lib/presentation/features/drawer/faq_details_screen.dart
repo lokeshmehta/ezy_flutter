@@ -1,11 +1,13 @@
 import 'package:ezy_orders_flutter/presentation/features/drawer/widgets/faq_detail_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:html/parser.dart';
+
+import '../../widgets/custom_loader_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../../../config/theme/app_theme.dart';
 import '../../providers/dashboard_provider.dart';
+import '../../../core/utils/common_methods.dart';
 
 
 class FAQDetailsScreen extends StatefulWidget {
@@ -60,11 +62,7 @@ class _FAQDetailsScreenState extends State<FAQDetailsScreen> {
     }
   }
 
-  String _parseHtmlTitle(String htmlString) {
-      if (htmlString.isEmpty) return "";
-      final document = parse(htmlString);
-      return document.body?.text ?? htmlString;
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +70,7 @@ class _FAQDetailsScreenState extends State<FAQDetailsScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
-          _parseHtmlTitle(widget.categoryName),
+          CommonMethods.decodeHtmlEntities(widget.categoryName),
           style: TextStyle(color: Colors.white, fontSize: 18.sp),
         ),
         backgroundColor: AppTheme.primaryColor,
@@ -84,56 +82,92 @@ class _FAQDetailsScreenState extends State<FAQDetailsScreen> {
           },
         ),
       ),
-      body: Consumer<DashboardProvider>(
-        builder: (context, provider, child) {
-          if (provider.isFetchingDrawerData && provider.faqDetailsResponse == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          final details = provider.faqDetailsResponse?.results;
-
-          if (details == null || details.isEmpty) {
-             // Android shows "No Data Found" text
-            return Center(
-              child: Text(
-                "No Details Found",
-                style: TextStyle(fontSize: 16.sp, color: Colors.grey),
-              ),
-            );
-          }
-
-          return ListView.builder(
-            controller: _scrollController,
-            padding: EdgeInsets.symmetric(vertical: 10.h),
-            itemCount: details.length + (provider.isFetchingDrawerData ? 1 : 0),
-            itemBuilder: (context, index) {
-              if (index == details.length) {
-                return const Center(child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: CircularProgressIndicator(),
-                ));
+      body: Stack(
+        children: [
+          Consumer<DashboardProvider>(
+            builder: (context, provider, child) {
+              if (provider.isFetchingDrawerData && provider.faqDetailsResponse == null) {
+                return const SizedBox.shrink(); // Overlay handles it
               }
 
-              final item = details[index];
-              final isExpanded = _expandedIndex == index;
+              final details = provider.faqDetailsResponse?.results;
 
-              return FAQDetailItemWidget(
-                question: item.name ?? "",
-                answer: item.description ?? "",
-                isExpanded: isExpanded,
-                onTap: () {
-                  setState(() {
-                    if (_expandedIndex == index) {
-                      _expandedIndex = -1; // Collapse
-                    } else {
-                      _expandedIndex = index; // Expand
-                    }
-                  });
+              if (details == null || details.isEmpty) {
+                 // Android shows "No Data Found" text
+                return Center(
+                  child: Text(
+                    "No Details Found",
+                    style: TextStyle(fontSize: 16.sp, color: Colors.grey),
+                  ),
+                );
+              }
+
+              return ListView.builder(
+                controller: _scrollController,
+                padding: EdgeInsets.symmetric(vertical: 10.h),
+                itemCount: details.length + (provider.isFetchingDrawerData ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (index == details.length) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Center(child: CustomLoaderWidget(size: 30.w)),
+                    );
+                  }
+
+                  final item = details[index];
+                  final isExpanded = _expandedIndex == index;
+
+                  return FAQDetailItemWidget(
+                    question: item.name ?? "",
+                    answer: item.description ?? "",
+                    isExpanded: isExpanded,
+                    onTap: () {
+                      setState(() {
+                        if (_expandedIndex == index) {
+                          _expandedIndex = -1; // Collapse
+                        } else {
+                          _expandedIndex = index; // Expand
+                        }
+                      });
+                    },
+                  );
                 },
               );
             },
-          );
-        },
+          ),
+          Consumer<DashboardProvider>(
+             builder: (context, provider, child) {
+                // Initial Load or Pagination Load on empty list (should be covered by initial load condition)
+                if (provider.isFetchingDrawerData && provider.faqDetailsResponse == null) {
+                   return Container(
+                      color: Colors.black54,
+                      child: Center(
+                        child: SizedBox(
+                          width: 100.w,
+                          height: 100.w,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                               CustomLoaderWidget(size: 100.w),
+                               Text(
+                                 "Please Wait",
+                                 textAlign: TextAlign.center,
+                                 style: TextStyle(
+                                   color: AppTheme.primaryColor,
+                                   fontSize: 13.sp,
+                                   fontWeight: FontWeight.bold,
+                                 ),
+                               ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                }
+                return const SizedBox.shrink();
+             },
+          ),
+        ],
       ),
     );
   }
