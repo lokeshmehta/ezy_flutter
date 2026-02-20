@@ -195,14 +195,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> with Single
               padding: EdgeInsets.only(top: 5.h),
               child: Text(
                 CommonMethods.decodeHtmlEntities(product.shortDescription),
-                style: TextStyle(color: Colors.grey[600], fontSize: 14.sp),
+                style: TextStyle(color: AppTheme.darkGrayColor, fontSize: 14.sp),
               ),
             ),
           // Brand
           SizedBox(height: 5.h),
           Text(
             CommonMethods.decodeHtmlEntities(product.brandName),
-            style: TextStyle(color: Colors.grey[500], fontSize: 14.sp),
+            style: TextStyle(color: AppTheme.darkGrayColor, fontSize: 14.sp),
           ),
           SizedBox(height: 10.h),
           // Pricing
@@ -211,13 +211,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> with Single
               if (hasPromotion) ...[
                 Text(
                   _formatPrice(product.promotionPrice),
-                  style: TextStyle(color: Colors.grey[800], fontSize: 18.sp, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: AppTheme.primaryColor, fontSize: 18.sp, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(width: 10.w),
                 Text(
                    _formatPrice(product.price),
                    style: TextStyle(
-                     color: AppTheme.primaryColor, 
+                     color: AppTheme.darkerGrayColor, 
                      fontSize: 16.sp, 
                      decoration: TextDecoration.lineThrough
                    ),
@@ -237,7 +237,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> with Single
               ] else
                 Text(
                   _formatPrice(product.price),
-                  style: TextStyle(color: Colors.grey[800], fontSize: 18.sp, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: AppTheme.darkerGrayColor, fontSize: 18.sp, fontWeight: FontWeight.bold),
                 ),
             ],
           ),
@@ -510,7 +510,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> with Single
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label, style: TextStyle(color: AppTheme.primaryColor, fontSize: 14.sp , fontWeight: FontWeight.w700)),
-          Text(CommonMethods.decodeHtmlEntities(value), style: TextStyle(color: Colors.grey[700], fontSize: 14.sp)),
+          Text(CommonMethods.decodeHtmlEntities(value), style: TextStyle(color: AppTheme.darkerGrayColor, fontSize: 14.sp)),
         ],
       ),
     );
@@ -753,18 +753,18 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> with Single
                    child: Column(
                      crossAxisAlignment: CrossAxisAlignment.start,
                      children: [
-                       Text(item.brandName ?? "", style: TextStyle(color: Colors.black54, fontSize: 11.sp, fontWeight: FontWeight.w800), maxLines: 1),
-                       Text(item.title ?? "", style: TextStyle(color: AppTheme.blackColor, fontSize: 12.sp, fontWeight: FontWeight.w800), maxLines: 2, overflow: TextOverflow.ellipsis),
+                       Text(item.brandName ?? "", style: TextStyle(color: AppTheme.darkerGrayColor, fontSize: 11.sp, fontWeight: FontWeight.w800), maxLines: 1),
+                       Text(item.title ?? "", style: TextStyle(color: AppTheme.textColor, fontSize: 12.sp, fontWeight: FontWeight.w800), maxLines: 2, overflow: TextOverflow.ellipsis),
                        
                        // Price
                        SizedBox(height: 5.h),
                         if (!hasPromotion)
-                          Text(_formatPrice(item.price), style: TextStyle(color: Colors.grey[700], fontSize: 12.sp, fontWeight: FontWeight.w800))
+                          Text(_formatPrice(item.price), style: TextStyle(color: AppTheme.darkerGrayColor, fontSize: 12.sp, fontWeight: FontWeight.w800))
                         else
                           Row(children: [
-                             Text(_formatPrice(item.price), style: TextStyle(color: Colors.grey, fontSize: 12.sp, decoration: TextDecoration.lineThrough)),
+                             Text(_formatPrice(item.price), style: TextStyle(color: AppTheme.darkerGrayColor, fontSize: 12.sp, decoration: TextDecoration.lineThrough)),
                              SizedBox(width: 5.w),
-                             Text(_formatPrice(item.promotionPrice), style: TextStyle(color: AppTheme.redColor, fontSize: 12.sp, fontWeight: FontWeight.bold)),
+                             Text(_formatPrice(item.promotionPrice), style: TextStyle(color: AppTheme.primaryColor, fontSize: 12.sp, fontWeight: FontWeight.bold)),
                           ]),
                           
                        const Spacer(),

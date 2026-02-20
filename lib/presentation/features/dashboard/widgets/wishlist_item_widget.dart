@@ -105,7 +105,7 @@ class WishlistItemWidget extends StatelessWidget {
                               CommonMethods.decodeHtmlEntities(item.brandName),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(color: Colors.grey, fontSize: 12.sp,
+                              style: TextStyle(color: AppTheme.darkerGrayColor, fontSize: 12.sp,
                                 fontWeight: FontWeight.bold
                               ),
                             ),
@@ -125,7 +125,7 @@ class WishlistItemWidget extends StatelessWidget {
                             if (!hasPromotion) ...[
                                Text(
                                  _formatPrice(item.price),
-                                 style: TextStyle(color: AppTheme.textColor, fontSize: 12.sp),
+                                 style: TextStyle(color: AppTheme.darkerGrayColor, fontSize: 12.sp),
                                ),
                             ] else ...[
                                // Formatting for promo
@@ -134,7 +134,7 @@ class WishlistItemWidget extends StatelessWidget {
                                    Text(
                                      _formatPrice(item.price),
                                      style: TextStyle(
-                                       color: Colors.grey, 
+                                       color: AppTheme.darkerGrayColor, 
                                        fontSize: 12.sp,
                                        decoration: TextDecoration.lineThrough
                                      ),
@@ -142,7 +142,7 @@ class WishlistItemWidget extends StatelessWidget {
                                    SizedBox(width: 5.w),
                                    Text(
                                      _formatPrice(item.promotionPrice),
-                                     style: TextStyle(color: AppTheme.redColor, fontSize: 12.sp, fontWeight: FontWeight.bold),
+                                     style: TextStyle(color: AppTheme.primaryColor, fontSize: 12.sp, fontWeight: FontWeight.bold),
                                    ),
                                  ],
                                )
@@ -179,7 +179,7 @@ class WishlistItemWidget extends StatelessWidget {
                           padding: EdgeInsets.symmetric(horizontal: 15.w),
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: canAddToCart ? AppTheme.orangeColor : AppTheme.redColorOpacity50,
+                            color: canAddToCart ? AppTheme.tealColor : AppTheme.redColor.withOpacity(0.5),
                             borderRadius: BorderRadius.circular(20.r),
                             boxShadow: [
                                BoxShadow(

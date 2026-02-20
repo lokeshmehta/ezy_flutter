@@ -103,10 +103,10 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
         surfaceTintColor: Colors.transparent,
         title: const Text("My Orders" ,
           style: TextStyle(
-            color: Colors.black ,
+            color: AppTheme.textColor ,
           ) ,),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black,),
+          icon: const Icon(Icons.arrow_back, color: AppTheme.textColor,),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -126,7 +126,8 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
               // If isLoading is true, it's a blocking load (or initial).
               if (provider.isLoading) {
                  return Container(
-                    color: Colors.black54,
+                    color: AppTheme.lightGrayBg.withOpacity(0.7), // Adjusted to be a valid color for Container
+                    margin: EdgeInsets.only(bottom: 10.h), // Valid property for Container
                     child: Center(
                       child: SizedBox(
                         width: 100.w,
@@ -232,7 +233,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                 child: ElevatedButton(
                   onPressed: _clearFilters,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
+                    backgroundColor: AppTheme.redColor,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.r)),
                   ),
                   child: const Text("Clear", style: TextStyle(color: Colors.white)),
@@ -297,7 +298,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
       title: "Re-Order Confirmation",
       content: "Do you want to re-order the products in this order?",
       confirmText: "Re-Order",
-      confirmColor: Colors.orange,
+      confirmColor: AppTheme.secondaryColor,
     );
 
     if (confirm == true && mounted) {

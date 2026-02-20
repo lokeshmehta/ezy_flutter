@@ -137,7 +137,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     return Column(
       children: [
         _buildRow("Order ID :", "#${widget.order.refNo}"),
-        _buildRow("Status :", widget.order.orderStatus ?? "", valueColor: Colors.teal),
+        _buildRow("Status :", widget.order.orderStatus ?? "", valueColor: AppTheme.tealColor),
         _buildRow("Order Date :", widget.order.orderDate?.split(" ")[0] ?? ""),
         _buildRow("Order Time :", widget.order.orderDate?.contains(" ") == true ? widget.order.orderDate!.split(" ")[1] : ""),
       ],
@@ -150,7 +150,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontSize: 14.sp, color: Colors.grey[700])),
+          Text(label, style: TextStyle(fontSize: 14.sp, color: AppTheme.darkGrayColor)),
           Text(value, style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: valueColor ?? AppTheme.textColor)),
         ],
       ),
@@ -202,7 +202,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     return Column(
       children: [
         _buildRow("Sub Total :", "AUD ${widget.order.subTotal}"),
-        _buildRow("Discount :", "AUD ${widget.order.discount}", valueColor: Colors.red),
+        _buildRow("Discount :", "AUD ${widget.order.discount}", valueColor: AppTheme.redColor),
         _buildRow("Shipping Charges :", "AUD ${widget.order.deliveryCharge}"),
         _buildRow("Add. Supplier Shipping :", "AUD ${widget.order.suppliersExceededShippingCharge}"),
         _buildRow("Tax (GST) :", "AUD ${widget.order.gst}"),
@@ -219,7 +219,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       children: [
         _buildActionButton("DUPLICATE ORDER", AppTheme.primaryColor, () => _handleDuplicate()),
         SizedBox(height: 10.h),
-        _buildActionButton("RE-ORDER", Colors.orange, () => _handleReorder()),
+        _buildActionButton("RE-ORDER", AppTheme.secondaryColor, () => _handleReorder()),
         if (!isCancelled) ...[
           SizedBox(height: 10.h),
           _buildActionButton("CANCEL ORDER", AppTheme.redColor, () => _handleCancel()),
@@ -248,7 +248,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       title: "Re-Order Confirmation",
       content: "Do you want to re-order the products in this order?",
       confirmText: "Re-Order",
-      confirmColor: Colors.orange,
+      confirmColor: AppTheme.secondaryColor,
     );
 
     if (confirm == true && mounted) {

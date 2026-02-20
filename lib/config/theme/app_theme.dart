@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 
 class AppTheme {
   static const Color primaryColor = Color(0xFF1E3A8A); // Blue (Android 'blue')
@@ -20,6 +19,22 @@ class AppTheme {
   static const Color tealColor = Color(0xFFFFB347); // Helper alias for secondaryColor
   static const Color skyBlue = Color(0xFF0DCAF0); // Android 'skyblue'
   static const Color lightBlue = Color(0xFF0664F1); // Android 'lightblue'
+  
+  static const double inputRadius = 5.0;
+  static const double authButtonRadius = 5.0;
+  static const double productButtonRadius = 5.0;
+  static const double arrowSize = 16.0;
+
+  // Restored Constants
+  static const Color orangeColor = secondaryColor;
+  static const Color yellow = secondaryColor;
+  static const Color darkOrange = Color(0xFFF57C00); // Estimated dark orange
+  static const Color lightGrayBg = Color(0xFFF5F5F5);
+  static const Color shadowBlack = Color(0x1F000000); // Black with ~12% opacity
+  static const Color successGreen = Color(0xFF27AE60);
+  static const Color lightGreen = Color(0xFFD4EED8);
+  static const Color lightSecondaryColor = Color(0xFFFFD180);
+  static Color redColorOpacity10 = redColor.withValues(alpha: 0.1);
   
   static ThemeData get lightTheme {
     return ThemeData(

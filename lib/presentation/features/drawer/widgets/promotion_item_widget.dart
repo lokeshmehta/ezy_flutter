@@ -105,7 +105,7 @@ class PromotionItemWidget extends StatelessWidget {
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                     decoration: BoxDecoration(
-                      color: Colors.orange,
+                      color: AppTheme.secondaryColor,
                       borderRadius: BorderRadius.circular(4.r),
                     ),
                     child: Text(
@@ -131,7 +131,7 @@ class PromotionItemWidget extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 14.sp,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                        color: AppTheme.textColor,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -143,7 +143,7 @@ class PromotionItemWidget extends StatelessWidget {
                       "${_formatDate(item.fromDate)} - ${_formatDate(item.toDate)}",
                       style: TextStyle(
                         fontSize: 12.sp,
-                        color: Colors.grey[600],
+                        color: AppTheme.darkGrayColor,
                       ),
                     ),
                 ],

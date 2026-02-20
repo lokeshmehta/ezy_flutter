@@ -146,8 +146,8 @@ class _FlashDealItemWidgetState extends State<FlashDealItemWidget> {
                          crossAxisAlignment: CrossAxisAlignment.start,
                          children: [
                             if (item.brandName != null)
-                             Text(CommonMethods.decodeHtmlEntities(item.brandName), style: TextStyle(color: Colors.grey, fontSize: 11.sp)),
-                            Text(CommonMethods.decodeHtmlEntities(item.title), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13.sp), maxLines: 2),
+                             Text(CommonMethods.decodeHtmlEntities(item.brandName), style: TextStyle(color: AppTheme.darkerGrayColor, fontSize: 11.sp)),
+                            Text(CommonMethods.decodeHtmlEntities(item.title), style: TextStyle(color: AppTheme.textColor, fontWeight: FontWeight.bold, fontSize: 13.sp), maxLines: 2),
                             
                             // MOQ
                             if (item.minimumOrderQty != null && item.minimumOrderQty != "0")
@@ -157,16 +157,16 @@ class _FlashDealItemWidgetState extends State<FlashDealItemWidget> {
                             SizedBox(height: 5.h),
                             // Flash Deal Logic: often has promotion
                             if (hasPromotion) ...[
-                               Text(_formatPrice(item.price), style: TextStyle(decoration: TextDecoration.lineThrough, color: Colors.grey, fontSize: 12.sp)),
+                               Text(_formatPrice(item.price), style: TextStyle(decoration: TextDecoration.lineThrough, color: AppTheme.darkerGrayColor, fontSize: 12.sp)),
                                Row(
                                  children: [
-                                   Text(_formatPrice(item.promotionPrice), style: TextStyle(color: Colors.red, fontSize: 12.sp)),
+                                   Text(_formatPrice(item.promotionPrice), style: TextStyle(color: AppTheme.primaryColor, fontSize: 12.sp)),
                                    SizedBox(width: 5.w),
-                                   Container(color: Colors.red, padding: EdgeInsets.all(2.w), child: Text("-${_calculateDiscount(item.price, item.promotionPrice)}%", style: TextStyle(color: Colors.white, fontSize: 8.sp))),
+                                   Container(color: AppTheme.redColor, padding: EdgeInsets.all(2.w), child: Text("-${_calculateDiscount(item.price, item.promotionPrice)}%", style: TextStyle(color: Colors.white, fontSize: 8.sp))),
                                  ],
                                )
                             ] else 
-                               Text(_formatPrice(item.price), style: TextStyle(color: AppTheme.textColor, fontSize: 13.sp)),
+                               Text(_formatPrice(item.price), style: TextStyle(color: AppTheme.darkerGrayColor, fontSize: 13.sp)),
 
                             // Add To Cart
                             SizedBox(height: 10.h),
@@ -218,11 +218,11 @@ class _FlashDealItemWidgetState extends State<FlashDealItemWidget> {
                        SizedBox(height: 20.h),
                        
                        // Availability
-                       Text("Availability :", style: TextStyle(color: Colors.grey, fontSize: 14.sp)),
+                       Text("Availability :", style: TextStyle(color: AppTheme.darkGrayColor, fontSize: 14.sp)),
                        Text("${item.availableStockQty} In Stock", style: TextStyle(color: AppTheme.tealColor, fontSize: 14.sp, fontWeight: FontWeight.bold)),
                        
                        SizedBox(height: 10.h),
-                       Text("Hurry Up!\nOffers ends in :", textAlign: TextAlign.center, style: TextStyle(color: Colors.grey, fontSize: 14.sp)),
+                       Text("Hurry Up!\nOffers ends in :", textAlign: TextAlign.center, style: TextStyle(color: AppTheme.darkGrayColor, fontSize: 14.sp)),
                        
                        // Timer
                        SizedBox(height: 10.h),
@@ -249,8 +249,8 @@ class _FlashDealItemWidgetState extends State<FlashDealItemWidget> {
   Widget _buildTimerBox(String value, String label) {
     return Column(
       children: [
-        Text("$value :", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.sp)),
-        Text(label, style: TextStyle(fontSize: 8.sp, color: Colors.grey)),
+        Text("$value :", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.sp, color: AppTheme.blackColor)),
+        Text(label, style: TextStyle(fontSize: 8.sp, color: AppTheme.darkGrayColor)),
       ],
     );
   }

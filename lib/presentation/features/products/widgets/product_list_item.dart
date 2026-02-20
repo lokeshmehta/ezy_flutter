@@ -193,14 +193,14 @@ class _ProductListItemState extends State<ProductListItem> {
                               children: [
                                 Text(
                                   _formatPrice(widget.item.promotionPrice),
-                                  style: TextStyle(color: AppTheme.darkerGrayColor, fontSize: 13.sp, fontWeight: FontWeight.bold),
+                                  style: TextStyle(color: AppTheme.primaryColor, fontSize: 13.sp, fontWeight: FontWeight.bold),
                                 ),
                                 Row(
                                   children: [
                                     Text(
                                       _formatPrice(widget.item.price),
                                       style: TextStyle(
-                                        color: AppTheme.primaryColor, 
+                                        color: AppTheme.darkerGrayColor, 
                                         fontSize: 13.sp,
                                         decoration: TextDecoration.lineThrough
                                       ),

@@ -57,7 +57,7 @@ class HomePromotionItemWidget extends StatelessWidget {
                         child: Container(
                           padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
                           decoration: BoxDecoration(
-                            color: Colors.orange,
+                            color: AppTheme.secondaryColor,
                             borderRadius: BorderRadius.circular(4.r),
                           ),
                           child: Text(
@@ -95,7 +95,7 @@ class HomePromotionItemWidget extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: 10.sp,
-                    color: Colors.black54,
+                    color: AppTheme.darkGrayColor,
                     fontWeight: FontWeight.bold
                   ),
                 ),
@@ -112,12 +112,12 @@ class HomePromotionItemWidget extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 12.sp,
-                          color: const Color(0xFF1B4E9B),
+                          color: AppTheme.primaryColor,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
                       SizedBox(width: 2.w),
-                      Icon(Icons.arrow_forward_ios, color: const Color(0xFF1B4E9B), size: 12.sp),
+                      Icon(Icons.arrow_forward_ios, color: AppTheme.primaryColor, size: 12.sp),
                     ],
                   ),
                 ],

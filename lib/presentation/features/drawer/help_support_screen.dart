@@ -39,7 +39,7 @@ class HelpSupportScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           "Help & Support",
-          style: TextStyle(color: Colors.black, fontSize: 18.sp),
+          style: TextStyle(color: AppTheme.textColor, fontSize: 18.sp),
         ),
         backgroundColor: Colors.white,
         elevation: 4, // 👈 controls shadow intensity
@@ -47,7 +47,7 @@ class HelpSupportScreen extends StatelessWidget {
         surfaceTintColor: Colors.transparent,
         iconTheme: IconThemeData(color: Colors.white),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back , color: Colors.black,),
+          icon: Icon(Icons.arrow_back , color: AppTheme.textColor,),
           onPressed: () {
              Navigator.pop(context);
           },
@@ -143,7 +143,7 @@ class HelpSupportScreen extends StatelessWidget {
   Widget _buildDivider() {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 10.h),
-      child: Divider(color: Colors.grey[300]),
+      child: Divider(color: AppTheme.lightGrayBg),
     );
   }
 
@@ -158,7 +158,7 @@ class HelpSupportScreen extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(8.w),
               decoration: BoxDecoration(
-                color: Colors.grey[200],
+                color: AppTheme.lightGrayBg,
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: AppTheme.primaryColor, size: 24.sp),
@@ -172,7 +172,7 @@ class HelpSupportScreen extends StatelessWidget {
                     title,
                     style: TextStyle(
                       fontSize: 14.sp,
-                      color: Colors.grey[600],
+                      color: AppTheme.darkGrayColor,
                     ),
                   ),
                   SizedBox(height: 5.h),
@@ -181,13 +181,13 @@ class HelpSupportScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color: AppTheme.textColor,
                     ),
                   ),
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios, size: 14.sp, color: Colors.grey),
+            Icon(Icons.arrow_forward_ios, size: 14.sp, color: AppTheme.darkGrayColor),
           ],
         ),
       ),

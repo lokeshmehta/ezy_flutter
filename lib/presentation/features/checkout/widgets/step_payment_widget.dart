@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../config/theme/app_theme.dart';
 import '../../../providers/checkout_provider.dart';
 import '../../../../config/routes/app_routes.dart';
 import '../../../../core/constants/app_messages.dart';
@@ -39,14 +40,14 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
                 // "Order Summary" Header
                 Row(
                   children: [
-                    Icon(Icons.description_outlined, color: Color(0xFF0038FF), size: 20.sp), // Document Icon
+                    Icon(Icons.description_outlined, color: AppTheme.primaryColor, size: 20.sp), // Document Icon
                     SizedBox(width: 8.w),
                     Text(
                       "Order Summary",
                       style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF0038FF), // Blue
+                        color: AppTheme.primaryColor, // Blue
                       ),
                     ),
                   ],
@@ -138,7 +139,7 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
                                        }
                                  },
                                 style: ElevatedButton.styleFrom(
-                                   backgroundColor: Color(0xFFF5A623), // Orange
+                                   backgroundColor: AppTheme.secondaryColor, // Orange
                                    foregroundColor: Colors.white,
                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.r)),
                                    padding: EdgeInsets.zero,
@@ -206,7 +207,7 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 10.w),
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black), // Screenshot looks like black border
+                          border: Border.all(color: AppTheme.blackColor), // Screenshot looks like black border
                           borderRadius: BorderRadius.circular(5.r),
                         ),
                         child: DropdownButtonHideUnderline(
@@ -287,7 +288,7 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
                Expanded(
                  flex: 4,
                  child: Center(
-                   child: Text("3/3", style: TextStyle(color: Color(0xFF0038FF), fontSize: 16.sp, fontWeight: FontWeight.bold)),
+                   child: Text("3/3", style: TextStyle(color: AppTheme.primaryColor, fontSize: 16.sp, fontWeight: FontWeight.bold)),
                  ),
                ),
                
@@ -333,7 +334,7 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
       style: TextStyle(
         fontSize: 16.sp,
         fontWeight: FontWeight.bold,
-        color: Color(0xFF0038FF), // Blue
+        color: AppTheme.primaryColor, // Blue
       ),
     );
   }
@@ -344,10 +345,10 @@ class _StepPaymentWidgetState extends State<StepPaymentWidget> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontSize: 13.sp, color: Colors.grey.shade700, fontWeight: FontWeight.w600)), 
+          Text(label, style: TextStyle(fontSize: 13.sp, color: AppTheme.darkGrayColor, fontWeight: FontWeight.w600)), 
           Text(value, style: TextStyle(
               fontSize: 14.sp, 
-              color: isDiscount ? Colors.red : (isBlueValue ? Color(0xFF0038FF) : Colors.black), 
+              color: isDiscount ? AppTheme.redColor : (isBlueValue ? AppTheme.primaryColor : Colors.black), 
               fontWeight: FontWeight.bold 
           )),
         ],

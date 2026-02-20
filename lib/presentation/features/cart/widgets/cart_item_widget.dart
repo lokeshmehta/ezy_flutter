@@ -63,7 +63,7 @@ class CartItemWidget extends StatelessWidget {
                     item.brandName ?? "",
                     style: TextStyle(
                       fontSize: 12.sp,
-                      color: Colors.grey[600],
+                      color: AppTheme.darkerGrayColor,
                     ),
                   ),
                   SizedBox(height: 4.h),
@@ -81,7 +81,7 @@ class CartItemWidget extends StatelessWidget {
                       SizedBox(width: 5.w),
                       Text(
                         "/ ${item.orderedAs ?? item.soldAs ?? 'Each'}",
-                        style: TextStyle(fontSize: 12.sp, color: Colors.grey),
+                        style: TextStyle(fontSize: 12.sp, color: AppTheme.darkGrayColor),
                       ),
                     ],
                   ),
@@ -149,7 +149,7 @@ class CartItemWidget extends StatelessWidget {
                               context.read<DashboardProvider>().setCartCount(CommonMethods.cartCount);
                            }
                         },
-                        child: Icon(Icons.delete_outline, color: Colors.red, size: 24.sp),
+                        child: Icon(Icons.delete_outline, color: AppTheme.redColor, size: 24.sp),
                       ),
                     ],
                   ),

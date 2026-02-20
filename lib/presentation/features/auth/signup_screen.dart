@@ -88,7 +88,7 @@ class SignUpScreen extends StatelessWidget {
                                               height: 45,
                                               padding: EdgeInsets.symmetric(horizontal: 10),
                                               decoration: BoxDecoration(
-                                                border: Border.all(color: Colors.grey.shade400),
+                                                border: Border.all(color: AppTheme.hintColor),
                                                 borderRadius: BorderRadius.circular(4),
                                               ),
                                               child: DropdownButtonHideUnderline(
@@ -143,7 +143,7 @@ class SignUpScreen extends StatelessWidget {
                                             Text(
                                               "Note : Please add Email(s) in comma separated", // @string/note
                                               style: TextStyle(
-                                                color: Colors.red,
+                                                color: AppTheme.redColor,
                                                 fontSize: 12,
                                               ),
                                             ),
@@ -168,7 +168,7 @@ class SignUpScreen extends StatelessWidget {
                                                 padding: EdgeInsets.only(bottom: 10),
                                                 child: Text(
                                                   provider.errorMsg!,
-                                                  style: TextStyle(color: Colors.red, fontSize: 13),
+                                                  style: TextStyle(color: AppTheme.redColor, fontSize: 13),
                                                   textAlign: TextAlign.center,
                                                 ),
                                               ),
@@ -312,7 +312,7 @@ class SignUpScreen extends StatelessWidget {
         ),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
+          hintStyle: const TextStyle(color: AppTheme.hintColor, fontSize: 14),
           filled: true,
           fillColor: const Color(0xFFFFFFFF), // White background
           contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
@@ -320,15 +320,15 @@ class SignUpScreen extends StatelessWidget {
           // Black rectangular border
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
-            borderSide: const BorderSide(color: Colors.black, width: 1),
+            borderSide: const BorderSide(color: AppTheme.blackColor, width: 1),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
-            borderSide: const BorderSide(color: Colors.black, width: 1),
+            borderSide: const BorderSide(color: AppTheme.blackColor, width: 1),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppTheme.inputRadius.r),
-            borderSide: const BorderSide(color: Colors.black, width: 2),
+            borderSide: const BorderSide(color: AppTheme.blackColor, width: 2),
           ),
         ),
       ),

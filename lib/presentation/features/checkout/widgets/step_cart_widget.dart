@@ -143,7 +143,7 @@ class _StepCartWidgetState extends State<StepCartWidget> {
                     children: [
                       Text(
                         "Cart Total",
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp, color: Color(0xFF0038FF)),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp, color: AppTheme.primaryColor),
                       ),
                       Container(
                         padding: EdgeInsets.all(4.w),
@@ -195,7 +195,7 @@ class _StepCartWidgetState extends State<StepCartWidget> {
                       // Grand Total Section
                       Text(
                         provider.cartResult?.totalHeading ?? "Grand Total",
-                        style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: Colors.grey.shade700),
+                        style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: AppTheme.darkGrayColor),
                       ),
                        SizedBox(height: 5.h),
                       _buildSummaryRow("Inc. GST :", "AUD ${provider.totalAmount}", isBlueValue: true),
@@ -219,7 +219,7 @@ class _StepCartWidgetState extends State<StepCartWidget> {
                              _showClearCartDialog(context, provider);
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFD32F2F), // Darker Red
+                            backgroundColor: AppTheme.redColor, // Darker Red
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.r)),
                           ),
                           child: Text("Clear Cart", style: TextStyle(color: Colors.white, fontSize: 14.sp)),
@@ -231,7 +231,7 @@ class _StepCartWidgetState extends State<StepCartWidget> {
                     Expanded(
                       flex: 3,
                       child: Center(
-                        child: Text("1/3", style: TextStyle(color: Color(0xFF0038FF), fontSize: 15.sp, fontWeight: FontWeight.bold)),
+                        child: Text("1/3", style: TextStyle(color: AppTheme.primaryColor, fontSize: 15.sp, fontWeight: FontWeight.bold)),
                       ),
                     ),
                     
@@ -248,7 +248,7 @@ class _StepCartWidgetState extends State<StepCartWidget> {
                         child: Container(
                           height: 40.h,
                           decoration: BoxDecoration(
-                            color: Color(0xFFF5A623), // Orange/Yellow
+                            color: AppTheme.secondaryColor, // Orange/Yellow
                             borderRadius: BorderRadius.circular(5.r),
                           ),
                           alignment: Alignment.center,
@@ -279,10 +279,10 @@ class _StepCartWidgetState extends State<StepCartWidget> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontSize: 13.sp, color: Colors.grey.shade700, fontWeight: FontWeight.w600)), 
+          Text(label, style: TextStyle(fontSize: 13.sp, color: AppTheme.darkGrayColor, fontWeight: FontWeight.w600)), 
           Text(value, style: TextStyle(
               fontSize: 14.sp, 
-              color: isDiscount ? Colors.red : (isBlueValue ? Color(0xFF0038FF) : Colors.black), 
+              color: isDiscount ? AppTheme.redColor : (isBlueValue ? AppTheme.primaryColor : Colors.black), 
               fontWeight: FontWeight.bold 
           )),
         ],

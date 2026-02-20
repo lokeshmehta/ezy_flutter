@@ -52,7 +52,7 @@ class _StepAddressWidgetState extends State<StepAddressWidget> {
                       onChanged: (val) {
                         provider.toggleNewAddress(val ?? false);
                       },
-                      activeColor: Colors.teal,
+                      activeColor: AppTheme.secondaryColor,
                     ),
                     Text(
                       "Ship to a different address?",
@@ -145,7 +145,7 @@ class _StepAddressWidgetState extends State<StepAddressWidget> {
                    child: Container(
                      height: 45.h,
                      decoration: BoxDecoration(
-                       color: Color(0xFFF5A623), // Orange/Yellow from screenshot
+                       color: AppTheme.secondaryColor, // Orange/Yellow from screenshot
                        borderRadius: BorderRadius.circular(5.r),
                      ),
                      child: Row(
@@ -163,7 +163,7 @@ class _StepAddressWidgetState extends State<StepAddressWidget> {
                // 2/3 Indicator
                Expanded(
                  child: Center(
-                   child: Text("2/3", style: TextStyle(color: Color(0xFF0038FF), fontSize: 16.sp, fontWeight: FontWeight.bold)),
+                   child: Text("2/3", style: TextStyle(color: AppTheme.primaryColor, fontSize: 16.sp, fontWeight: FontWeight.bold)),
                  ),
                ),
                
@@ -180,7 +180,7 @@ class _StepAddressWidgetState extends State<StepAddressWidget> {
                    child: Container(
                      height: 45.h,
                      decoration: BoxDecoration(
-                       color: Color(0xFFF5A623), // Orange/Yellow
+                       color: AppTheme.secondaryColor, // Orange/Yellow
                        borderRadius: BorderRadius.circular(5.r),
                      ),
                      child: Row(
@@ -207,7 +207,7 @@ class _StepAddressWidgetState extends State<StepAddressWidget> {
       style: TextStyle(
         fontSize: 16.sp,
         fontWeight: FontWeight.bold,
-        color: Color(0xFF0038FF), // Blue color from screenshot
+        color: AppTheme.primaryColor, // Blue color from screenshot
       ),
     );
   }
@@ -224,7 +224,7 @@ class _StepAddressWidgetState extends State<StepAddressWidget> {
               style: TextStyle(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF0038FF), // Blueish Label
+                color: AppTheme.primaryColor, // Blueish Label
               ),
             ),
             SizedBox(height: 8.h),
@@ -245,9 +245,9 @@ class _StepAddressWidgetState extends State<StepAddressWidget> {
                  borderSide: BorderSide(color: Colors.grey.shade400),
               ),
               focusedBorder: OutlineInputBorder(
-                 borderRadius: BorderRadius.circular(5.r),
-                 borderSide: BorderSide(color: Color(0xFF0038FF), width: 1.5),
-              ),
+                  borderRadius: BorderRadius.circular(5.r),
+                  borderSide: BorderSide(color: AppTheme.primaryColor, width: 1.5),
+               ),
               contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
               isDense: true,
             ),
