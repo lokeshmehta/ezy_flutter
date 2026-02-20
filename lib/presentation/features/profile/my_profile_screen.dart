@@ -160,15 +160,15 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.primaryColor, 
+      // backgroundColor: AppTheme.primaryColor,
       body: SafeArea(
         child: Column(
           children: [
             // Header Card
             Padding(
-               padding: EdgeInsets.all(5.w),
+               padding: EdgeInsets.all(0.w),
                child: Card(
-                 elevation: 5,
+                 elevation: 1,
                  color: Colors.white,
                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.r)),
                  child: Container(
