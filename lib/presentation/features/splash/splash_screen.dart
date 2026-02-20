@@ -35,7 +35,7 @@ class _SplashScreenState extends State<SplashScreen> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 30.w),
               child: Image.asset(
-                AppAssets.splashLogo,
+                AppAssets.appLogo,
                 height: 200.h,
                 fit: BoxFit.contain, // match_parent width usually implies contain or fitWidth
                 errorBuilder: (ctx, _, __) => const Icon(Icons.error), 

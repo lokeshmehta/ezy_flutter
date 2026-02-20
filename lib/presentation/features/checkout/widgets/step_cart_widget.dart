@@ -279,10 +279,10 @@ class _StepCartWidgetState extends State<StepCartWidget> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontSize: 13.sp, color: AppTheme.darkGrayColor, fontWeight: FontWeight.w600)), 
+          Text(label, style: TextStyle(fontSize: 13.sp, color: Colors.black, fontWeight: FontWeight.w600)),
           Text(value, style: TextStyle(
               fontSize: 14.sp, 
-              color: isDiscount ? AppTheme.redColor : (isBlueValue ? AppTheme.primaryColor : Colors.black), 
+              color: isDiscount ? AppTheme.redColor : (isBlueValue ? AppTheme.primaryColor : AppTheme.darkBlue),
               fontWeight: FontWeight.bold 
           )),
         ],

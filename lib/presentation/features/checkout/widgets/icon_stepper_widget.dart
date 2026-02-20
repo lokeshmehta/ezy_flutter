@@ -19,9 +19,9 @@ class IconStepperWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 20.w),
+      padding: EdgeInsets.symmetric(vertical: 7.h, horizontal: 20.w),
       decoration: BoxDecoration(
-        color: AppTheme.lightGreen,
+        color: AppTheme.stepperBG,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

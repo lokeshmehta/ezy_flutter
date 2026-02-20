@@ -278,9 +278,9 @@ class _DashboardScreenState extends State<DashboardScreen>
                           child: Stack(
                             alignment: Alignment.center,
                             children: [
-                               CustomLoaderWidget(size: 100.w),
+                               CustomLoaderWidget(size: 95.w),
                                Text(
-                                 "Please Wait",
+                                 "Loading..",
                                  textAlign: TextAlign.center,
                                  style: TextStyle(
                                    color: AppTheme.primaryColor,

@@ -51,25 +51,25 @@ class HomePromotionItemWidget extends StatelessWidget {
                   child: Stack(
                     children: [
                       Positioned.fill(child: _buildImage(imageUrl)),
-                      Positioned(
-                        top: 8.h,
-                        left: 8.w,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
-                          decoration: BoxDecoration(
-                            color: AppTheme.secondaryColor,
-                            borderRadius: BorderRadius.circular(4.r),
-                          ),
-                          child: Text(
-                            "Promotion",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 8.sp,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
+                      // Positioned(
+                      //   top: 8.h,
+                      //   left: 8.w,
+                      //   child: Container(
+                      //     padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                      //     decoration: BoxDecoration(
+                      //       color: AppTheme.secondaryColor,
+                      //       borderRadius: BorderRadius.circular(4.r),
+                      //     ),
+                      //     child: Text(
+                      //       "Promotion",
+                      //       style: TextStyle(
+                      //         color: Colors.white,
+                      //         fontSize: 8.sp,
+                      //         fontWeight: FontWeight.bold,
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),

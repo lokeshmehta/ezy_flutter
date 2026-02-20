@@ -33,6 +33,7 @@ class AppTheme {
   static const Color shadowBlack = Color(0x1F000000); // Black with ~12% opacity
   static const Color successGreen = Color(0xFF27AE60);
   static const Color lightGreen = Color(0xFFD4EED8);
+  static const Color stepperBG = Color(0xFFF5FBFE);
   static const Color lightSecondaryColor = Color(0xFFFFD180);
   static Color redColorOpacity10 = redColor.withValues(alpha: 0.1);
   static const double arrowSize = 25.0;
