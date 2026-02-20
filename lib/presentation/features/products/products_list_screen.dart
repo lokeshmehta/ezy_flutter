@@ -103,7 +103,7 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(widget.pageTitle ?? "Products",
+          title: Text(CommonMethods.decodeHtmlEntities(widget.pageTitle ?? "Products"),
           style: TextStyle(
             color: AppTheme.primaryColor,
             fontWeight: FontWeight.bold

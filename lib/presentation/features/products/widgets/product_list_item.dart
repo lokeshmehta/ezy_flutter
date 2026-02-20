@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 import '../../../../core/constants/app_theme.dart';
 import '../../../../core/constants/url_api_key.dart';
 import '../../../../core/network/image_cache_manager.dart';
@@ -334,11 +335,24 @@ class _ProductListItemState extends State<ProductListItem> {
   }
 
   String _calculateDiscount(String? original, String? promo) {
-     if (original == null || promo == null) return "0";
-     double o = double.tryParse(original) ?? 0;
-     double p = double.tryParse(promo) ?? 0;
-     if (o == 0) return "0";
-     int discount = (((o - p) / o) * 100).toInt();
-     return discount.toString();
+    // Handle null or empty inputs
+    if (original == null || promo == null || original.isEmpty || promo.isEmpty) {
+      return "0";
+    }
+
+    double o = double.tryParse(original) ?? 0;
+    double p = double.tryParse(promo) ?? 0;
+
+    if (o <= 0) return "0";
+
+    // Logic: 100 - ((Promo / Original) * 100)
+    double totalDisPrice = 100 - ((p / o) * 100);
+
+    // Equivalent to DecimalFormat("#.##")
+    // Note: Dart doesn't have a direct "RoundingMode.CEILING" flag in NumberFormat,
+    // so we manually apply ceil to 2 decimal places first.
+    double ceilingValue = (totalDisPrice * 100).ceil() / 100;
+    final df = NumberFormat("#.##");
+    return df.format(ceilingValue);
   }
 }
