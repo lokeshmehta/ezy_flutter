@@ -3,12 +3,23 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AppTheme {
-  static const Color primaryColor = Color(0xFF1E3A8A); // blue
-  static const Color secondaryColor = Color(0xFFFFB347); // yellow/tealcolor
-  static const Color redColor = Color(0xFFE4134A);
-  static const Color textColor = Color(0xFF333333);
-  static const Color tealColor = Color(0xFF009688);
-  static const Color white = Colors.white;
+  static const Color primaryColor = Color(0xFF1E3A8A); // Blue (Android 'blue')
+  static const Color secondaryColor = Color(0xFFFFB347); // Orange (Android 'tealcolor'/'yellow')
+  static const Color textColor = Color(0xFF333333); // Dark Grey (Android 'text_color')
+  static const Color hintColor = Color(0xFFBDBDBD); // Light Grey (Android 'hint_color')
+
+  static const Color darkGrayColor = Color(0xFF888787); // Medium Grey (Android 'darkgray_color')
+  static const Color darkerGrayColor = Color(0xFF5B5A5A); // Darker Grey (Android 'darkgreycolor') - NEW
+  
+  static const Color blackColor = Color(0xFF000000); // Black
+  static const Color white = Color(0xFFFFFFFF); // White
+  static const Color redColor = Color(0xFFE4134A); // Red
+  static const Color greybtn = Color(0xFFE6E5E5); // Light Grey for buttons
+  
+  static const Color darkBlue = Color(0xFF1E3A8A); // Same as primary
+  static const Color tealColor = Color(0xFFFFB347); // Helper alias for secondaryColor
+  static const Color skyBlue = Color(0xFF0DCAF0); // Android 'skyblue'
+  static const Color lightBlue = Color(0xFF0664F1); // Android 'lightblue'
   
   static ThemeData get lightTheme {
     return ThemeData(

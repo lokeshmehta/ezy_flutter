@@ -158,7 +158,7 @@ class _ProductListItemState extends State<ProductListItem> {
                           // Vendor
                           Text(
                         CommonMethods.decodeHtmlEntities(widget.item.brandName ?? ""),
-                        style: TextStyle(color: Colors.grey, fontSize: 12.sp),
+                        style: TextStyle(color: AppTheme.darkerGrayColor, fontSize: 12.sp),
                       ),
                       Text(
                         CommonMethods.decodeHtmlEntities(widget.item.title ?? ""),
@@ -185,7 +185,7 @@ class _ProductListItemState extends State<ProductListItem> {
                           if (!hasPromotion)
                             Text(
                               _formatPrice(widget.item.price),
-                              style: TextStyle(color: Colors.grey[700], fontSize: 13.sp , fontWeight: FontWeight.w800),
+                              style: TextStyle(color: AppTheme.darkerGrayColor, fontSize: 13.sp , fontWeight: FontWeight.w800),
                             )
                           else
                             Column(
@@ -193,14 +193,14 @@ class _ProductListItemState extends State<ProductListItem> {
                               children: [
                                 Text(
                                   _formatPrice(widget.item.promotionPrice),
-                                  style: TextStyle(color: Colors.grey[700], fontSize: 13.sp, fontWeight: FontWeight.bold),
+                                  style: TextStyle(color: AppTheme.darkerGrayColor, fontSize: 13.sp, fontWeight: FontWeight.bold),
                                 ),
                                 Row(
                                   children: [
                                     Text(
                                       _formatPrice(widget.item.price),
                                       style: TextStyle(
-                                        color: AppTheme.blackColor, 
+                                        color: AppTheme.primaryColor, 
                                         fontSize: 13.sp,
                                         decoration: TextDecoration.lineThrough
                                       ),

@@ -105,7 +105,7 @@ class CartItemRefinedWidget extends StatelessWidget {
                                    ],
                                    Text(
                                      "AUD ${(double.tryParse(item.salePrice ?? "0") ?? 0) > 0 ? item.salePrice : (item.normalPrice ?? "0.00")}",
-                                      style: TextStyle(color: AppTheme.darkGrayColor, fontSize: 14.sp, fontWeight: FontWeight.bold), // Dark Grey or Black based on screenshot? Looks Grey/Black.
+                                      style: TextStyle(color: AppTheme.darkerGrayColor, fontSize: 14.sp, fontWeight: FontWeight.bold), 
                                    ),
                                    
                                     if((double.tryParse(item.discountAmount ?? "0") ?? 0) > 0)
@@ -114,7 +114,7 @@ class CartItemRefinedWidget extends StatelessWidget {
                                         padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
                                         color: AppTheme.redColor,
                                         child: Text(
-                                          "-${CommonMethods.checkNullempty(item.discountPercent)}%", // Using percent if available, screenshot shows %
+                                          "-${CommonMethods.checkNullempty(item.discountPercent)}%", 
                                           style: TextStyle(color: Colors.white, fontSize: 12.sp, fontWeight: FontWeight.bold),
                                         ),
                                       ),
@@ -148,7 +148,7 @@ class CartItemRefinedWidget extends StatelessWidget {
                                                    onUpdateQty((qty-1).toString());
                                                 }
                                              },
-                                             child: Center(child: Text("-", style: TextStyle(fontSize: 20.sp, color: Colors.grey))),
+                                             child: Center(child: Text("-", style: TextStyle(fontSize: 20.sp, color: AppTheme.darkGrayColor))),
                                            ),
                                          ),
                                          Container(width: 1.w, color: Colors.grey.shade400),
@@ -161,7 +161,7 @@ class CartItemRefinedWidget extends StatelessWidget {
                                              onTap: () {
                                                  onUpdateQty((qty+1).toString());
                                              },
-                                             child: Center(child: Text("+", style: TextStyle(fontSize: 20.sp, color: Colors.grey))),
+                                             child: Center(child: Text("+", style: TextStyle(fontSize: 20.sp, color: AppTheme.darkGrayColor))),
                                            ),
                                          ),
                                        ],

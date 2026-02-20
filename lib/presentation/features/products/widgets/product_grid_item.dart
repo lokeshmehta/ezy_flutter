@@ -149,7 +149,7 @@ class _ProductGridItemState extends State<ProductGridItem> {
                     SizedBox(height: 5.h),
                     Text(
                       widget.item.brandName ?? "",
-                      style: TextStyle(color: Colors.black54, fontSize: 11.sp , fontWeight: FontWeight.w800),
+                      style: TextStyle(color: AppTheme.darkerGrayColor, fontSize: 11.sp , fontWeight: FontWeight.w800),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -158,7 +158,7 @@ class _ProductGridItemState extends State<ProductGridItem> {
                     SizedBox(height: 2.h),
                     Text(
                       widget.item.title ?? "",
-                      style: TextStyle(color: AppTheme.blackColor, fontSize: 12.sp, fontWeight: FontWeight.w800),
+                      style: TextStyle(color: AppTheme.textColor, fontSize: 12.sp, fontWeight: FontWeight.w800),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -178,7 +178,7 @@ class _ProductGridItemState extends State<ProductGridItem> {
                     if (!hasPromotion)
                       Text(
                         _formatPrice(widget.item.price),
-                        style: TextStyle(color: Colors.grey[700], fontSize: 12.sp, fontWeight: FontWeight.w800),
+                        style: TextStyle(color: AppTheme.darkerGrayColor, fontSize: 12.sp, fontWeight: FontWeight.w800),
                       )
                     else
                       Column(
@@ -187,17 +187,17 @@ class _ProductGridItemState extends State<ProductGridItem> {
                           Row(
                             children: [
                                Text(
-                                 _formatPrice(widget.item.price),
+                                 _formatPrice(widget.item.price), // Original Price (Was)
                                  style: TextStyle(
-                                   color: Colors.grey, 
+                                   color: AppTheme.darkerGrayColor, 
                                    fontSize: 12.sp,
                                    decoration: TextDecoration.lineThrough
                                  ),
                                ),
                                SizedBox(width: 5.w),
                                Text(
-                                 _formatPrice(widget.item.promotionPrice),
-                                 style: TextStyle(color: AppTheme.redColor, fontSize: 12.sp, fontWeight: FontWeight.bold),
+                                 _formatPrice(widget.item.promotionPrice), // Promo Price (Now)
+                                 style: TextStyle(color: AppTheme.primaryColor, fontSize: 12.sp, fontWeight: FontWeight.bold),
                                ),
                             ],
                           ),
